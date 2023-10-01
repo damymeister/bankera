@@ -1,0 +1,4 @@
+.dashboardBody{
+    display: flex;
+    flex-direction: row;
+}

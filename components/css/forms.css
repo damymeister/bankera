@@ -1,0 +1,55 @@
+.inputsBorder{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+}
+
+.formContainer { 
+  background-image: url('data:image/svg+xml;utf8,<svg id="visual" viewBox="0 0 900 600" width="900" height="600" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"><rect x="0" y="0" width="900" height="600" fill="%231f1b24"></rect><path d="M317 0L319.3 20C321.7 40 326.3 80 301.5 120C276.7 160 222.3 200 213.8 240C205.3 280 242.7 320 242.2 360C241.7 400 203.3 440 212.2 480C221 520 277 560 305 580L333 600L0 600L0 580C0 560 0 520 0 480C0 440 0 400 0 360C0 320 0 280 0 240C0 200 0 160 0 120C0 80 0 40 0 20L0 0Z" fill="%23282128" stroke-linecap="round" stroke-linejoin="miter"></path></svg>');
+  background-repeat: no-repeat;
+  background-size: cover;    
+  background-color: var(--primary-dark-color);
+  margin-top: 5rem;
+  margin-bottom: 10rem;
+  padding-top: 5rem;
+}
+
+input{
+    max-width: 90%;
+    width: 20rem;
+    border: none;
+    border-bottom: solid var(--primary-blue-color) 1px;
+    background: transparent;
+    outline: none;
+    padding: 0.5rem;
+    color: #e8e8e8;
+    font-size: var(--text-small);
+    margin: 0.5rem;
+    transition: 0.5s ease-in-out;
+}
+
+input:focus , input:valid {
+    border-color: var(--primary-purple-color)
+  }
+
+  input:hover {
+    background-color: #bb86fc2c;
+    border-radius: 0.5rem;
+  }
+  
+  
+.formContainer::after{
+    content: "";
+    padding: 5rem;
+    
+}
+
+h4 a{
+  color: var(--primary-purple-color) !important;
+  text-decoration: none;
+  font-weight: 200;
+  text-align: right;
+}
+

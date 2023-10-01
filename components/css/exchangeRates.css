@@ -1,0 +1,114 @@
+.table {
+    display: table;
+    width: 100%;
+    font-size: var(--text-small);
+    background-color: #1f1b24;
+    opacity: 1;
+    background-image:  repeating-radial-gradient( circle at 0 0, transparent 0, #1f1b24 12px ), repeating-linear-gradient( #12121255, #121212 );
+  }
+  
+  .row {
+    display: table-row;
+  }
+  
+  .Theader {
+    font-weight: bold;
+    width: 100%;
+    font-size: var(--text-small-plus);
+  }
+  
+  .cell {
+    display: table-cell;
+    border-bottom: 1px solid var(--text-mid);
+  }
+
+  .border-bottom{
+    border-bottom: 1px solid var(--text-mid);
+  }
+
+
+  .wrapper{
+    
+    margin-inline: auto;
+  }
+  .wrapper::after{
+    content: "";
+    padding: 5rem;
+    
+  }
+  tbody{
+    
+    text-align: center;
+    font-size: var(--text-small);
+  }
+  
+  table{
+    width: 100%;
+    border-collapse: collapse;
+    color: #fff;
+    margin-top: 2rem;
+    
+  }
+  thead tr,td, td, .cell{
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+
+  }
+  thead{
+    background: var(--button-dark);
+  }
+  
+  tr, caption {
+    text-align: center;
+    width: 100%;
+  }
+
+  /* tr:nth-of-type(2n){
+    
+  } */
+tr:hover{
+  background-color: var(--text-mid);
+}
+
+@media (max-width: 650px) {
+    thead tr{
+      display: none;
+    }
+    td{
+      display: block;
+      text-align: left;
+    }
+    tr, .Theader{
+      font-size: var(--text-small);
+      width: 100%;
+    }
+  
+    td:first-child{
+      padding-top: 1rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    td:last-child{
+      padding-bottom: 1rem;
+    }
+    td::before{
+      
+      font-weight: 700;
+      text-transform: capitalize;
+    }
+    td:nth-of-type(1):before{
+      content: "Waluta: ";
+    }
+    td:nth-of-type(2):before{
+      content: "Nazwa: ";
+    }
+    td:nth-of-type(3):before{
+      content: "Kod waluty: ";
+    }
+    td:nth-of-type(4):before{
+        content: "Kupno: ";
+      }
+    td:nth-of-type(5):before{
+        content: "Sprzedaż: ";
+      }
+}

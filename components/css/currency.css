@@ -1,0 +1,35 @@
+.currency{
+    padding: 3rem;
+    width: fit-content;
+    border: solid 1px;
+    backdrop-filter : blur(10px);
+    filter:brightness(.8);
+    margin: 1rem;
+    transition: filter 0.3s ease-in-out;
+    
+}
+
+.currencies{
+    margin-top: 3rem;
+    border-top: 1px solid var(--text-mid);
+    background-color:var(--primary-dark-color);
+    max-width: calc(100% - 2rem);
+    margin-left: 1rem;
+    margin-right: 1rem;
+    position: relative;
+}
+.currencies::after{
+    content: "";
+    margin-bottom: 5rem;
+}
+.currency:hover{
+    filter:brightness(.99);
+    
+}
+.Topcurrencies{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 1rem;
+    padding-bottom: 3rem;
+}
