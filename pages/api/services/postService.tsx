@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 
 const prisma = new PrismaClient();
 
-export default async function handler(req, res) {
+export async function createPost(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
@@ -27,5 +27,20 @@ export default async function handler(req, res) {
     console.error("Error creating post:", error);
 
     return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function getPosts(req, res) {
+  try {
+    const posts = await prisma.post.findMany({
+      include: {
+        user: true,
+      },
+    });
+
+    res.json(posts);
+  } catch (error) {
+    console.error('Error retrieving posts:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
