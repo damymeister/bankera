@@ -1,0 +1,2 @@
+W dotenv koniecznie musi być:
+DATABASE_URL="mysql://ei_project:Project2023!@localhost:3306/ei_project"
