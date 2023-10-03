@@ -1,12 +1,12 @@
 -- CreateTable
 CREATE TABLE `User` (
-    `user_id` INTEGER NOT NULL,
+    `user_id` INTEGER NOT NULL AUTO_INCREMENT,
     `first_name` VARCHAR(191) NOT NULL,
     `last_name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
     `phone_number` VARCHAR(191) NOT NULL,
-    `wallet_id` INTEGER NOT NULL,
+    `wallet_id` INTEGER NULL,
     `forex_wallet_id` INTEGER NULL,
     `account_created_on` DATETIME(3) NOT NULL,
     `role_id` INTEGER NOT NULL,
@@ -157,7 +157,7 @@ CREATE TABLE `Speculative_Transaction` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `User` ADD CONSTRAINT `User_wallet_id_fkey` FOREIGN KEY (`wallet_id`) REFERENCES `Wallet`(`wallet_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `User` ADD CONSTRAINT `User_wallet_id_fkey` FOREIGN KEY (`wallet_id`) REFERENCES `Wallet`(`wallet_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `User` ADD CONSTRAINT `User_forex_wallet_id_fkey` FOREIGN KEY (`forex_wallet_id`) REFERENCES `Forex_Wallet`(`forex_wallet_id`) ON DELETE SET NULL ON UPDATE CASCADE;

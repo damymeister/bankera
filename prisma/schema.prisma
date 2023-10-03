@@ -8,31 +8,22 @@ datasource db {
 }
 
 model User {
-  user_id              Int      @id
+  user_id              Int      @id @default(autoincrement())
   first_name           String
   last_name            String
   email                String
   password             String
   phone_number         String
-  wallet_id            Int      @unique
+  wallet_id            Int?     @unique
   forex_wallet_id      Int?     @unique
   account_created_on   DateTime
   role_id              Int     
-  wallet               Wallet   @relation(fields: [wallet_id], references: [wallet_id]) // 1->1
+  wallet               Wallet?   @relation(fields: [wallet_id], references: [wallet_id]) // 1->1
   forex_wallet         Forex_Wallet? @relation(fields: [forex_wallet_id], references: [forex_wallet_id])
   role                 Role     @relation(fields: [role_id], references: [role_id])
   posts                Post[] // 1->*
 }
 
-// model Post {
-//   post_id      Int      @id
-//   user_id      Int 
-//   post_title   String
-//   post_content String
-//   posted_on    DateTime
-//   edited_on    DateTime?
-//   user         User     @relation(fields: [user_id], references: [user_id]) // *->1
-// }
 model Post {
   id          Int      @id @default(autoincrement())
   post_title  String
