@@ -14,11 +14,11 @@ interface RegisteringUser {
 
 const validate = (data : RegisteringUser) => {
     const schema = Joi.object({
-        firstName: Joi.string().required().label("First Name"),
-        lastName: Joi.string().required().label("Last Name"),
+        first_name: Joi.string().required().label("First Name"),
+        last_name: Joi.string().required().label("Last Name"),
         email: Joi.string().email().required().label("Email"),
         password: passwordComplexity().required().label("Password"),
-        phone_number: Joi.string().pattern(/^(\+(0-9){1,3})?(0-9){7,10}$/).label("Phone number")
+        phone_number: Joi.string().pattern(/^(\+[0-9]{1,3})?[0-9]{7,10}$/).label("Phone number")
     })
     return schema.validate(data)
 }
@@ -48,10 +48,10 @@ export default async function handler(
         await prisma.user.create({data: {
             email: req.body.email,
             first_name: req.body.first_name,
-            last_name: req.body.lastName,
+            last_name: req.body.last_name,
             password: hashPassword,
             phone_number: req.body.phone_number,
-            role_id: 0,
+            role_id: 1,
             account_created_on: new Date()
         }})
         return res.status(201).json({ message: "User created successfully" })
