@@ -4,11 +4,7 @@ import Joi from "joi"
 import jwt, { Secret } from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import { setCookie } from 'cookies-next'
-
-interface LoginUser {
-    email: String,
-    password: String
-}
+import { LoginUser } from './interfaces/user'
 
 const SECRET_KEY: Secret = "3abFA7c2Quf52601SGMS5w780"
 
