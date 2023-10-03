@@ -14,6 +14,7 @@ import { useRouter } from 'next/router';
 export default function Register() {
     const router = useRouter()
     const [data, setData] = useState({first_name: '', last_name: '', email: '', password: '', phone_number: ''})
+    const [error, setError] = useState('')
   
     const handleRegister = async (e: React.SyntheticEvent) => {
       e.preventDefault();
@@ -29,7 +30,7 @@ export default function Register() {
               error.response.status >= 400 &&
               error.response.status <= 500
           ) {
-              //setError(error.response.data.message)
+              setError(error.response.data.message)
           }
         }
         else console.log('unexpected error: ', error)
