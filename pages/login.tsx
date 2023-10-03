@@ -4,37 +4,53 @@ import '@/components/css/forms.css';
 import  '@/app/globals.css';
 import  Link  from 'next/link';
 import Layout from '@/app/layoutPattern';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { PrismaClient } from '@prisma/client';
+import api_url from '@/lib/api_url';
+import axios from 'axios';
 
 const prisma = new PrismaClient();
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const router = useRouter()
+    const [data, setData] = useState({email: '', password: ''})
+    const [error, setError] = useState('')
   
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.SyntheticEvent) => {
       e.preventDefault();
-  
       try {
-        const response = await fetch('/api/auth', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
-        });
-  
-        if (response.ok) {
-          
-        } else {
-          console.log("error while logging")
-        }
+        const url = api_url('login')
+        const { data: res, status } = await axios.post(url, data, {headers: {Accept: 'application/json'}})
+        console.log(res.message)
+        if (status === 200) router.push('/') // 200 = Auth OK
       } catch (error) {
-        
+        if (axios.isAxiosError(error)) {
+          if (
+              error.response &&
+              error.response.status >= 400 &&
+              error.response.status <= 500
+          ) {
+              setError(error.response.data.message)
+          }
+        }
+        else console.log('unexpected error: ', error)
       }
-    };
+    }
+
+    useEffect(() => {
+      // Registered users should not access this page
+      const handleGetPrivilege = async () => {
+        try {
+            const url = api_url('privilege')
+            const { data} = await axios.get(url, {headers: {Accept: 'application/json'}})
+            if (parseInt(data.privilege) > 0) router.back()
+        } catch (error) {
+            console.log('unexpected error: ', error)
+        }
+      }
+      handleGetPrivilege()
+    }, [])
 
   return (
     <Layout>
@@ -48,8 +64,8 @@ export default function LoginPage() {
                 type="email"
                 placeholder="Email"
                 name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={data.email}
+                onChange={(e) => setData({...data, email: e.target.value})}
                 required
                 className="field"
               />
@@ -58,8 +74,8 @@ export default function LoginPage() {
                 type="password"
                 placeholder="Password"
                 name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={data.password}
+                onChange={(e) => setData({...data, password: e.target.value})}
                 required
                 className="field"
               />
