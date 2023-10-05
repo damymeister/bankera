@@ -6,14 +6,23 @@ import React, { useEffect, useState } from "react";
 import Post from '@/components/post';
 
 import  Link  from 'next/link';
+import api_url from '@/lib/api_url';
+import axios from 'axios';
 export default function News() {
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-        fetch('/api/getPosts') // Replace with your actual API endpoint
-            .then(response => response.json())
-            .then(data => setPosts(data))
-            .catch(error => console.error('Error fetching posts:', error));
+        // Get Posts
+        const handleGetPosts = async () => {
+            try {
+                const url = api_url('posts')
+                const { data } = await axios.get(url, {headers: {Accept: 'application/json'}})
+                setPosts(data)
+            } catch (error) {
+                console.log('unexpected error: ', error)
+            }
+        }
+        handleGetPosts()
     }, []);
 
     return (

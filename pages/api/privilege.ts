@@ -26,6 +26,7 @@ export default async function handler (
             let user_id = token_json._id
             let user = await prisma.user.findUnique({where: {user_id: parseInt(user_id)}})
             if (user === null) return res.status(200).json({privilege: 0})
+
             return res.status(200).json({privilege: user.role_id})
         }
         return res.status(200).json({privilege: 0})

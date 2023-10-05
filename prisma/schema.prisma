@@ -27,7 +27,7 @@ model User {
 model Post {
   id          Int      @id @default(autoincrement())
   post_title  String
-  post_content String
+  post_content String   @db.Text
   posted_on   DateTime @default(now())
   user_id     Int
   user         User     @relation(fields: [user_id], references: [user_id]) // *->1
