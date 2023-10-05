@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react";
 import Service from '../components/service';
 import Currency from '../components/site-elements/currency';
 import { useExchangeRates } from '../components/functions/MoneyData';
-import Post from '../components/post';
+import Post_t from '@/components/post';
 import {FaChartLine, FaWallet, FaRegCreditCard}  from "react-icons/fa";
 import  Link  from 'next/link';
 import Layout from './layoutPattern';
@@ -106,7 +106,7 @@ export default function Home() {
             <h1 className='pb-3'>Recent Posts</h1>
             <div className='postContainer px-1'>
                 {posts.map((post, index) => (
-                    <Post key={index} post={post} />
+                    <Post_t key={index} post={post} />
                 ))}
             </div>
             <div className="circleBottom"></div>

@@ -17,12 +17,12 @@ export default function Footer(){
             
                 <div className='FooterTitle'>BANKERA</div>
                 <div className='footerLinks'>
-                    <a href="https://www.facebook.com"> <FaFacebookSquare/> Facebook </a>
-                    <a href="https://www.instagram.com"> <FaInstagramSquare/> Instagram </a>
-                    <a href="https://twitter.com"> <FaTwitterSquare/> Twitter </a>
+                    <a className='rowFlex' href="https://www.facebook.com"> <FaFacebookSquare/> Facebook </a>
+                    <a className='rowFlex' href="https://www.instagram.com"> <FaInstagramSquare/> Instagram </a>
+                    <a className='rowFlex' href="https://twitter.com"> <FaTwitterSquare/> Twitter </a>
                 </div>
                 <div className='footerMoreInfo '>
-                    <a href="https://github.com/RaViii1/praca-dyplomowa"> <FaGithub/> Project on github </a>
+                    <a className='rowFlex footerJusty'  href="https://github.com/RaViii1/praca-dyplomowa"> <FaGithub/> Project on github </a>
                 </div>
            </div>
            

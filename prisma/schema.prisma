@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  user_id              Int      @id @default(autoincrement())
+  id                   Int      @id @default(autoincrement())
   first_name           String
   last_name            String
   email                String
@@ -18,30 +18,30 @@ model User {
   forex_wallet_id      Int?     @unique
   account_created_on   DateTime
   role_id              Int     
-  wallet               Wallet?   @relation(fields: [wallet_id], references: [wallet_id]) // 1->1
-  forex_wallet         Forex_Wallet? @relation(fields: [forex_wallet_id], references: [forex_wallet_id])
-  role                 Role     @relation(fields: [role_id], references: [role_id])
+  wallet               Wallet?   @relation(fields: [wallet_id], references: [id]) // 1->1
+  forex_wallet         Forex_Wallet? @relation(fields: [forex_wallet_id], references: [id])
+  role                 Role     @relation(fields: [role_id], references: [id])
   posts                Post[] // 1->*
 }
 
 model Post {
   id          Int      @id @default(autoincrement())
-  post_title  String
-  post_content String   @db.Text
+  title  String
+  content String   @db.Text
   posted_on   DateTime @default(now())
   user_id     Int
-  user         User     @relation(fields: [user_id], references: [user_id]) // *->1
+  user         User     @relation(fields: [user_id], references: [id]) // *->1
 }
 
 model Role {
-  role_id      Int     @id
-  role_name    String
-  user         User[]
+  id      Int     @id
+  name    String
+  user    User[]
 }
 
 model Wallet {
-  wallet_id            Int       @id @default(autoincrement())
-  wallet_created_on    DateTime
+  id                   Int       @id @default(autoincrement())
+  created_on           DateTime
   currency_storage     Currency_Storage[]
   user                 User?
   uu_trns_sender       User_to_User_Transaction[] @relation("uu_trns_sender_wallet")
@@ -52,16 +52,16 @@ model Wallet {
 }
 
 model Forex_Wallet {
-  forex_wallet_id         Int @id
-  forex_wallet_created_on DateTime
+  id                      Int @id
+  created_on              DateTime
   user                    User?
   forex_currency_storage  Forex_Currency_Storage[]
   wfw_trns                Wallet_Forex_Wallet_Transaction[]
 }
 
 model Currency {
-  currency_id             Int      @id @default(autoincrement())
-  currency_name           String
+  id                      Int      @id @default(autoincrement())
+  name                    String
   currency_storage        Currency_Storage[]
   forex_currency_storage  Forex_Currency_Storage[]
   currency_pair_sell      Currency_Pair[] @relation("currency_sell")
@@ -71,85 +71,85 @@ model Currency {
 }
 
 model Currency_Storage {
-  currency_storage_id Int     @id @default(autoincrement())
-  currency_amount     Float
+  id                  Int     @id @default(autoincrement())
+  amount              Float
   currency_id         Int
   wallet_id           Int
-  currency            Currency @relation(fields: [currency_id], references: [currency_id])
-  wallet              Wallet  @relation(fields: [wallet_id], references: [wallet_id])
+  currency            Currency @relation(fields: [currency_id], references: [id])
+  wallet              Wallet  @relation(fields: [wallet_id], references: [id])
 }
 
 model Forex_Currency_Storage {
-  forex_currency_storage_id Int @id
+  id                        Int @id
   forex_currency_id         Int 
   forex_currency_amount     Float
   forex_wallet_id           Int
-  currency                  Currency @relation(fields: [forex_currency_id], references: [currency_id])
-  forex_wallet              Forex_Wallet @relation(fields: [forex_wallet_id], references: [forex_wallet_id])
+  currency                  Currency @relation(fields: [forex_currency_id], references: [id])
+  forex_wallet              Forex_Wallet @relation(fields: [forex_wallet_id], references: [id])
 }
 
 model Currency_Pair {
-  currency_pair_id  Int @id @default(autoincrement())
+  id  Int @id @default(autoincrement())
   sell_currency_id  Int
   buy_currency_id   Int
   conversion_value  Float
-  selling_currency  Currency @relation("currency_sell", fields: [sell_currency_id], references: [currency_id])
-  buying_currency   Currency @relation("currency_buy", fields: [buy_currency_id], references: [currency_id])
+  selling_currency  Currency @relation("currency_sell", fields: [sell_currency_id], references: [id])
+  buying_currency   Currency @relation("currency_buy", fields: [buy_currency_id], references: [id])
   uu_trns           User_to_User_Transaction[]
   inner_trns        Inner_Transaction[]
   spec_trns         Speculative_Transaction[]
 }
 
 model User_to_User_Transaction {
-  transaction_id         String   @id
+  id         String   @id
   wallet_sender_id       Int      
   wallet_recipient_id    Int      
   currency_pair_id       Int            
-  sender_wallet          Wallet     @relation("uu_trns_sender_wallet", fields: [wallet_sender_id], references: [wallet_id])
-  recipient_wallet       Wallet     @relation("uu_trns_recipient_wallet", fields: [wallet_recipient_id], references: [wallet_id]) 
-  currency_pair          Currency_Pair   @relation(fields: [currency_pair_id], references: [currency_pair_id])
+  sender_wallet          Wallet     @relation("uu_trns_sender_wallet", fields: [wallet_sender_id], references: [id])
+  recipient_wallet       Wallet     @relation("uu_trns_recipient_wallet", fields: [wallet_recipient_id], references: [id]) 
+  currency_pair          Currency_Pair   @relation(fields: [currency_pair_id], references: [id])
   inital_amount          Float
   converted_amount       Float
   transaction_date       DateTime
 }
 
 model Inner_Transaction {
-  inner_transaction_id String @id
+  id                   String @id
   wallet_id            Int
   currency_pair_id     Int
   inital_amount        Float
   converted_amount     Float
   transaction_date     DateTime
-  wallet               Wallet @relation(fields: [wallet_id], references: [wallet_id])
-  currency_pair        Currency_Pair @relation(fields: [currency_pair_id], references: [currency_pair_id])
+  wallet               Wallet @relation(fields: [wallet_id], references: [id])
+  currency_pair        Currency_Pair @relation(fields: [currency_pair_id], references: [id])
 }
 
 model External_Transaction {
-  external_transaction_id String @id
+  id                      String @id
   wallet_id               Int    
   currency_id             Int    
   bank_account            String
   transaction_amount      Int
   transaction_commision   Float
   transaction_date        DateTime
-  wallet                  Wallet @relation(fields: [wallet_id], references: [wallet_id])
-  currency                Currency @relation(fields: [currency_id], references: [currency_id])
+  wallet                  Wallet @relation(fields: [wallet_id], references: [id])
+  currency                Currency @relation(fields: [currency_id], references: [id])
 }
 
 model Wallet_Forex_Wallet_Transaction {
-  wallet_forex_wallet_transaction_id Int @id
+  id                                 Int @id
   wallet_id                          Int
   forex_wallet_id                    Int
   currency_id                        Int
   amount                             Float
   transaction_date                   DateTime
-  wallet                             Wallet @relation(fields: [wallet_id], references: [wallet_id])
-  forex_wallet                       Forex_Wallet @relation(fields: [forex_wallet_id], references: [forex_wallet_id])
-  currency                           Currency @relation(fields: [currency_id], references: [currency_id])
+  wallet                             Wallet @relation(fields: [wallet_id], references: [id])
+  forex_wallet                       Forex_Wallet @relation(fields: [forex_wallet_id], references: [id])
+  currency                           Currency @relation(fields: [currency_id], references: [id])
 }
 
 model Speculative_Transaction {
-  speculative_transaction_id Int @id
+  id                         Int @id
   transaction_type           Int
   currency_pair_id           Int
   financial_leverage         Int
@@ -160,5 +160,5 @@ model Speculative_Transaction {
   entry_date                 DateTime
   exit_date                  DateTime?
   authors_profit             Float
-  currency_pair              Currency_Pair @relation(fields: [currency_pair_id], references: [currency_pair_id])
+  currency_pair              Currency_Pair @relation(fields: [currency_pair_id], references: [id])
 }

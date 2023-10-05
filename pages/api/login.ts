@@ -47,7 +47,7 @@ export default async function handler(
         if (!validPassword) {
             return res.status(401).json({ message: "Invalid E-mail or Password" })
         }
-        const token = generateAuthToken(user_found.user_id)
+        const token = generateAuthToken(user_found.id)
         setCookie('token', token, {req, res, maxAge: 60 * 60 * 24 * 7})
         return res.status(200).json({ message: "Logged in successfully" })
     }

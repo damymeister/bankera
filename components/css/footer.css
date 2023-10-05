@@ -12,6 +12,16 @@
   text-decoration: none;
   color: var(--text-light)
 }  
+.rowFlex{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 0.5rem;
+  
+}
+.footerJusty{
+  justify-content: center;
+}
 .FooterinfoText {
   /* position: absolute;
   top: 50%;

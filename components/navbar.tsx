@@ -24,7 +24,7 @@ export default function Navbar(){
         <div className="logo mx-5 px-5">
           <a href="/" className={`flex items-center space-x-2 py-5 text-gray-300 pl-2 ${isActive('/')}`}>Bankera.pL</a>
         </div>
-        <div className="links text-right">
+        <div className="linksN text-right">
           <div className="navlinks mx-5 text ">
             <Link href="/about" className={` ${isActive('/about')}`}>About</Link>
             <Link href="/help" className={` ${isActive('/help')}`}>Help</Link>

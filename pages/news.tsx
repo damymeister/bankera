@@ -3,7 +3,7 @@ import '@/components/css/home.css';
 import  '@/app/globals.css';
 import Layout from '@/app/layoutPattern';
 import React, { useEffect, useState } from "react";
-import Post from '@/components/post';
+import Post_t from '@/components/post';
 
 import  Link  from 'next/link';
 import api_url from '@/lib/api_url';
@@ -33,7 +33,7 @@ export default function News() {
                     <h1 className="py-6 textleft">Najnowsze Posty</h1>
                     <div className="px-1">
                         {posts.map((post, index) => (
-                            <Post key={index} post={post} />
+                            <Post_t key={index} post={post} />
                         ))}
                     </div>
                 </div>

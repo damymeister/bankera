@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PrismaClient } from '@prisma/client';
 import '@/components/css/home.css';
 
@@ -7,6 +7,9 @@ import  '@/app/globals.css';
 import Layout from '@/app/layoutPattern';
 import '@/components/css/tailwind.css';
 import  Link  from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import api_url from '@/lib/api_url';
+import axios from 'axios';
 const prisma = new PrismaClient();
 
 export default function CreatePost() {
@@ -14,8 +17,24 @@ export default function CreatePost() {
   const [postContent, setPostContent] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const params = useSearchParams()
 
-  const handleSubmit = async (e) => {
+  useEffect (() => {
+    // Get Posts
+    const handleGetPost = async (id: number) => {
+        try {
+            const url = api_url('posts?id=' + id.toString())
+            const { data } = await axios.get(url, {headers: {Accept: 'application/json'}})
+            setPostTitle(data.title)
+            setPostContent(data.content)
+        } catch (error) {
+            console.log('unexpected error: ', error)
+        }
+    }
+    if (params !== null && params.has('id')) handleGetPost(parseInt(params.get('id') ?? "0"))
+  }, [])
+
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
 
     try {
@@ -25,12 +44,12 @@ export default function CreatePost() {
         return;
       }
 
-      const response = await fetch('/api/create-post', {
+      const response = await fetch('/api/auth/redaktor/post', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ post_title: postTitle, post_content: postContent }),
+        body: JSON.stringify({ title: postTitle, content: postContent }),
       });
 
       if (response.ok) {
@@ -53,7 +72,7 @@ export default function CreatePost() {
     <Layout>
         <div className="containerCustom borderLightY">
         <div className="p-4 bg-[#1f1b24b2] shadow-md text-white rounded-md">
-        <h1 className="text-3xl font-bold mb-4">Create a new post</h1>
+        <h1 className="text-3xl font-bold mb-4">{(params !== null && params.has('id')) ? "Edit " : "Create new " }post</h1>
         {successMessage && <div className="text-green-500">{successMessage}</div>}
         {errorMessage && <div className="text-red-500">{errorMessage}</div>}
         <form onSubmit={handleSubmit} className="space-y-4 my-4 flex flex-col items-center justify-center">
