@@ -26,6 +26,7 @@ export async function middleware(request: NextRequest) {
     // Define levels of privilege (0 - guest, 1 - user, 2 - redaktor, 3 - admin)
     if (request.nextUrl.pathname.includes('/api/auth/')) callback_ts = 1
     if (request.nextUrl.pathname.includes('/user/')) callback_ts = 1
+    if (request.nextUrl.pathname.includes('/api/wallet')) callback_ts = 1
     if (request.nextUrl.pathname.includes('/api/auth/redaktor/')) callback_ts = 2
     if (request.nextUrl.pathname.includes('/admin/')) callback_ts = 3
     if (request.nextUrl.pathname.includes('/api/auth/admin/')) callback_ts = 3
