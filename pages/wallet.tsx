@@ -38,6 +38,11 @@ export default function Wallet() {
     }
   };
 
+
+  const closeWalletModal =  () =>{
+    setShowWalletModal(false);
+  }
+
   return (
     <Layout>
       <div>
@@ -52,7 +57,7 @@ export default function Wallet() {
         }
         {showWalletModal ? 
         <div>
-            <WalletModal/>
+            <WalletModal closeWalletModal={closeWalletModal} />
         </div>:
         <></>
         }
