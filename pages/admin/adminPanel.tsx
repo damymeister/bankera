@@ -39,8 +39,9 @@ const UsersTable = () => {
             <FaUser></FaUser>
             <span className="text-gray-500 hover:text-gray-700 hover:border-b  hover:border-gray-300">Placeholder</span>
           </span>
-        </div>
+        </div> 
       </nav>
+      
       <div className="relative bg-white px-6 pb-8 pt-10 shadow-xl ring-1 ring-gray-900/5 sm:mx-auto sm:rounded-lg sm:px-10 w-screen">
         <div className="mx-auto">
           <div className="text-slate-600 border-b border-gray-300 uppercase font-bold">Admin panel</div>
