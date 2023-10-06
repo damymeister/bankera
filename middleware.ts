@@ -27,6 +27,8 @@ export async function middleware(request: NextRequest) {
     if (request.nextUrl.pathname.includes('/api/auth/')) callback_ts = 1
     if (request.nextUrl.pathname.includes('/user/')) callback_ts = 1
     if (request.nextUrl.pathname.includes('/api/wallet')) callback_ts = 1
+    if (request.nextUrl.pathname.includes('/api/currency')) callback_ts = 1
+    if (request.nextUrl.pathname.includes('/api/currencyStorage')) callback_ts = 1
     if (request.nextUrl.pathname.includes('/api/auth/redaktor/')) callback_ts = 2
     if (request.nextUrl.pathname.includes('/admin/')) callback_ts = 3
     if (request.nextUrl.pathname.includes('/api/auth/admin/')) callback_ts = 3

@@ -7,8 +7,8 @@ export default function Wallet() {
   const [walletData, setWalletData] = useState([]);
   const [error, setError] = useState("");
   const [showWalletModal, setShowWalletModal] = useState(false);
+  
   useEffect(() => {
-    // Get Wallets
     const fetchWalletData = async () => {
       try {
         const promiseWalletData = await getWalletData();
@@ -24,20 +24,6 @@ export default function Wallet() {
     fetchWalletData();
   }, []);
 
-  const createWallet = async () => {
-
-    try {
-      await handleCreateWallet();
-      const promiseWalletData = await getWalletData();
-      if (promiseWalletData) {
-        setWalletData(promiseWalletData);
-      }
-    } catch (error) {
-      console.error('Error creating wallet:', error);
-      setError('Error creating wallet.');
-    }
-  };
-
 
   const closeWalletModal =  () =>{
     setShowWalletModal(false);
@@ -48,20 +34,17 @@ export default function Wallet() {
       <div>
         {walletData.length === 0 ?
           <div>
-            <h4>You do not have a wallet yet! Create one below!</h4>
-            <button onClick={() => setShowWalletModal(true) } className="p-4 bg-black">Create Wallet</button>
+            <h3>You do not have a wallet yet! Create one below!</h3>
+            <button onClick={() => setShowWalletModal(true) } className="p-4 rounded-xl mt-4 bg-black mb-4 cursor-pointer">Create Wallet</button>
           </div> :
           <div>
            <h1>jest</h1>
           </div>
         }
-        {showWalletModal ? 
-        <div>
-            <WalletModal closeWalletModal={closeWalletModal} />
-        </div>:
-        <></>
-        }
       </div>
+      {showWalletModal ? 
+            <WalletModal closeWalletModal={closeWalletModal} />: null
+        }
     </Layout>
   );
 }

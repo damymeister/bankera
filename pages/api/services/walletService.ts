@@ -6,11 +6,11 @@ const url = api_url('wallet')
 
 export const getWalletData = async () => {
         try {
-        const { data } = await axios.get(url, { headers: { Accept: 'application/json' } });
-        return(data);
+          const { data } = await axios.get(url, { headers: { Accept: 'application/json' } });
+          return(data);
         } catch (error) {
-        console.log('unexpected error: ', error);
-        throw error;
+          console.log('unexpected error: ', error);
+          throw error;
         }
     };
 
