@@ -28,7 +28,7 @@ export default function News() {
     return (
         <Layout>
             <div className="containerCustom borderLightY p0">
-            <Link href="/posts/create" className="button2">Dodaj nowy post</Link>
+            <Link href="/posts/editor" className="button2">Dodaj nowy post</Link>
                 <div className="py-5 my1">
                     <h1 className="py-6 textleft">Najnowsze Posty</h1>
                     <div className="px-1">
