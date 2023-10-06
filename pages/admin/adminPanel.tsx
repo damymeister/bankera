@@ -4,7 +4,7 @@ import '@/app/globals.css';
 import '@/components/css/post.css';
 import React, { useState, useEffect } from 'react';
 import Layout from '@/app/layoutPattern';
-import handleDelete from '@/pages/api/deleteUser';
+
 import {FaTrash, FaEdit, FaHistory, FaUser, FaFolderOpen}  from "react-icons/fa";
 
 const UsersTable = () => {
@@ -12,7 +12,7 @@ const UsersTable = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const response = await fetch('/api/getUsers');
+      const response = await fetch('/api/auth/admin/user');
       const data = await response.json();
       setUsers(data);
     };
@@ -70,7 +70,7 @@ const UsersTable = () => {
                   <td className="px-1 ">{user.email}</td>
                   <td className="px-1 ">{user.password}</td>
                   <td className="px-1 ">{user.phone_number}</td>
-                  <td className="text-red-600 border-rounded1">{user.role.role_name}</td>
+                  <td className="text-red-600 border-rounded1">{user.role_id}</td>
                   <td className="py-3 m-1 px-2 flex flex-row  justify-center">
                     <FaEdit className="text-blue-400 hover:text-blue-800 mx-1">Edit</FaEdit>
                     <FaTrash className="text-red-400 hover:text-red-800 mx-1">Delete</FaTrash>

@@ -3,14 +3,8 @@ import prisma from "@/lib/prisma";
 import Joi from "joi"
 import passwordComplexity from "joi-password-complexity"
 import bcrypt from "bcrypt"
+import { RegisteringUser } from './interfaces/user';
 
-interface RegisteringUser {
-    first_name: String,
-    last_name: String,
-    email: String,
-    password: String,
-    phone_number: String
-}
 
 const validate = (data : RegisteringUser) => {
     const schema = Joi.object({
