@@ -1,5 +1,5 @@
 "use client";
-import '@/components/css/home.css';
+
 import '@/components/css/home.css';
 import '@/components/css/navbar.css';
 
@@ -44,7 +44,7 @@ export default function Navbar(){
         <div className="logo mx-5 px-5">
           <a href="/" className={`flex items-center space-x-2 py-5 text-gray-300 pl-2 ${isActive('/')}`}>Bankera.pL</a>
         </div>
-        <div className="linksN text-right">
+        <div className="linksN textRight">
           <div className="navlinks mx-5 text ">
             <Link href="/about" className={` ${isActive('/about')}`}>About</Link>
             <Link href="/help" className={` ${isActive('/help')}`}>Help</Link>
@@ -57,7 +57,7 @@ export default function Navbar(){
             { privilege > 0 && <Link href="/wallet" className={`${isActive('/wallet')}`}>Wallet</Link> }
             { privilege === 0 && <Link href="/login" className={`${isActive('/login')}`}>Zaloguj</Link> }
             { privilege === 0 && <Link href="/register" className="">Zarejestruj</Link>}
-            { privilege > 0 && <button onClick={handleLogout}>Logout</button> }
+            { privilege > 0 && <Link href="/" onClick={handleLogout}>Logout</Link> }
           </div>
         </div>
       </div>
