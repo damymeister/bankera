@@ -54,7 +54,27 @@ const UserProfile = () => {
       
       const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
-    
+      
+        try {
+          const updatedProfileData = {
+            first_name: name,
+            last_name: surname,
+            email,
+            password,
+            phone_number: phoneNumber,
+          };
+      
+          const response = await axios.put(url, updatedProfileData, { headers: { Accept: 'application/json' } });
+      
+          if (response.status === 200) {
+            setSuccessMessage('User profile updated successfully.');
+          } else {
+            setErrorMessage('Failed to update user profile.');
+          }
+        } catch (error) {
+          console.error('Error while updating user profile:', error);
+          setErrorMessage('An error occurred while updating user profile.');
+        }
       };
 
     return (
@@ -106,6 +126,12 @@ const UserProfile = () => {
                 className="w-1/5 px-4 py-2 bg-[#BB86FC] hover:bg-[#996dce] text-[white] rounded-md"
               >
                 Save Profile
+              </button>
+              <button
+                type="submit"
+                className="w-1/5 px-4 py-2 bg-[#ff0000] hover:bg-[#996dce] text-[white] rounded-md"
+              >
+                Delete Profile
               </button>
             </form>
           </div>
