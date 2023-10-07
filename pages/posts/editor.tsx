@@ -94,7 +94,7 @@ export default function CreatePost() {
                 type="submit"
                 className="w-2/5 px-4 py-2 bg-[#BB86FC] hover:bg-[#996dce] text-[white] rounded-md"
                 >
-                Create Post
+                {(params !== null && params.has('id')) ? "Edit " : "Create " }post
             </button>
             
             </div>
