@@ -28,12 +28,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const wallet_id = userWallet.wallet_id;
         const walletStorage = await prisma.currency_Storage.findMany({
           where: {
-            id: wallet_id,
+            wallet_id: wallet_id,
           },
         });
-        return res.status(200).json(wallet_id);
         if (walletStorage) {
-          return res.status(200).json(walletStorage);
+          return res.status(200).json({walletStorage, first_name: userWallet.first_name, last_name: userWallet.last_name});
         } else {
           return res.status(404).json({ error: 'Data of User wallet not found.' });
         }
