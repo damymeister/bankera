@@ -1,8 +1,10 @@
 import Layout from '@/app/layoutPattern';
 import { GrClose } from "react-icons/gr";
 import React, { useEffect, useState } from 'react';
-import { postCurrencyStorage, updateCurrencyStorage } from '@/pages/api/services/currencyStorageService';
-
+import { postCurrencyStorage, updateCurrencyStorage, deleteCurrencyStorage } from '@/pages/api/services/currencyStorageService';
+import { GrMoney } from "react-icons/gr";
+import { GiMoneyStack } from "react-icons/gi";
+import { GoSingleSelect } from "react-icons/go";
 
 export default function WalletModal(props) {
   const [currencies, setCurrencies] = useState([]);
@@ -12,6 +14,7 @@ export default function WalletModal(props) {
   const [amountToChange, setAmountToChange] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [operationType, setOperationType] = useState(1);
+  const [currencyName, setCurrencyName] = useState(null);
   useEffect(() => {
     const setupProps = () => {
       if(props.currenciesToSend){
@@ -27,6 +30,7 @@ export default function WalletModal(props) {
           currency_id: props.walletData.currency_id,
           amount: props.walletData.amount,
         });
+        setCurrencyName(props.findCurrencyName(props.walletData.currency_id));
       } else {
         setData((dat) => ({
           ...dat,
@@ -39,7 +43,6 @@ export default function WalletModal(props) {
     ;
     setupProps();
   }, [props.currencies, props.walletData]);
-
 
   const handleAmountChange = (e) => {
     const enteredAmount = e.target.value;
@@ -75,8 +78,11 @@ export default function WalletModal(props) {
   };
 
   const addBalanceToAccount = async () =>{
+    if(parseFloat(amountToChange) === 0){
+      setMessage("Incorrect value.")
+    }else{
     const newCurrentValueBalance = parseFloat(data.amount) + parseFloat(amountToChange);
-    if(newCurrentValueBalance > 0){
+    if(newCurrentValueBalance >= 0){
       const dataa = {id: data.currencyRow_id, amount: newCurrentValueBalance}
       const res = await updateCurrencyStorage(dataa);
       if(res.status === 200){
@@ -89,11 +95,16 @@ export default function WalletModal(props) {
     }else{
       setMessage("You do not have that amount of money.");
     }
+  }
+  setAmountToChange(0);
   }
   
   const withDrawMoneyFromAccount = async () =>{
+    if(parseFloat(amountToChange) === 0){
+      setMessage("Incorrect value.")
+    }else{
     const newCurrentValueBalance = parseFloat(data.amount) - parseFloat(amountToChange);
-    if(newCurrentValueBalance > 0){
+    if(newCurrentValueBalance >= 0){
       const dataa = {id: data.currencyRow_id, amount: newCurrentValueBalance}
       const res = await updateCurrencyStorage(dataa);
       if(res.status === 200){
@@ -103,40 +114,57 @@ export default function WalletModal(props) {
         }));
       }
       setMessage(res.message);
+      if(newCurrentValueBalance == 0 && res.status === 200){
+        const resDel = await deleteCurrencyStorage(data.currencyRow_id);
+        setMessage(resDel.message);
+      }
     }else{
       setMessage("You do not have that amount of money.");
     }
   }
+  setAmountToChange(0);
+  }
   
   const addNewCurrency = async () =>{
+    if(parseFloat(amountToChange) === 0){
+      setMessage("Incorrect value.")
+    }else{
     const dataCurr = {
       wallet_id : data.wallet_id,
       currency_id : parseInt(data.currency_id),
       amount: parseFloat(amountToChange),
     }
     const res = await postCurrencyStorage(dataCurr);
+    setAmountToChange(0);
     setMessage(res.message);
+  }
   }
   
 const displayButton = () =>{
   if(operationType == 1 && data.currencyRow_id){
-    return <button onClick={() => addBalanceToAccount()} className="py-2 button2 text-white rounded-xl w-1/3">Deposit</button>
+    return <button onClick={() => addBalanceToAccount()} className="py-2 button2 text-white font-bold rounded-xl w-1/3">Deposit</button>
   }else if(operationType == 2 && data.currencyRow_id){
-    return <button onClick={() => withDrawMoneyFromAccount()} className="py-2 button2 text-white rounded-xl w-1/3">Withdraw</button>
+    return <button onClick={() => withDrawMoneyFromAccount()} className="py-2 button2 font-sans text-white rounded-xl font-bold w-1/3">Withdraw</button>
   }
   else if(data.currencyRow_id == null){
-    return <button onClick={() => addNewCurrency()} className="py-2 button2 text-white rounded-xl w-1/3">Add</button>
+    return <button onClick={() => addNewCurrency()} className="py-2 button2 text-white rounded-xl font-bold w-1/3">Add</button>
   }
 }
 
   return (
     <Layout>
       <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black bg-opacity-80">
-        <div className="lg:w-1/4 w-2/3 py-2 lg:h-96 min-h-1/3 h-auto bg-white rounded-xl relative border-2 text-black">
+        <div className="lg:w-1/4 w-2/3 py-2 lg:h-64 min-h-1/3 h-auto bg-white rounded-xl relative border-2 text-black border-black">
           {isLoading ? (
             <div>Is loading...</div>
           ) : (
             <div className="text-black flex flex-col items-center">
+            <div className='flex flex-row font-bold mb-4'>
+              <GrMoney className="cursor-pointer text-2xl mr-3" />
+              <label htmlFor="currentAmount" className="text-lg">
+                Current Value: {data.amount} {currencyName ? currencyName : null}
+              </label>
+            </div>
               {!data.currencyRow_id ? (
                 <div>
                   <p className="font-bold">Choose currency</p>
@@ -144,31 +172,36 @@ const displayButton = () =>{
                 </div>
               ) : null }
               {data.currencyRow_id ? (
-                <div>
-                  <p className="font-bold">Choose Operation Type</p>
-                  <select className="w-1/2" onChange={handleOperationTypeChange} value={operationType}>
-                        <option key={1} value={1}>
-                              Deposit
-                        </option>
-                        <option key={2} value={2}>
-                              Withdraw
-                        </option>
+                <div className='flex flex-row'>
+                 <label htmlFor="operationType" className="font-bold flex flex-row">
+                 <GoSingleSelect className = "cursor-pointer text-2xl mr-1"/> 
+                 <p>Operation:</p>
+                 </label>
+                  <select
+                    id="operationType"
+                    className="w-38 border-1 font-bold"
+                    onChange={handleOperationTypeChange}
+                    value={operationType}
+                  >
+                    <option key={1} value={1}>Deposit</option>
+                    <option key={2} value={2}>Withdraw</option>
                   </select>
-                <p>Current Amount: {data.amount}</p>
                 </div>
               ): null}
-              <label htmlFor="name" className="font-bold">Amount</label>
-              <input
-                placeholder="Amount"
-                id="name"
-                type="number"
-                min="0"
-                className="mt-4 w-1/2 font-bold border-transparent border-1 focus:border-black overflow-y-auto resize-none"
-                onChange={handleAmountChange}
-                value={amountToChange}
-              />
+              <div className='flex flex-row mt-4'>
+                <label htmlFor="name" className="font-bold mr-1 flex flex-row"><GiMoneyStack className = "cursor-pointer text-2xl mr-2"/>Amount:</label>
+                <input
+                  placeholder="0"
+                  id="name"
+                  type="number"
+                  min="0"
+                  className="w-16 font-bold border-transparent border-1 focus:border-black overflow-y-auto resize-none"
+                  onChange={handleAmountChange}
+                  value={amountToChange}
+                />
+              </div>
             {displayButton()}
-            {message !== "" ? (<p>{message}</p>) : null}
+            {message !== "" ? (<p className='font-bold text-black'>{message}</p>) : null}
             </div>
           )}
           <button onClick={() => props.closeWalletModal()} className="absolute right-2 top-2">

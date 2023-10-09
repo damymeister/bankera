@@ -1,31 +1,49 @@
 import Layout from '@/app/layoutPattern';
 import React, { useEffect, useState } from 'react';
-import { getWalletData, handleCreateWallet, handleDeleteWallet, handleEditWallet } from './api/services/walletService';
+import { getWalletData, handleCreateWallet, handleDeleteWallet} from './api/services/walletService';
 import { getCurrencies } from './api/services/currencyService';
+import { getCurrencyStorage } from './api/services/currencyStorageService';
 import WalletModal from '@/components/WalletModal';
-
+import { BsCurrencyExchange } from "react-icons/bs";
 
 export default function Wallet() {
   const [walletData, setWalletData] = useState(null);
+  const [walletID, setWalletID] = useState(null);
   const [error, setError] = useState("");
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currencies, setCurrencies] = useState(null);
   const [pickedCurrency, setPickedCurrency] = useState({ currencyRow_id: null, wallet_id:"", currency_id: "", amount: "" })
   const [currenciesToSend, setCurrenciesToSend] = useState([]);
+  const [userData, setuserData] = useState({firstName:"", surname: ""})
 
   const fetchWalletData = async () => {
     try {
-      const promiseWalletData = await getWalletData();
+      const walletId = await getWalletData();
       const currencyData = await getCurrencies();
-      if (promiseWalletData && currencyData) {
-        setWalletData(promiseWalletData);
+      var currenciesSaved = []
+      if(walletId.wallet_id){
+
+        currenciesSaved = await getCurrencyStorage(walletId.wallet_id);
+        setWalletID(walletId.wallet_id);
+
+        setuserData((data) => ({
+          ...data,
+          firstName: walletId.first_name,
+          surname: walletId.last_name,
+        }));
+
+        if(currenciesSaved){
+          setWalletData(currenciesSaved.data);
+        }
+      }
+      if (currencyData) {
         setCurrencies(currencyData);
-        checkRemainingCurrencies(promiseWalletData, currencyData);
+        checkRemainingCurrencies(currenciesSaved.data, currencyData);
       }
     } catch (error) {
-      console.error('Error fetching wallet data:', error);
-      setError('Error fetching wallet data.');
+      console.error('Error while fetching wallet data:', error);
+      setError('Error while fetching wallet data.');
     }
     finally{
       setIsLoading(false);
@@ -37,7 +55,7 @@ export default function Wallet() {
   }, []);
 
   const checkRemainingCurrencies = (promiseWalletData, currencyData) => {
-    const currentCurrencies = promiseWalletData.walletStorage.map(data=> Number(data.currency_id));
+    const currentCurrencies = promiseWalletData.map(data=> Number(data.currency_id));
     const allCurrencies = currencyData.map(currency => Number(currency.id));
     const currenciesRemaining = allCurrencies.filter( id => !currentCurrencies.includes(id));
     const currenciesToSend = currencyData.filter( data => currenciesRemaining.includes(data.id));
@@ -76,50 +94,57 @@ const setChoosenCurrency = (id, walletID, currencyID, amount) => {
   }
   return currencyName;
 }
-  const mapUserCurrencies = () => {
-    if (!isLoading && walletData !== null && currencies !== null) {
-
-      return (
-        <table className='w-full bg-white text-black'>
-          <thead>
-            <tr>
-              <th>Currency</th>
-              <th>Amount</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-          {walletData.walletStorage.map((currency) => {
-            return (
-              <tr key={currency.id}>
-                <td>{findCurrencyName(currency.currency_id)}</td>
-                <td>{currency.amount}</td>
-                <td><button onClick={() => {setShowWalletModal(true); setChoosenCurrency(currency.id , currency.wallet_id, currency.currency_id, currency.amount)}}>Edit</button></td>
+const mapUserCurrencies = () => {
+  if (!isLoading && walletData !== null && currencies !== null) {
+    return (
+      <div>
+          <table className='w-full bg-white text-black'>
+            <thead>
+              <tr>
+                <th>Currency</th>
+                <th>Amount</th>
+                <th>Action</th>
               </tr>
-            );
-          })}
-          </tbody>
-        </table>
-      );
-    }
-    return "Your current wallet balance is 0."; 
+            </thead>
+            <tbody>
+              {walletData.map((currency) => {
+                return (
+                  <tr key={currency.id}>
+                    <td>{findCurrencyName(currency.currency_id)}</td>
+                    <td>{currency.amount}</td>
+                    <td className='flex items-center justify-center'>
+                      <BsCurrencyExchange
+                        className="cursor-pointer text-2xl"
+                        onClick={() => {setShowWalletModal(true); setChoosenCurrency(currency.id , currency.wallet_id, currency.currency_id, currency.amount)}}/></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+      </div>
+    );
   }
+  return "Your current wallet balance is 0.";
+};
+
 
   return (
     <Layout>
-      <div className="items-center justify-center flex">
+      <div className="items-center justify-center flex h-full w-full">
         {isLoading ? (<div>Is loading...</div>):
-        walletData === null ?
+        walletID === null ?
           <div>
             <h3>You do not have a wallet yet! Create one below!</h3>
-            <button onClick={() => setShowWalletModal(true) } className="p-4 rounded-xl mt-4 button2 mb-4 cursor-pointer">Create Wallet</button>
+            <button onClick={() => { handleCreateWallet().then(() => window.location.reload()) }} className="p-4 rounded-xl mt-4 button2 mb-4 cursor-pointer ">Create Wallet</button>
           </div> :
-          <div className="border-2 bg-inherit border-white rounded-xl m-8">
-           <h1>Hello { walletData.first_name } {walletData.last_name}</h1>
+          <div className="border-2 bg-inherit border-white rounded-xl m-8 containerCustom min-h-400">
+            {!walletData || walletData.length === 0 ? (
+           <button onClick={() => {handleDeleteWallet(walletID).then(() => window.location.reload()) }} className="p-4 rounded-xl mt-4 mb-4 bg-white cursor-pointer text-black font-bold hover:bg-slate-300">Delete Wallet</button>) : null }
+           <h1>Hello { userData.firstName } { userData.surname }</h1>
            <p>Current balance of you account is shown below</p>
            { mapUserCurrencies() }
           { currenciesToSend.length !== 0 ? (
-          <button onClick={() => {setShowWalletModal(true)}}>Deposit new currency into your wallet</button>
+          <button className='p-4 rounded-xl mt-4 mb-4 bg-white cursor-pointer text-black font-bold hover:bg-slate-300' onClick={() => {setShowWalletModal(true)}}>Deposit new currency into your wallet</button>
           ):(<div>
               <p>You have all of the possibile currencies in your wallet.</p>
             </div>)}
@@ -127,7 +152,7 @@ const setChoosenCurrency = (id, walletID, currencyID, amount) => {
         }
       </div>
       {showWalletModal ? 
-            <WalletModal walletID = {walletData.walletStorage[0].wallet_id} closeWalletModal={closeWalletModal} currencies={currencies} walletData = {pickedCurrency} currenciesToSend = {currenciesToSend}/>: null
+            <WalletModal findCurrencyName = {findCurrencyName} walletID = {walletID} closeWalletModal={closeWalletModal} currencies={currencies} walletData = {pickedCurrency} currenciesToSend = {currenciesToSend}/>: null
         }
     </Layout>
   );

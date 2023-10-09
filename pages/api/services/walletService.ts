@@ -14,11 +14,10 @@ export const getWalletData = async () => {
         }
     };
 
-export const handleCreateWallet = async (e: React.SyntheticEvent) => {
-        e.preventDefault();
+export const handleCreateWallet = async () => {
         try{
-            const { data: res } = await axios.post(url, data, {headers: {Accept: 'application/json'}})
-            console.log(res.message)
+            const { data: res } = await axios.post(url, {headers: {Accept: 'application/json'}})
+            console.log(res);
         } catch (error) {
             if (axios.isAxiosError(error)) {
             if (
@@ -33,37 +32,16 @@ export const handleCreateWallet = async (e: React.SyntheticEvent) => {
         }
     }
 
-export const handleEditWallet = async (e: React.SyntheticEvent) => {
-        e.preventDefault();
-        try{
-            const { data: res } = await axios.put(url, data, {headers: {Accept: 'application/json'}})
-            console.log(res.message)
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-            if (
-                error.response &&
-                error.response.status >= 400 &&
-                error.response.status <= 500
-            ) {
-                return(error.response.data.message);
-            }
-            }
-            else console.log('unexpected error: ', error)
-        }
-    }
-
-
-
-
-export const handleDeleteWallet = async (e: React.SyntheticEvent, id) => {
-        e.preventDefault();
+export const handleDeleteWallet = async (id) => {
         try {
-          const { data: res } = await axios.delete(url, id, { headers: { Accept: 'application/json' } });
-
+          const urll = api_url('wallet?id=' + id.toString())
+          const res = await axios.delete(urll, {
+              headers: { Accept: 'application/json' },    
+          });
+          return { message: res.data.message, status: res.status };
         } catch (error) {
           if (axios.isAxiosError(error)) {
             if (error.response && error.response.status >= 400 && error.response.status <= 500) {
-              // Tutaj możesz obsłużyć błąd odpowiedzi z serwera.
             }
           } else {
             console.log('unexpected error: ', error);
