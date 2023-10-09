@@ -26,6 +26,7 @@ export async function middleware(request: NextRequest) {
     // Define levels of privilege (0 - guest, 1 - user, 2 - redaktor, 3 - admin)
     if (request.nextUrl.pathname.includes('/api/auth/')) callback_ts = 1
     if (request.nextUrl.pathname.includes('/user/')) callback_ts = 1
+    if (request.nextUrl.pathname.includes('/dashboard')) callback_ts = 1
     if (request.nextUrl.pathname.includes('/api/wallet')) callback_ts = 1
     if (request.nextUrl.pathname.includes('/api/currency')) callback_ts = 1
     if (request.nextUrl.pathname.includes('/api/currencyStorage')) callback_ts = 1
@@ -48,10 +49,13 @@ export async function middleware(request: NextRequest) {
     let v = await getPrivilege(token_value).then((v) => {
         return v
     })
-    console.log(`[Mid] Privilege ${v}, accessing: ${request.nextUrl.pathname}`)
     // Privilege less than threshold - No Auth
-    if (v < callback_ts) return NextResponse.redirect(new URL('/', request.url))
+    if (v < callback_ts) {
+        console.log(`[Mid] Privilege ${v}, Denying access to: ${request.nextUrl.pathname}`)
+        return NextResponse.redirect(new URL('/', request.url))
+    }
     // Otherwise it passes through
+    console.log(`[Mid] Privilege ${v}, Accessing: ${request.nextUrl.pathname}`)
 }
 
 // Middleware configuration
