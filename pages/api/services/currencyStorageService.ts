@@ -4,7 +4,7 @@ import { IcurrencyStorage } from '@/pages/api/interfaces/currencyStorage';
 
 const url = api_url('currencyStorage')
 
-export const getCurrencyStorage = async (wallet_id) => {
+export const getCurrencyStorage = async (wallet_id: number) => {
     try {
         const urll = api_url('currencyStorage?id=' + wallet_id.toString())
         const res  = await axios.get(urll, {headers: {Accept: 'application/json'}})
@@ -33,7 +33,7 @@ export const updateCurrencyStorage = async (data : IcurrencyStorage) => {
             throw error;
         }
     };
-    export const deleteCurrencyStorage = async (id) => {
+    export const deleteCurrencyStorage = async (id: number) => {
         try {
             const urll = api_url('currencyStorage?id=' + id.toString())
             const res = await axios.delete(urll, {

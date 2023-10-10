@@ -1,8 +1,16 @@
 "use client"
 import { useState, useEffect } from 'react';
 
+interface Data {
+  currency: string,
+  name: string,
+  code: string,
+  buy: string,
+  sell: string
+}
+
 export function useExchangeRates() {
-  const [currencies, setCurrencies] = useState([]);
+  const [currencies, setCurrencies] = useState<Data[]>([]);
   const [date, setDate] = useState('');
 
   useEffect(() => {
@@ -14,8 +22,8 @@ export function useExchangeRates() {
           currency: `PLN ${code}`,
           name: '', 
           code,
-          buy: (rate * 0.98).toFixed(4), 
-          sell: (rate * 1.02).toFixed(4) 
+          buy: ((rate as number) * 0.98).toFixed(4), 
+          sell: ((rate as number) * 1.02).toFixed(4) 
         }));
         setCurrencies(newCurrencies);
         setDate(data.date); // Extracting and setting the date

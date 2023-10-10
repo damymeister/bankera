@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       let token = getCookie('token', { req, res });
       if (token !== undefined) {
       const response =  await prisma.currency_Storage.findMany({
-          where: {wallet_id: parseInt(req.query.id)}, 
+          where: {wallet_id: parseInt(req.query.id as string)}, 
         });
         return res.status(200).json(response);
       } else {
@@ -80,7 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (token !== undefined) {
       try {
         await prisma.currency_Storage.delete({
-          where: {id: parseInt(req.query.id)}, 
+          where: {id: parseInt(req.query.id as string)}, 
         });
         return res.status(200).json({ message: "Currency Storage deleted." });
       } catch (error) {
