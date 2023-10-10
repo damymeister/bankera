@@ -36,6 +36,7 @@ const UserProfile = () => {
             console.log('unexpected error: ', error);
             throw error;
           }
+          
         };
 
         const fetchProfileData = async () => {
@@ -77,6 +78,8 @@ const UserProfile = () => {
         }
       };
 
+      
+
     return (
       <Layout>
         <div className="containerCustom borderLightY">
@@ -97,28 +100,28 @@ const UserProfile = () => {
                 type="text"
                 placeholder="Surname"
                 value={surname}
-                // onChange={(e) => setSurname(e.target.value)}
+                onChange={(e) => setSurname(e.target.value)}
                 className="w-1/4 px-4 py-2 border bgdark rounded-md focus:outline-none focus:border-blue-500"
               />
               <input
                 type="email"
                 placeholder="Email"
                 value={email}
-                // onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-1/4 px-4 py-2 border bgdark rounded-md focus:outline-none focus:border-blue-500"
               />
               <input
                 type="password"
                 placeholder="Password"
                 value={password}
-                // onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-1/4 px-4 py-2 border bgdark rounded-md focus:outline-none focus:border-blue-500"
               />
               <input
                 type="text"
                 placeholder="Phone Number"
                 value={phoneNumber}
-                // onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 className="w-1/4 px-4 py-2 border bgdark rounded-md focus:outline-none focus:border-blue-500"
               />
               <button
