@@ -6,9 +6,10 @@ import React, { useState, useEffect } from 'react';
 import Layout from '@/app/layoutPattern';
 
 import {FaTrash, FaEdit, FaHistory, FaUser, FaFolderOpen}  from "react-icons/fa";
+import { User } from '@prisma/client';
 
 const UsersTable = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -63,8 +64,8 @@ const UsersTable = () => {
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.user} className="border-b border-gray-700 hover:bg-gray-100 text-center items-center">
-                  <td className="px-1 ">{user.user_id}.</td>
+                <tr key={user.id} className="border-b border-gray-700 hover:bg-gray-100 text-center items-center">
+                  <td className="px-1 ">{user.id}.</td>
                   <td className="px-1 ">{user.first_name}</td>
                   <td className="px-1 ">{user.last_name}</td>
                   <td className="px-1 ">{user.email}</td>
