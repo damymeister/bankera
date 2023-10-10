@@ -7,21 +7,21 @@ import WalletModal from '@/components/WalletModal';
 import { BsCurrencyExchange } from "react-icons/bs";
 
 export default function Wallet() {
-  const [walletData, setWalletData] = useState(null);
+  const [walletData, setWalletData] = useState<any[]>([]);
   const [walletID, setWalletID] = useState(null);
   const [error, setError] = useState("");
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [currencies, setCurrencies] = useState(null);
-  const [pickedCurrency, setPickedCurrency] = useState({ currencyRow_id: null, wallet_id:"", currency_id: "", amount: "" })
-  const [currenciesToSend, setCurrenciesToSend] = useState([]);
+  const [currencies, setCurrencies] = useState<any[]>([]);
+  const [pickedCurrency, setPickedCurrency] = useState({ currencyRow_id: 0, wallet_id:0, currency_id: 0, amount: 0.00 })
+  const [currenciesToSend, setCurrenciesToSend] = useState<any[]>([]);
   const [userData, setuserData] = useState({firstName:"", surname: ""})
 
   const fetchWalletData = async () => {
     try {
       const walletId = await getWalletData();
       const currencyData = await getCurrencies();
-      var currenciesSaved = []
+      let currenciesSaved : {data: any} = {data: []}
       if(walletId.wallet_id){
 
         currenciesSaved = await getCurrencyStorage(walletId.wallet_id);
@@ -54,7 +54,7 @@ export default function Wallet() {
     fetchWalletData();
   }, []);
 
-  const checkRemainingCurrencies = (promiseWalletData, currencyData) => {
+  const checkRemainingCurrencies = (promiseWalletData: any[], currencyData : any[]) => {
     const currentCurrencies = promiseWalletData.map(data=> Number(data.currency_id));
     const allCurrencies = currencyData.map(currency => Number(currency.id));
     const currenciesRemaining = allCurrencies.filter( id => !currentCurrencies.includes(id));
@@ -65,16 +65,16 @@ export default function Wallet() {
   const closeWalletModal =  () =>{
     setShowWalletModal(false);
     setPickedCurrency({
-      currencyRow_id: null,
-      wallet_id: "",
-      currency_id: "",
-      amount: "",
+      currencyRow_id: 0,
+      wallet_id: 0,
+      currency_id: 0,
+      amount: 0.00,
     });
     setCurrenciesToSend([]);
     fetchWalletData();
   }
 
-const setChoosenCurrency = (id, walletID, currencyID, amount) => {
+const setChoosenCurrency = (id: number, walletID: number, currencyID: number, amount: number) => {
   setPickedCurrency({
     currencyRow_id: id,
     wallet_id: walletID,

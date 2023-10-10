@@ -32,7 +32,7 @@ export const handleCreateWallet = async () => {
         }
     }
 
-export const handleDeleteWallet = async (id) => {
+export const handleDeleteWallet = async (id: number) => {
         try {
           const urll = api_url('wallet?id=' + id.toString())
           const res = await axios.delete(urll, {
