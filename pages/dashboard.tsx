@@ -25,7 +25,7 @@ export default function Dashboard() {
         <div className="container bgdark borderLightY p0 h-3/5 ">
             <div className="dashboard py1 my1 ">
             <div className="dashboardBody px1">
-                <div className="dashboardPanel">Zajebisty panel boczny</div>
+                <div className="dashboardPanel">Panel boczny</div>
                 <div className="dashboardContent textCenter">
                     <div className=''>Pulpit</div>
                     <div className=''>Witaj @UserName</div>
