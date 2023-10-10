@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import '@/components/css/post.css';
 import '@/components/css/home.css';
+import '@/components/css/tailwind.css';
 import axios from 'axios';
 import api_url from '@/lib/api_url';
 import { Post } from '@prisma/client';
 import Link from 'next/link';
-
+import { FaTrash, FaEdit } from 'react-icons/fa';
 const handleDeletePost = async (id:number) => {
     try {
         const url = api_url('auth/redaktor/post')
@@ -51,11 +52,11 @@ const Post_t = (props: { post: any }) => {
                         {/* {user.first_name} {user.last_name}  */}
                 </div>
                 {privilege >= 2 &&
-                    <div>
-                        <Link className="button3" href={"/posts/editor?id=" + props.post.id}>Edit</Link>
-                        <button className='button4' onClick={() => {
+                    <div className='flex flex-row-reverse py-5'>
+                        <Link className="text-blue-400 hover:text-blue-800 mx-1" href={"/posts/editor?id=" + props.post.id}><FaEdit>Edit</FaEdit></Link>
+                        <FaTrash className="text-red-400 hover:text-red-800 mx-1" onClick={() => {
                             handleDeletePost(props.post.id)
-                        }}>Delete</button>
+                        }}>Delete</FaTrash>
                     </div>
                 }
             </div>
