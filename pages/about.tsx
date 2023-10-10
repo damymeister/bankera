@@ -1,7 +1,7 @@
 import '@/components/css/home.css';
 import '@/components/css/contact.css';
 import '@/components/css/post.css';
-import  '@/app/globals.css';
+import '@/app/globals.css';
 import Layout from '@/app/layoutPattern';
 import React from "react";
 
