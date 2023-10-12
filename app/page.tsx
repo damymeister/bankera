@@ -21,8 +21,9 @@ const prisma = new PrismaClient();
 export default function Home() {
   
 
-  const { currencies, date } = useExchangeRates();
-  const [posts, setPosts] = useState([]);
+    const [privilege, setPrivilege] = useState(0);
+    const { currencies, date } = useExchangeRates();
+    const [posts, setPosts] = useState([]);
 
     useEffect(() => {
         // Get Posts
@@ -36,7 +37,20 @@ export default function Home() {
             }
         }
         handleGetPosts()
+        const handleGetPrivilege = async () => {
+            try {
+                const url = api_url('privilege')
+                const { data } = await axios.get(url, {headers: {Accept: 'application/json'}})
+                setPrivilege(parseInt(data.privilege))
+            } catch (error) {
+                console.log('unexpected error: ', error)
+            }
+        }
+        handleGetPrivilege()
     }, []);
+
+
+    
   return (
 
     <Layout>
@@ -115,6 +129,7 @@ export default function Home() {
             <div className="circleBottom"></div>
             <Link href="/news" className="button2 ">Zobacz więcej</Link>
         </div>
+        { privilege === 0 &&
         <div className="site-element2 mx1 anim3 py-1 borderLightY">
             <div className="register">
             <h1 className='py-5'>Załóż darmowe konto już dziś</h1>
@@ -123,6 +138,7 @@ export default function Home() {
             {/* <CurrencyDataComponent /> */}
             </div>
         </div>
+        }
     </div>
     {/* <Footer></Footer> */}
 </main>

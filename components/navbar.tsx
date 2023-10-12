@@ -13,7 +13,7 @@ import { deleteCookie } from 'cookies-next';
 
 export default function Navbar(){
 
-  const [privilege, setPrivilege] = useState(0)
+  const [privilege, setPrivilege] = useState(0);
   const currentRoute = usePathname();
 
   useEffect (() => {

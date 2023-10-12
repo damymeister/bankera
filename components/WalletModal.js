@@ -5,6 +5,7 @@ import { postCurrencyStorage, updateCurrencyStorage, deleteCurrencyStorage } fro
 import { GrMoney } from "react-icons/gr";
 import { GiMoneyStack } from "react-icons/gi";
 import { GoSingleSelect } from "react-icons/go";
+// import {Fa}  from "react-icons/fa";
 
 export default function WalletModal(props) {
   const [currencies, setCurrencies] = useState([]);
@@ -57,7 +58,7 @@ export default function WalletModal(props) {
 
   const mapCurrencies = () => {
     return (
-      <select className="w-1/2" onChange={handleCurrencyChange} value={data.currency_id}>
+      <select className="w-1/2 bgdark" onChange={handleCurrencyChange} value={data.currency_id}>
         {currencies.length !== 0
           ? currencies.map((currency) => (
               <option key={currency.id} value={currency.id}>
@@ -152,15 +153,15 @@ const displayButton = () =>{
 }
 
   return (
-    <Layout>
+    
       <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black bg-opacity-80">
-        <div className="lg:w-1/4 w-2/3 py-2 lg:h-64 min-h-1/3 h-auto bg-white rounded-xl relative border-2 text-black border-black">
+        <div className="lg:w-1/4 w-2/3 py-2 lg:h-64 min-h-1/3 h-auto bgdark text-white rounded-xl relative border-2  border-black">
           {isLoading ? (
             <div>Is loading...</div>
           ) : (
-            <div className="text-black flex flex-col items-center">
+            <div className="text-white flex flex-col items-center">
             <div className='flex flex-row font-bold mb-4'>
-              <GrMoney className="cursor-pointer text-2xl mr-3" />
+              <GrMoney className="cursor-pointer text-white text-2xl mr-3" />
               <label htmlFor="currentAmount" className="text-lg">
                 Current Value: {data.amount} {currencyName ? currencyName : null}
               </label>
@@ -174,12 +175,12 @@ const displayButton = () =>{
               {data.currencyRow_id ? (
                 <div className='flex flex-row'>
                  <label htmlFor="operationType" className="font-bold flex flex-row">
-                 <GoSingleSelect className = "cursor-pointer text-2xl mr-1"/> 
+                 <GoSingleSelect className = "text-white cursor-pointer text-2xl mr-1"/> 
                  <p>Operation:</p>
                  </label>
                   <select
                     id="operationType"
-                    className="w-38 border-1 font-bold"
+                    className="w-38 border-1 font-bold text-black"
                     onChange={handleOperationTypeChange}
                     value={operationType}
                   >
@@ -189,13 +190,13 @@ const displayButton = () =>{
                 </div>
               ): null}
               <div className='flex flex-row mt-4'>
-                <label htmlFor="name" className="font-bold mr-1 flex flex-row"><GiMoneyStack className = "cursor-pointer text-2xl mr-2"/>Amount:</label>
+                <label htmlFor="name" className="font-bold mr-1 flex flex-row"><GiMoneyStack className = "cursor-pointer text-white text-2xl mr-2"/>Amount:</label>
                 <input
                   placeholder="0"
                   id="name"
                   type="number"
                   min="0"
-                  className="w-16 font-bold border-transparent border-1 focus:border-black overflow-y-auto resize-none"
+                  className="w-32 font-bold  border border-white rounded-lg px-1  bgdark focus:border-black overflow-y-auto resize-none"
                   onChange={handleAmountChange}
                   value={amountToChange}
                 />
@@ -205,11 +206,11 @@ const displayButton = () =>{
             </div>
           )}
           <button onClick={() => props.closeWalletModal()} className="absolute right-2 top-2">
-            <GrClose className="w-6 inline mr-3 cursor-pointer" />
+            <GrClose className="text-white w-6 inline mr-3 cursor-pointer" />
           </button>
         </div>
       </div>
-    </Layout>
+    
   );  
 }
 

@@ -10,6 +10,7 @@ import axios from 'axios';
 import { Post } from '@prisma/client';
 export default function News() {
     const [posts, setPosts] = useState([]);
+    const [privilege, setPrivilege] = useState(0);
 
     useEffect(() => {
         // Get Posts
@@ -23,14 +24,26 @@ export default function News() {
             }
         }
         handleGetPosts()
+        const handleGetPrivilege = async () => {
+            try {
+                const url = api_url('privilege')
+                const { data } = await axios.get(url, {headers: {Accept: 'application/json'}})
+                setPrivilege(parseInt(data.privilege))
+            } catch (error) {
+                console.log('unexpected error: ', error)
+            }
+        }
+        handleGetPrivilege()
     }, []);
 
+    
     return (
         <Layout>
             <div className="containerCustom borderLightY p0">
-            <Link href="/posts/editor" className="button2">Dodaj nowy post</Link>
+            <h1 className="text-2xl mb-8 textleft">Najnowsze Posty</h1>
+            { privilege > 1 && <Link href="/posts/editor" className="button2">Dodaj nowy post</Link>}
                 <div className="py-5 my1">
-                    <h1 className="py-6 textleft">Najnowsze Posty</h1>
+                    
                     <div className="px-1">
                         {posts.map((post, index) => (
                             <Post_t key={index} post={post} />
