@@ -6,8 +6,8 @@ export default function Loader() {
 
     return (
         <div className="loader-container">
-            <div class="loader">
-                <div class="shape"></div>
+            <div className="loader">
+                <div className="shape"></div>
             </div>
         </div>
     )

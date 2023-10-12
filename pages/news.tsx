@@ -7,6 +7,7 @@ import Post_t from '@/components/post';
 import  Link  from 'next/link';
 import api_url from '@/lib/api_url';
 import axios from 'axios';
+import { Post } from '@prisma/client';
 export default function News() {
     const [posts, setPosts] = useState([]);
 
@@ -16,7 +17,7 @@ export default function News() {
             try {
                 const url = api_url('posts')
                 const { data } = await axios.get(url, {headers: {Accept: 'application/json'}})
-                setPosts(data)
+                setPosts(data.sort((a: Post, b: Post) => { return a.posted_on < b.posted_on }))
             } catch (error) {
                 console.log('unexpected error: ', error)
             }

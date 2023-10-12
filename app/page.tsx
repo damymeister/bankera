@@ -13,7 +13,9 @@ import {FaChartLine, FaWallet, FaRegCreditCard}  from "react-icons/fa";
 import  Link  from 'next/link';
 import Layout from './layoutPattern';
 
-import { PrismaClient } from '@prisma/client';
+import { Post, PrismaClient } from '@prisma/client';
+import api_url from '@/lib/api_url';
+import axios from 'axios';
 const prisma = new PrismaClient();
 
 export default function Home() {
@@ -22,12 +24,19 @@ export default function Home() {
   const { currencies, date } = useExchangeRates();
   const [posts, setPosts] = useState([]);
 
-  useEffect(() => {
-      fetch('/api/getPosts') // Replace with your actual API endpoint
-          .then(response => response.json())
-          .then(data => setPosts(data.slice(0, 3))) // Only keep the first 3 posts
-          .catch(error => console.error('Error fetching posts:', error));
-  }, []);
+    useEffect(() => {
+        // Get Posts
+        const handleGetPosts = async () => {
+            try {
+                const url = api_url('posts')
+                const { data } = await axios.get(url, {headers: {Accept: 'application/json'}})
+                setPosts(data.sort((a: Post, b: Post) => { return a.posted_on < b.posted_on }).slice(0, 3))
+            } catch (error) {
+                console.log('unexpected error: ', error)
+            }
+        }
+        handleGetPosts()
+    }, []);
   return (
 
     <Layout>
@@ -47,42 +56,36 @@ export default function Home() {
                     service={{
                     name: 'Karty wielowalutowe',
                     icon: <FaRegCreditCard/>,
-                    image: '/img/financial-planning.png',
                     }}
                 />
                 <Service 
                     service={{
                     name: 'Rynek Forex',
                     icon: <FaChartLine/>,
-                    image: '/img/financial-planning.png',
                     }}
                 />
                 <Service 
                     service={{
                     name: 'Financial Planning',
                     icon: <FaWallet/>,
-                    image: '/img/financial-planning.png',
                     }}
                 />
                 <Service 
                     service={{
                     name: 'Financial Planning',
                     icon: <FaWallet/>,
-                    image: '/img/financial-planning.png',
                     }}
                 />
                 <Service 
                     service={{
                     name: 'Financial Planning',
                     icon: <FaWallet/>,
-                    image: '/img/financial-planning.png',
                     }}
                 />
                 <Service 
                     service={{
                     name: 'Financial Planning',
                     icon: <FaWallet/>,
-                    image: '/img/financial-planning.png',
                     }}
                 />
         </div>

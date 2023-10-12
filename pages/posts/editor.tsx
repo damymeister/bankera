@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useState } from 'react';
 import { PrismaClient } from '@prisma/client';
 import '@/components/css/home.css';
@@ -6,7 +7,6 @@ import  '@/app/globals.css';
 import Layout from '@/app/layoutPattern';
 import '@/components/css/tailwind.css';
 import  Link  from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import api_url from '@/lib/api_url';
 import axios from 'axios';
 const prisma = new PrismaClient();
@@ -14,9 +14,9 @@ const prisma = new PrismaClient();
 export default function CreatePost() {
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
+  const [postId, setPostId] = useState(-1)
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const params = useSearchParams()
 
   useEffect (() => {
     // Get Posts
@@ -26,11 +26,13 @@ export default function CreatePost() {
             const { data } = await axios.get(url, {headers: {Accept: 'application/json'}})
             setPostTitle(data.title)
             setPostContent(data.content)
+            setPostId(data.id)
         } catch (error) {
             console.log('unexpected error: ', error)
         }
     }
-    if (params !== null && params.has('id')) handleGetPost(parseInt(params.get('id') ?? "0"))
+    const post_id = parseInt(window.location.search.slice(1).split('&')[0].slice(3) ?? "-1")
+    if (post_id > -1) handleGetPost(post_id)
   }, [])
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
@@ -44,15 +46,16 @@ export default function CreatePost() {
       }
 
       const response = await fetch('/api/auth/redaktor/post', {
-        method: 'POST',
+        method: (postId > -1 ? 'PUT' : 'POST'),
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ title: postTitle, content: postContent }),
+        body: JSON.stringify({ id: postId, title: postTitle, content: postContent }),
       });
 
       if (response.ok) {
-        setSuccessMessage('Post created successfully');
+        if (postId > -1) setSuccessMessage('Post edited successfully');
+        else setSuccessMessage('Post created successfully')
         setErrorMessage('');
         // Redirect or show success message
       } else {
@@ -71,7 +74,7 @@ export default function CreatePost() {
     <Layout>
         <div className="containerCustom borderLightY">
         <div className="p-4 bg-[#1f1b24b2] shadow-md text-white rounded-md">
-        <h1 className="text-3xl font-bold mb-4">{(params !== null && params.has('id')) ? "Edit " : "Create new " }post</h1>
+        <h1 className="text-3xl font-bold mb-4">{(postId > -1) ? "Edit " : "Create new " }post</h1>
         {successMessage && <div className="text-green-500">{successMessage}</div>}
         {errorMessage && <div className="text-red-500">{errorMessage}</div>}
         <form onSubmit={handleSubmit} className="space-y-4 my-4 flex flex-col items-center justify-center">
@@ -94,7 +97,7 @@ export default function CreatePost() {
                 type="submit"
                 className="w-2/5 px-4 py-2 bg-[#BB86FC] hover:bg-[#996dce] text-[white] rounded-md"
                 >
-                {(params !== null && params.has('id')) ? "Edit " : "Create " }post
+                {(postId > -1) ? "Edit " : "Create " }post
             </button>
             
             </div>
