@@ -53,7 +53,7 @@ export default function Navbar(){
           <div className="menuNav mx-3 py-5">
             { privilege === 3 && <Link href="/admin/adminPanel" className="">Admin</Link> }
             { privilege > 0 && <Link href="/dashboard" className={` ${isActive('/dashboard')}`}>Dashboard</Link> }
-            { privilege > 0 &&<Link href="/services" className={` ${isActive('/services')}`}>Services</Link> }
+            { privilege > 0 &&<Link href="/currencyExchange" className={` ${isActive('/currencyExchange')}`}>Currency Exchange</Link> }
             <Link href="/news" className={`${isActive('/news')}`}>News</Link>
             { privilege > 0 && <Link href="/profile" className={`${isActive('/profile')}`}>Profil</Link> }
             
