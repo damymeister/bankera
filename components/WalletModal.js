@@ -207,7 +207,7 @@ const displayButton = () =>{
             </div>
           )}
           <button onClick={() => props.closeWalletModal()} className="absolute right-2 top-2 ">
-            <FaWindowClose className="text-white w-6 inline mr-3 cursor-pointer " />
+            <FaWindowClose className="text-white w-6 inline mr-3 cursor-pointer hover:text-slate-200 " />
           </button>
         </div>
       </div>

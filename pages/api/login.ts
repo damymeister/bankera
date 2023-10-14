@@ -6,6 +6,7 @@ import bcrypt from "bcrypt"
 import { setCookie } from 'cookies-next'
 import { LoginUser } from './interfaces/user'
 
+
 const SECRET_KEY: Secret = "3abFA7c2Quf52601SGMS5w780"
 
 const generateAuthToken = (id: number) => {
@@ -52,4 +53,5 @@ export default async function handler(
         return res.status(200).json({ message: "Logged in successfully" })
     }
     res.status(500).json({message: "This HTTP method is not supported on this endpoint"})
+   
 }

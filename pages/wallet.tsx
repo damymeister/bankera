@@ -115,7 +115,7 @@ const mapUserCurrencies = () => {
                     <td>{currency.amount}</td>
                     <td className='flex items-center justify-center'>
                       <BsCurrencyExchange
-                        className="cursor-pointer text-2xl"
+                        className="cursor-pointer text-2xl hover:text-slate-200"
                         onClick={() => {setShowWalletModal(true); setChoosenCurrency(currency.id , currency.wallet_id, currency.currency_id, currency.amount)}}/></td>
                   </tr>
                 );
