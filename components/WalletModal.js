@@ -1,11 +1,12 @@
 import Layout from '@/app/layoutPattern';
+import '@/components/css/home.css';
 import { GrClose } from "react-icons/gr";
 import React, { useEffect, useState } from 'react';
 import { postCurrencyStorage, updateCurrencyStorage, deleteCurrencyStorage } from '@/pages/api/services/currencyStorageService';
 import { GrMoney } from "react-icons/gr";
 import { GiMoneyStack } from "react-icons/gi";
 import { GoSingleSelect } from "react-icons/go";
-// import {Fa}  from "react-icons/fa";
+import { FaWindowClose, FaMoneyBillWaveAlt}  from "react-icons/fa";
 
 export default function WalletModal(props) {
   const [currencies, setCurrencies] = useState([]);
@@ -143,25 +144,25 @@ export default function WalletModal(props) {
   
 const displayButton = () =>{
   if(operationType == 1 && data.currencyRow_id){
-    return <button onClick={() => addBalanceToAccount()} className="py-2 button2 text-white font-bold rounded-xl w-1/3">Deposit</button>
+    return <button onClick={() => addBalanceToAccount()} className="py-4 button2 text-white  rounded-xl ">Deposit</button>
   }else if(operationType == 2 && data.currencyRow_id){
-    return <button onClick={() => withDrawMoneyFromAccount()} className="py-2 button2 font-sans text-white rounded-xl font-bold w-1/3">Withdraw</button>
+    return <button onClick={() => withDrawMoneyFromAccount()} className="py-4 button2  text-white rounded-xl  ">Withdraw</button>
   }
   else if(data.currencyRow_id == null){
-    return <button onClick={() => addNewCurrency()} className="py-2 button2 text-white rounded-xl font-bold w-1/3">Add</button>
+    return <button onClick={() => addNewCurrency()} className="py-4 button2 text-white rounded-xl  ">Add</button>
   }
 }
 
   return (
     
-      <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black bg-opacity-80">
-        <div className="lg:w-1/4 w-2/3 py-2 lg:h-64 min-h-1/3 h-auto bgdark text-white rounded-xl relative border-2  border-black">
+      <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black bg-opacity-80 text-white ">
+        <div className="lg:w-2/5 w-2/3 py-2 lg:h-1/3 min-h-2/3 h-auto bgdark text-white rounded-xl relative border-2  border-black borderLight p-6">
           {isLoading ? (
             <div>Is loading...</div>
           ) : (
-            <div className="text-white flex flex-col items-center">
-            <div className='flex flex-row font-bold mb-4'>
-              <GrMoney className="cursor-pointer text-white text-2xl mr-3" />
+            <div className="text-white flex flex-col items-center  ">
+            <div className='flex flex-row font-bold mb-4 py-6'>
+              {/* <FaMoneyBillWaveAlt className="cursor-pointer text-white text-2xl mr-3" /> */}
               <label htmlFor="currentAmount" className="text-lg">
                 Current Value: {data.amount} {currencyName ? currencyName : null}
               </label>
@@ -173,14 +174,14 @@ const displayButton = () =>{
                 </div>
               ) : null }
               {data.currencyRow_id ? (
-                <div className='flex flex-row'>
+                <div className='flex flex-row bgdark'>
                  <label htmlFor="operationType" className="font-bold flex flex-row">
-                 <GoSingleSelect className = "text-white cursor-pointer text-2xl mr-1"/> 
-                 <p>Operation:</p>
+                 {/* <GoSingleSelect className = "text-white cursor-pointer text-2xl mr-1"/>  */}
+                 <p className='px-2'>Operation:</p>
                  </label>
                   <select
-                    id="operationType"
-                    className="w-38 border-1 font-bold text-black"
+                    id="operationType "
+                    className="w-38  font-bold text-white bgdark"
                     onChange={handleOperationTypeChange}
                     value={operationType}
                   >
@@ -189,14 +190,14 @@ const displayButton = () =>{
                   </select>
                 </div>
               ): null}
-              <div className='flex flex-row mt-4'>
-                <label htmlFor="name" className="font-bold mr-1 flex flex-row"><GiMoneyStack className = "cursor-pointer text-white text-2xl mr-2"/>Amount:</label>
+              <div className='flex flex-row my-6'>
+              <label htmlFor="name" className="font-bold mr-1 flex items-center justify-center"><GiMoneyStack className="cursor-pointer text-white text-2xl mr-2 py-4" /> Amount:</label>
                 <input
                   placeholder="0"
                   id="name"
                   type="number"
                   min="0"
-                  className="w-32 font-bold  border border-white rounded-lg px-1  bgdark focus:border-black overflow-y-auto resize-none"
+                  className="w-24 font-bold  border border-white rounded-lg px-1  bgdark focus:border-black overflow-y-auto resize-none"
                   onChange={handleAmountChange}
                   value={amountToChange}
                 />
@@ -205,8 +206,8 @@ const displayButton = () =>{
             {message !== "" ? (<p className='font-bold text-black'>{message}</p>) : null}
             </div>
           )}
-          <button onClick={() => props.closeWalletModal()} className="absolute right-2 top-2">
-            <GrClose className="text-white w-6 inline mr-3 cursor-pointer" />
+          <button onClick={() => props.closeWalletModal()} className="absolute right-2 top-2 ">
+            <FaWindowClose className="text-white w-6 inline mr-3 cursor-pointer hover:text-slate-200 " />
           </button>
         </div>
       </div>

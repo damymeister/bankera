@@ -9,22 +9,39 @@ import { useRouter } from 'next/router';
 import { PrismaClient } from '@prisma/client';
 import api_url from '@/lib/api_url';
 import axios from 'axios';
-
+import SnackBar from '@/components/snackbar'
+import {FaExclamation}  from "react-icons/fa";
 const prisma = new PrismaClient();
 
 export default function LoginPage() {
     const router = useRouter()
     const [data, setData] = useState({email: '', password: ''})
     const [error, setError] = useState('')
-  
+    const [showSnackbar, setShowSnackbar] = useState(false)
+    const [snackMess, setsnackMess] = useState("")
+    const [snackStatus, setsnackStatus] = useState("danger")
+    const snackbarProps = {
+      status: snackStatus,
+      icon: <FaExclamation />,
+      description: snackMess
+  };
+
+
     const handleSubmit = async (e: React.SyntheticEvent) => {
       e.preventDefault();
       try {
         const url = api_url('login')
         const { data: res, status } = await axios.post(url, data, {headers: {Accept: 'application/json'}})
         console.log(res.message)
-        if (status === 200) router.push('/') // 200 = Auth OK
+        if (status === 200) {
+         
+          router.push('/') // 200 = Auth OK
+        }
+         
       } catch (error) {
+        
+        setShowSnackbar(true);
+        setsnackMess("Błąd przy logowaniu");
         if (axios.isAxiosError(error)) {
           if (
               error.response &&
@@ -54,7 +71,9 @@ export default function LoginPage() {
 
   return (
     <Layout>
+      {showSnackbar && <SnackBar snackbar={snackbarProps} />}
       <div className="formContainer">
+      
         <form className="frame" onSubmit={handleSubmit}>
           <h2>Zaloguj się</h2>
           <div className="inputs">
@@ -93,6 +112,7 @@ export default function LoginPage() {
           </h4>
         </form>
       </div>
+     
     </Layout>
   );
 }

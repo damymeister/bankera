@@ -6,6 +6,7 @@ import { getCurrencyStorage } from './api/services/currencyStorageService';
 import WalletModal from '@/components/WalletModal';
 import { BsCurrencyExchange } from "react-icons/bs";
 import '@/components/css/home.css';
+// import Loader from '@/components/loader';
 
 export default function Wallet() {
   const [walletData, setWalletData] = useState<any[]>([]);
@@ -99,7 +100,7 @@ const mapUserCurrencies = () => {
   if (!isLoading && walletData !== null && currencies !== null) {
     return (
       <div>
-          <table className='w-full py-4 m-4 borderLightY text-white'>
+          <table className='w-full py-6 m-4 borderLightY text-white border-spacing-y-3' >
             <thead>
               <tr>
                 <th>Currency</th>
@@ -107,15 +108,15 @@ const mapUserCurrencies = () => {
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className='py-2'>
               {walletData.map((currency) => {
                 return (
-                  <tr key={currency.id}>
+                  <tr className='' key={currency.id}>
                     <td>{findCurrencyName(currency.currency_id)}</td>
                     <td>{currency.amount}</td>
                     <td className='flex items-center justify-center'>
                       <BsCurrencyExchange
-                        className="cursor-pointer text-2xl"
+                        className="cursor-pointer text-2xl hover:text-slate-200"
                         onClick={() => {setShowWalletModal(true); setChoosenCurrency(currency.id , currency.wallet_id, currency.currency_id, currency.amount)}}/></td>
                   </tr>
                 );
@@ -131,9 +132,9 @@ const mapUserCurrencies = () => {
 
   return (
     <Layout>
-      <div className="containerCustom borderLightY">
+      <div className="containerCustom borderLightY text-white">
       <div className="items-center bg-[#1f1b24b2] justify-center flex h-full w-full">
-        {isLoading ? (<div>Is loading...</div>):
+        {isLoading ? (<div>Is loading... </div>):
         walletID === null ?
           <div>
             <h3>You do not have a wallet yet! Create one below!</h3>
@@ -142,11 +143,11 @@ const mapUserCurrencies = () => {
           <div className=" p-8 borderLight rounded-xl m-8 containerCustom min-h-400">
             {!walletData || walletData.length === 0 ? (
            <button onClick={() => {handleDeleteWallet(walletID).then(() => window.location.reload()) }} className="w-3/5 px-4 py-2 bg-[#ff0000c0] hover:bg-[#5c2121] text-[white] rounded-md">Delete Wallet</button>) : null }
-           <h1 className='text-2xl'>Hello { userData.firstName } { userData.surname }</h1>
+           <h1 className='text-2xl   border-[#BB86FC] border-b-2 py-2 my-4'>Hello { userData.firstName } { userData.surname }!</h1>
            <p>Current balance of you account is shown below</p>
            { mapUserCurrencies() }
           { currenciesToSend.length !== 0 ? (
-          <button className='button2' onClick={() => {setShowWalletModal(true)}}>Deposit new currency into your wallet</button>
+          <button className='button3' onClick={() => {setShowWalletModal(true)}}>Deposit new currency</button>
           ):(<div>
               <p>You have all of the possibile currencies in your wallet.</p>
             </div>)}

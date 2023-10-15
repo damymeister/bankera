@@ -6,6 +6,7 @@ import SidePanel from'@/components/sidepanel';
 import { useState } from 'react';
 import Layout from '@/app/layoutPattern';
 import {FaHome, FaEdit, FaUser , FaExchangeAlt}  from "react-icons/fa";
+import SnackBar from '@/components/snackbar'
 export default function Dashboard() {
     const [isUsersExpanded, setIsUsersExpanded] = useState(false);
 
@@ -18,11 +19,22 @@ export default function Dashboard() {
       setIsSidebarHidden(!isSidebarHidden);
     };
 
+    const [snackMess, setsnackMess] = useState("Test Snackbar")
+
+    const snackbarProps = {
+      status: "success",
+      icon: <FaHome />,
+      description: snackMess
+  };
+
+
     return (
     <Layout>
+        <SnackBar snackbar={snackbarProps} />
         <div className="flex  md:min-h-screen w-full">
         <SidePanel></SidePanel>
         <div className="container bgdark borderLightY p0 h-3/5 ">
+        
             <div className="dashboard py1 my1 ">
             <div className="dashboardBody px1">
                 <div className="dashboardPanel">Panel boczny</div>
