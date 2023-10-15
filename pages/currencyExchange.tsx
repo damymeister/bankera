@@ -12,15 +12,14 @@ export default function currencyExchange(){
     const [newCurrencyExchange, setNewCurrencyExchange] = useState<number>();
     const [error, setError] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [valueToExchange, setValueToExchange] = useState<number>(0);
+
 const loadData = async () =>{
     try{
         var walletData = await getWalletData();
         if(walletData.wallet_id){
             const userCurrencies = await getCurrencyStorage(walletData.wallet_id);
             setUserOwnedCurrencies(userCurrencies.data);
-            if(userCurrencies){
-                console.log(userOwnedCurrencies);
-            }
             setUserWalletData((data) =>({
                 ...data,
                 wallet_id : walletData.wallet_id,
@@ -29,7 +28,6 @@ const loadData = async () =>{
             }));
         }
         const currencies = await getCurrencies();
-        console.log(currencies);
         setCurrenciesNames(currencies);
     }catch(error){
         console.error('Error while fetching data', error);
@@ -43,6 +41,20 @@ useEffect(()=>{
     loadData();
 },[])
 
+const setupUserObjectData = () =>{
+  if(userOwnedCurrencies.length > 0){
+    for (let i=0 ; i < userOwnedCurrencies.length ; i++){
+      var ob = { QuoteCurrency: null, Value : 0 };
+      userOwnedCurrencies.push(ob);
+    }
+  }
+}
+
+useEffect(()=>{
+  setupUserObjectData();
+  console.log(userOwnedCurrencies);
+},[userOwnedCurrencies])
+
 const findCurrencyName = (currencyID : number) =>{
     var currencyname = null;
     currenciesNames.forEach(currency => {
@@ -53,17 +65,24 @@ const findCurrencyName = (currencyID : number) =>{
     return currencyname;
 }
 
-const handleValueToExchange = (e: React.ChangeEvent<HTMLInputElement>) => {
+const handleValueToExchange = (e: any) => {
     const insertedValue = e.target.value;
-    const numericValue = parseFloat(insertedValue);
-    setValueToExchange(numericValue);
+    setValueToExchange(insertedValue);
 }
 
+
+const handleCurrencyChange = (e : any) => {
+    const newCurrency = parseInt(e.target.value);
+    setNewCurrencyExchange(newCurrency);
+}
+
+
 const displaySelectOfAvailableCurrencies = (currencyID: number) =>{
+  const newCurrenciesAvailable = currenciesNames.filter((currency) => currency.id !== currencyID)
         return (
-            <select className="w-1/4" onChange={handleCurrencyChange} value={data.currency_id}>
-              {currencies.length !== 0
-                ? currencies.map((currency) => (
+            <select className="w-1/4 text-black" onChange={handleCurrencyChange} value={newCurrencyExchange}>
+              {currenciesNames.length !== 0
+                ? newCurrenciesAvailable.map((currency) => (
                     <option key={currency.id} value={currency.id}>
                       {currency.name}
                     </option>
@@ -71,8 +90,9 @@ const displaySelectOfAvailableCurrencies = (currencyID: number) =>{
                 : <option value="No Currencies">No Currencies</option>}
             </select>
           );
-        };
-}
+  };
+      
+
 
 const mapUserCurrencies = () => {
     if (!isLoading && userOwnedCurrencies.length > 0 && currenciesNames.length > 0) {
@@ -101,6 +121,7 @@ const mapUserCurrencies = () => {
                         <input 
                             className='w-1/4 text-white bg-transparent border-white'
                             placeholder='0'
+                            type="number"
                             value={valueToExchange}
                             onChange={handleValueToExchange}
                             min="0"
