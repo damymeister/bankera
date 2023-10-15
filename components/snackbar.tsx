@@ -22,7 +22,7 @@ export default function SnackBar(props: { snackbar: SnackBar }) {
 
     const getBackgroundColor = () => {
         if (props.snackbar.status === 'success') {
-            return 'bg-[#BB86FC] border-[#BB86FC]';
+            return ' border-[#BB86FC]';
         } else if (props.snackbar.status === 'danger') {
             return 'bg-red-500 border-[#000000]';
         }
