@@ -6,6 +6,7 @@ import { getCurrencyStorage } from './api/services/currencyStorageService';
 import WalletModal from '@/components/WalletModal';
 import { BsCurrencyExchange } from "react-icons/bs";
 import '@/components/css/home.css';
+// import Loader from '@/components/loader';
 
 export default function Wallet() {
   const [walletData, setWalletData] = useState<any[]>([]);
@@ -133,7 +134,7 @@ const mapUserCurrencies = () => {
     <Layout>
       <div className="containerCustom borderLightY text-white">
       <div className="items-center bg-[#1f1b24b2] justify-center flex h-full w-full">
-        {isLoading ? (<div>Is loading...</div>):
+        {isLoading ? (<div>Is loading... </div>):
         walletID === null ?
           <div>
             <h3>You do not have a wallet yet! Create one below!</h3>

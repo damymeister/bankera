@@ -1,5 +1,5 @@
-import './home.css';
-import './css/loader.css';
+
+import '@/components/css/loader.css';
 import React from "react";
 
 export default function Loader() {

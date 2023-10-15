@@ -5,25 +5,26 @@
     top: 50%; 
     transform: translate(-50%, -50%);
     background-color: var(--main-bg-color);
+    
 }
 .loader {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    width: 200px;
-    height: 15px;
+    width: 25rem;
+    height: 3rem;
     background-color: var(--primary-dark-color);
-    border-radius: 10px;
+    border-radius: 0.7rem;
     overflow: hidden;
     position: relative;
-    margin-top: 15px;
+    
   }
   
   .shape {
-    width: 50px;
-    height: 15px;
+    width: 4rem;
+    height: 2rem;
     background-image: linear-gradient(144deg, #AF40FF, #5B42F3 50%, #00DDEB);
-    border-radius: 25px;
+    border-radius: 2rem;
     position: absolute;
     animation: slide 1.9s linear infinite;
     background-size: 200%;
