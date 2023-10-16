@@ -1,25 +1,40 @@
 import Layout from '@/app/layoutPattern';
 import { getCurrencies } from './api/services/currencyService';
 import { getCurrencyStorage } from './api/services/currencyStorageService';
+import { getCurrencyPairs } from './api/services/currencyPairService';
 import React, { useEffect, useState } from 'react';
 import { getWalletData } from './api/services/walletService';
 import { LiaExchangeAltSolid } from "react-icons/lia";
 
 export default function currencyExchange(){
-    const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<any[]>([])
+    const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<any[]>([ {id:null, amount: 0, currency_id: null, wallet_id : null, quoteCurrency: null, value: 0, rate:null, converted_amount:0} ])
     const [currenciesNames, setCurrenciesNames] = useState<any[]>([]);
     const [userWalletData, setUserWalletData] =  useState({wallet_id:null, firstName:"", lastName: ""})
-    const [newCurrencyExchange, setNewCurrencyExchange] = useState<number>();
     const [error, setError] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [valueToExchange, setValueToExchange] = useState<number>(0);
+    const [exchangeRates, setExchangeRates] = useState<any>([]);
 
 const loadData = async () =>{
     try{
+        const resExchangeRates = await getCurrencyPairs();
+        setExchangeRates(resExchangeRates.data);
         var walletData = await getWalletData();
         if(walletData.wallet_id){
             const userCurrencies = await getCurrencyStorage(walletData.wallet_id);
-            setUserOwnedCurrencies(userCurrencies.data);
+
+            const updatedUserCurrencies = userCurrencies.data.map((data: any) => ({
+              id: data.id, 
+              amount: data.amount,
+              currency_id: data.currency_id,
+              wallet_id: data.wallet_id,
+              quoteCurrency: null,
+              value: 0,
+              rate: 0,
+              converted_amount: 0,
+            }));
+
+            setUserOwnedCurrencies(updatedUserCurrencies);
+    
             setUserWalletData((data) =>({
                 ...data,
                 wallet_id : walletData.wallet_id,
@@ -38,22 +53,8 @@ const loadData = async () =>{
 }
 
 useEffect(()=>{
-    loadData();
+  loadData();
 },[])
-
-const setupUserObjectData = () =>{
-  if(userOwnedCurrencies.length > 0){
-    for (let i=0 ; i < userOwnedCurrencies.length ; i++){
-      var ob = { QuoteCurrency: null, Value : 0 };
-      userOwnedCurrencies.push(ob);
-    }
-  }
-}
-
-useEffect(()=>{
-  setupUserObjectData();
-  console.log(userOwnedCurrencies);
-},[userOwnedCurrencies])
 
 const findCurrencyName = (currencyID : number) =>{
     var currencyname = null;
@@ -65,22 +66,26 @@ const findCurrencyName = (currencyID : number) =>{
     return currencyname;
 }
 
-const handleValueToExchange = (e: any) => {
-    const insertedValue = e.target.value;
-    setValueToExchange(insertedValue);
+const handleValueToExchange = (e: any, currencyID: any) => {
+  const insertedValue = e.target.value;
+
+  const updatedUserOwnedCurrencies = userOwnedCurrencies.map((currency) => {
+    if (currency.id === currencyID) {
+      return {
+        ...currency,
+        value: parseFloat(insertedValue),
+      };
+    }
+    return currency;
+  });
+
+  setUserOwnedCurrencies(updatedUserOwnedCurrencies);
 }
 
-
-const handleCurrencyChange = (e : any) => {
-    const newCurrency = parseInt(e.target.value);
-    setNewCurrencyExchange(newCurrency);
-}
-
-
-const displaySelectOfAvailableCurrencies = (currencyID: number) =>{
+const displaySelectOfAvailableCurrencies = (currencyID: number, currencyNumber: number) =>{
   const newCurrenciesAvailable = currenciesNames.filter((currency) => currency.id !== currencyID)
         return (
-            <select className="w-1/4 text-black" onChange={handleCurrencyChange} value={newCurrencyExchange}>
+            <select className="w-1/4 text-black" onChange={(e) => handleCurrencyChange(e, currencyNumber)} >
               {currenciesNames.length !== 0
                 ? newCurrenciesAvailable.map((currency) => (
                     <option key={currency.id} value={currency.id}>
@@ -91,11 +96,56 @@ const displaySelectOfAvailableCurrencies = (currencyID: number) =>{
             </select>
           );
   };
-      
+ 
+const handleCurrencyChange = (e: any, currencyNumber: number) => {
+  const selectID = e.target.value;
+  const updatedUserOwnedCurrencies = userOwnedCurrencies.map((currency) => {
+    if (currency.id === currencyNumber) {
+      return {
+        ...currency,
+        quoteCurrency: parseInt(selectID),
+      };
+    }
+    return currency;
+  });
+  setUserOwnedCurrencies(updatedUserOwnedCurrencies);
+  console.log(exchangeRates);
+}
 
+const findCurrencyRate = (index: number) =>{
+  var ratetoReturn = 0;
+  if(exchangeRates.length > 0){
+    const ownedCurrencyID = userOwnedCurrencies[index].currency_id;
+    const currencyToBuyID = userOwnedCurrencies[index].quoteCurrency;
+    if(ownedCurrencyID && currencyToBuyID){
+      console.log(ownedCurrencyID);
+      console.log(currencyToBuyID);
+      console.log(userOwnedCurrencies[index]);
+      const localExchangeRates = [...exchangeRates];
+      localExchangeRates.map((rate: any, index: number) => {
+        if(rate.sell_currency_id == ownedCurrencyID && rate.buy_currency_id === currencyToBuyID){
+          ratetoReturn = rate.conversion_value;
+          localExchangeRates[index].rate = ratetoReturn;
+          setExchangeRates(localExchangeRates);
+        }
+      })}
+  }
+
+  console.log(exchangeRates);
+  return ratetoReturn;
+}
+
+const displayConvertedAmount = (index: number) =>{
+  var convAmount = 0;
+  if(userOwnedCurrencies[index].quoteCurrency && userOwnedCurrencies[index].rate){
+    convAmount =  userOwnedCurrencies[index].amount * userOwnedCurrencies[index].rate;
+  }
+  console.log(convAmount);
+  return convAmount;
+}
 
 const mapUserCurrencies = () => {
-    if (!isLoading && userOwnedCurrencies.length > 0 && currenciesNames.length > 0) {
+    if (!isLoading && userOwnedCurrencies.length > 0 && currenciesNames.length > 0 && exchangeRates.length > 0 )  {
       return (
         <div>
             <table className='w-full py-4 m-4 borderLightY text-white'>
@@ -111,24 +161,24 @@ const mapUserCurrencies = () => {
                 </tr>
               </thead>
               <tbody>
-                {userOwnedCurrencies.map((currency) => {
+                {userOwnedCurrencies.map((currency, index) => {
                   return (
                     <tr key={currency.id}>
                     <td>{findCurrencyName(currency.currency_id)}</td>
                     <td>{currency.amount}</td>
-                    <td>{displaySelectOfAvailableCurrencies(currency.currency_id)}</td>
+                    <td>{displaySelectOfAvailableCurrencies(currency.currency_id, currency.id)}</td>
                     <td className="flex items-center justify-center">
                         <input 
                             className='w-1/4 text-white bg-transparent border-white'
                             placeholder='0'
                             type="number"
-                            value={valueToExchange}
-                            onChange={handleValueToExchange}
+                            value={userOwnedCurrencies[index].value}
+                            onChange={(e) => handleValueToExchange(e, currency.id)}
                             min="0"
                         ></input>
                     </td>
-                    <td>Rate</td>
-                    <td>ConvertedAmount</td>
+                    <td>{userOwnedCurrencies[index].quoteCurrency ? findCurrencyRate(index) : "-"}</td>
+                    <td>{userOwnedCurrencies[index].quoteCurrency ? displayConvertedAmount(index) : "-"}</td>
                     <td className='flex items-center justify-center'><LiaExchangeAltSolid className = "text-white cursor-pointer text-2xl"/></td>
                     </tr>
                   );
@@ -142,7 +192,7 @@ const mapUserCurrencies = () => {
 
     return(
         <Layout>
-            {isLoading ? (<h1>Please wait...</h1>) : userWalletData ? (
+            {isLoading ? (<h1>Please wait...</h1>) : userWalletData && exchangeRates ? (
                 <div className='m-8'>
                    <h1 className='text-2xl'>Hello {userWalletData.firstName} {userWalletData.lastName}</h1>
                     <p>You can exchange currencies in your wallet below.</p>
