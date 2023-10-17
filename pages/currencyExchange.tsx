@@ -130,7 +130,7 @@ const findCurrencyRate = (ownedCurrencyID: number, currencyToBuyID: number) => {
 const setCurrencyRate = () => {
   const updatedUserOwnedCurrencies = userOwnedCurrencies.map((currency) => ({
     ...currency,
-    rate: 5, // Ustaw wartość rate jako liczbę zmiennoprzecinkową
+    rate: 5,
   }));
   console.log("SETCURRENCYRATE");
   setUserOwnedCurrencies(updatedUserOwnedCurrencies);
