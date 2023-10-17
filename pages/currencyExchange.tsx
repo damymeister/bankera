@@ -7,12 +7,13 @@ import { getWalletData } from './api/services/walletService';
 import { LiaExchangeAltSolid } from "react-icons/lia";
 
 export default function currencyExchange(){
-    const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<any[]>([ {id:null, amount: 0, currency_id: null, wallet_id : null, quoteCurrency: null, value: 0, rate:null, converted_amount:0} ])
+    const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<any[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0, converted_amount: 0} ])
     const [currenciesNames, setCurrenciesNames] = useState<any[]>([]);
     const [userWalletData, setUserWalletData] =  useState({wallet_id:null, firstName:"", lastName: ""})
     const [error, setError] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [exchangeRates, setExchangeRates] = useState<any>([]);
+    const [quoteCurrencyState, setQuoteCurrencyState] = useState<number | null>(null);
 
 const loadData = async () =>{
     try{
@@ -27,7 +28,7 @@ const loadData = async () =>{
               amount: data.amount,
               currency_id: data.currency_id,
               wallet_id: data.wallet_id,
-              quoteCurrency: null,
+              quoteCurrency: 1,
               value: 0,
               rate: 0,
               converted_amount: 0,
@@ -71,6 +72,7 @@ const handleValueToExchange = (e: any, currencyID: any) => {
 
   const updatedUserOwnedCurrencies = userOwnedCurrencies.map((currency) => {
     if (currency.id === currencyID) {
+      setConvertedAmount();
       return {
         ...currency,
         value: parseFloat(insertedValue),
@@ -78,14 +80,13 @@ const handleValueToExchange = (e: any, currencyID: any) => {
     }
     return currency;
   });
-
   setUserOwnedCurrencies(updatedUserOwnedCurrencies);
 }
 
-const displaySelectOfAvailableCurrencies = (currencyID: number, currencyNumber: number, index:number) =>{
+const displaySelectOfAvailableCurrencies = (currencyID: number, currencyNumber: number) =>{
   const newCurrenciesAvailable = currenciesNames.filter((currency) => currency.id !== currencyID)
         return (
-            <select className="w-1/4 text-black" onChange={(e) => handleCurrencyChange(e, currencyNumber, index)} >
+            <select className="w-1/4 text-black" onChange={(e) => handleCurrencyChange(e, currencyNumber)} >
               {currenciesNames.length !== 0
                 ? newCurrenciesAvailable.map((currency) => (
                     <option key={currency.id} value={currency.id}>
@@ -97,39 +98,22 @@ const displaySelectOfAvailableCurrencies = (currencyID: number, currencyNumber: 
           );
   };
  
-const handleCurrencyChange = (e: any, currencyNumber: number, index:number) => {
+const handleCurrencyChange = (e: any, currencyNumber: number) => {
   const selectID = e.target.value;
   const updatedUserOwnedCurrencies = userOwnedCurrencies.map((currency) => {
-    if (currency.id === currencyNumber && selectID) {
+    if (currency.id === currencyNumber) {
       return {
         ...currency,
         quoteCurrency: parseInt(selectID),
       };
     }
+    
     return currency
   });
-  
+  setQuoteCurrencyState(parseInt(selectID));
+  console.log("HANDLECURRENCYCHANGE");
   setUserOwnedCurrencies(updatedUserOwnedCurrencies);
-  setCurrencyRate(index);
 }
-
-const setCurrencyRate = (index: number) => {
-  var foundRate = 0;
-  console.log(index);
-  const ownedCurrencyID = userOwnedCurrencies[index].currency_id;
-  const currencyToBuyID = userOwnedCurrencies[index].quoteCurrency;
-  if (ownedCurrencyID && currencyToBuyID) {
-    foundRate = findCurrencyRate(ownedCurrencyID, currencyToBuyID);
-    const newUserOwnedCurrencies = userOwnedCurrencies.map((data, id) => {
-      if (id == index) {
-        setConvertedAmount(index)        
-        return { ...data, rate: foundRate };
-      } 
-      return data;
-    });
-    setUserOwnedCurrencies(newUserOwnedCurrencies); 
-  }
-};
 
 const findCurrencyRate = (ownedCurrencyID: number, currencyToBuyID: number) => {
   var ratetoReturn = 0;
@@ -143,15 +127,36 @@ const findCurrencyRate = (ownedCurrencyID: number, currencyToBuyID: number) => {
   return ratetoReturn;
 }
 
-const setConvertedAmount = (index: number) =>{
-  var convAmount = 0;
-  console.log(userOwnedCurrencies[index].amount);
-  console.log(userOwnedCurrencies[index].rate);
-  if(userOwnedCurrencies[index].quoteCurrency && userOwnedCurrencies[index].rate){
-    convAmount =  userOwnedCurrencies[index].amount * userOwnedCurrencies[index].rate;
-  }
-  console.log(convAmount);
+const setCurrencyRate = () => {
+  const updatedUserOwnedCurrencies = userOwnedCurrencies.map((currency) => ({
+    ...currency,
+    rate: 5, // Ustaw wartość rate jako liczbę zmiennoprzecinkową
+  }));
+  console.log("SETCURRENCYRATE");
+  setUserOwnedCurrencies(updatedUserOwnedCurrencies);
+};
+
+
+
+const setConvertedAmount = () =>{
+  const updatedUserOwnedCurrencies = userOwnedCurrencies.map((currency) => ({
+        ...currency,
+        converted_amount: (currency.value * currency.rate).toFixed(2),
+  }));
+  console.log("SETCCONVERTEDAMOUNT");
+  setUserOwnedCurrencies(updatedUserOwnedCurrencies);
 }
+
+useEffect(() => {
+  console.log("userOwnedCurrencies updated:", userOwnedCurrencies);
+}, [userOwnedCurrencies]);
+
+useEffect(() => {
+  if (quoteCurrencyState !== null) {
+    setCurrencyRate();
+    setConvertedAmount();
+  }
+}, [quoteCurrencyState]);
 
 const mapUserCurrencies = () => {
     if (!isLoading && userOwnedCurrencies.length > 0 && currenciesNames.length > 0 && exchangeRates.length > 0 )  {
@@ -175,7 +180,7 @@ const mapUserCurrencies = () => {
                     <tr key={currency.id}>
                     <td>{findCurrencyName(currency.currency_id)}</td>
                     <td>{currency.amount}</td>
-                    <td>{displaySelectOfAvailableCurrencies(currency.currency_id, currency.id, index)}</td>
+                    <td>{displaySelectOfAvailableCurrencies(currency.currency_id, currency.id)}</td>
                     <td className="flex items-center justify-center">
                         <input 
                             className='w-1/4 text-white bg-transparent border-white'
@@ -186,8 +191,8 @@ const mapUserCurrencies = () => {
                             min="0"
                         ></input>
                     </td>
-                    <td>{userOwnedCurrencies[index].quoteCurrency ? userOwnedCurrencies[index].rate : "-"}</td>
-                    <td>{userOwnedCurrencies[index].quoteCurrency && userOwnedCurrencies[index].rate ? userOwnedCurrencies[index].converted_amount : "-"}</td>
+                    <td>{userOwnedCurrencies[index].rate ? userOwnedCurrencies[index].rate : "-"}</td>
+                    <td>{userOwnedCurrencies[index].converted_amount ? <span> {userOwnedCurrencies[index].converted_amount} {findCurrencyName(userOwnedCurrencies[index].quoteCurrency)} </span>: "-"}</td>
                     <td className='flex items-center justify-center'><LiaExchangeAltSolid className = "text-white cursor-pointer text-2xl"/></td>
                     </tr>
                   );
