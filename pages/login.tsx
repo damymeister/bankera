@@ -71,7 +71,7 @@ export default function LoginPage() {
 
   return (
     <Layout>
-      {showSnackbar && <SnackBar snackbar={snackbarProps} />}
+      {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
       <div className="formContainer">
       
         <form className="frame" onSubmit={handleSubmit}>
