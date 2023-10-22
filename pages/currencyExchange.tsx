@@ -7,7 +7,7 @@ import { getWalletData } from './api/services/walletService';
 import { LiaExchangeAltSolid } from "react-icons/lia";
 
 export default function currencyExchange(){
-    const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<any[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0, converted_amount: 0} ])
+    const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<any[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0} ])
     const [currenciesNames, setCurrenciesNames] = useState<any[]>([]);
     const [userWalletData, setUserWalletData] =  useState({wallet_id:null, firstName:"", lastName: ""})
     const [error, setError] = useState<string>("");
@@ -23,7 +23,7 @@ const loadData = async () =>{
         if(walletData.wallet_id){
             const userCurrencies = await getCurrencyStorage(walletData.wallet_id);
 
-            const updatedUserCurrencies = userCurrencies.data.map((data: any) => ({
+            const newupdatedUserCurrencies = userCurrencies.data.map((data: any) => ({
               id: data.id, 
               amount: data.amount,
               currency_id: data.currency_id,
@@ -34,7 +34,7 @@ const loadData = async () =>{
               converted_amount: 0,
             }));
 
-            setUserOwnedCurrencies(updatedUserCurrencies);
+            setUserOwnedCurrencies(newupdatedUserCurrencies);
     
             setUserWalletData((data) =>({
                 ...data,
@@ -100,8 +100,9 @@ const displaySelectOfAvailableCurrencies = (currencyID: number, currencyNumber: 
  
 const handleCurrencyChange = (e: any, currencyNumber: number) => {
   const selectID = e.target.value;
+  console.log(currencyNumber);
   const updatedUserOwnedCurrencies = userOwnedCurrencies.map((currency) => {
-    if (currency.id === currencyNumber) {
+    if (currency.id == currencyNumber) {
       return {
         ...currency,
         quoteCurrency: parseInt(selectID),
@@ -117,32 +118,29 @@ const handleCurrencyChange = (e: any, currencyNumber: number) => {
 
 const findCurrencyRate = (ownedCurrencyID: number, currencyToBuyID: number) => {
   var ratetoReturn = 0;
-  if(exchangeRates.length > 0){
     exchangeRates.map((rate: any) => {
-      if(rate.sell_currency_id == ownedCurrencyID && rate.buy_currency_id === currencyToBuyID){
+      if(rate.sell_currency_id == ownedCurrencyID && rate.buy_currency_id == currencyToBuyID){
         ratetoReturn = rate.conversion_value;
       }
     })
-}
   return ratetoReturn;
 }
 
-const setCurrencyRate = () => {
-  const updatedUserOwnedCurrencies = userOwnedCurrencies.map((currency) => ({
-    ...currency,
-    rate: 5,
+const setCurrencyRate = async () => {
+  const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map(async (currency) => {
+    const rate = await findCurrencyRate(currency.currency_id, currency.quoteCurrency);
+    return { ...currency, rate };
   }));
-  console.log("SETCURRENCYRATE");
   setUserOwnedCurrencies(updatedUserOwnedCurrencies);
 };
 
 
-
-const setConvertedAmount = () =>{
-  const updatedUserOwnedCurrencies = userOwnedCurrencies.map((currency) => ({
+const setConvertedAmount = async () =>{
+  const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map((currency) => ({
         ...currency,
         converted_amount: (currency.value * currency.rate).toFixed(2),
-  }));
+  })));
+  console.log(updatedUserOwnedCurrencies);
   console.log("SETCCONVERTEDAMOUNT");
   setUserOwnedCurrencies(updatedUserOwnedCurrencies);
 }
