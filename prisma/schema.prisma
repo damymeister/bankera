@@ -47,7 +47,6 @@ model Wallet {
   uu_trns_sender       User_to_User_Transaction[] @relation("uu_trns_sender_wallet")
   uu_trns_recipient    User_to_User_Transaction[] @relation("uu_trns_recipient_wallet")
   inner_trns           Inner_Transaction[]
-  ext_trns             External_Transaction[]
   wfw_trns             Wallet_Forex_Wallet_Transaction[]
 }
 
@@ -66,7 +65,6 @@ model Currency {
   forex_currency_storage  Forex_Currency_Storage[]
   currency_pair_sell      Currency_Pair[] @relation("currency_sell")
   currency_pair_buy       Currency_Pair[] @relation("currency_buy")
-  ext_trns                External_Transaction[]
   wfw_trns                Wallet_Forex_Wallet_Transaction[]
 }
 
@@ -122,18 +120,6 @@ model Inner_Transaction {
   transaction_date     DateTime
   wallet               Wallet @relation(fields: [wallet_id], references: [id])
   currency_pair        Currency_Pair @relation(fields: [currency_pair_id], references: [id])
-}
-
-model External_Transaction {
-  id                      String @id
-  wallet_id               Int    
-  currency_id             Int    
-  bank_account            String
-  transaction_amount      Int
-  transaction_commision   Float
-  transaction_date        DateTime
-  wallet                  Wallet @relation(fields: [wallet_id], references: [id])
-  currency                Currency @relation(fields: [currency_id], references: [id])
 }
 
 model Wallet_Forex_Wallet_Transaction {
