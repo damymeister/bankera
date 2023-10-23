@@ -21,16 +21,8 @@ export default function Dashboard() {
 
     const [snackMess, setsnackMess] = useState("Test Snackbar")
 
-    const snackbarProps = {
-      status: "success",
-      icon: <FaHome />,
-      description: snackMess
-  };
-
-
     return (
     <Layout>
-        <SnackBar snackbar={snackbarProps} />
         <div className="flex  md:min-h-screen w-full">
         <SidePanel></SidePanel>
         <div className="container bgdark borderLightY p0 h-3/5 ">

@@ -1,5 +1,5 @@
 import { IconType } from 'react-icons';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 
 import '@/components/css/home.css';
 
@@ -9,11 +9,13 @@ interface SnackBar {
     description: string
 }
 
-export default function SnackBar(props: { snackbar: SnackBar }) {
-    const [show, setShow] = useState(true);
+export default function SnackBar(props: { snackbar: SnackBar, setShowSnackbar: Dispatch<SetStateAction<boolean>> }) {
+    const [show, setShow] = useState(false);
 
     useEffect(() => {
+        setShow(true)
         const timer = setTimeout(() => {
+            props.setShowSnackbar(false)
             setShow(false);
         }, 5000);
 
