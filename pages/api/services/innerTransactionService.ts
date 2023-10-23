@@ -1,0 +1,24 @@
+import api_url from '@/lib/api_url';
+import axios from 'axios'
+
+
+const url = api_url('innerTransaction')
+
+export const handleCreateInnerTransaction = async () => {
+        try{
+            const { data: res } = await axios.post(url, {headers: {Accept: 'application/json'}})
+            console.log(res);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+            if (
+                error.response &&
+                error.response.status >= 400 &&
+                error.response.status <= 500
+            ) {
+                return(error.response.data.message);
+            }
+            }
+            else console.log('unexpected error: ', error)
+        }
+    }
+

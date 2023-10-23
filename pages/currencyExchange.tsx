@@ -5,7 +5,7 @@ import { getCurrencyPairs } from './api/services/currencyPairService';
 import React, { useEffect, useState } from 'react';
 import { getWalletData } from './api/services/walletService';
 import { LiaExchangeAltSolid } from "react-icons/lia";
-import { parse } from 'path';
+import { handleCreateInnerTransaction } from './api/services/innerTransactionService';
 
 export default function currencyExchange(){
     const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<any[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0.0} ])
@@ -114,6 +114,7 @@ const handleCurrencyChange = async (e: any, currencyNumber: number) => {
     return currency
   }));
   setQuoteCurrencyState(parseInt(selectID));
+  setvalueToExchangeState(parseFloat(selectID));
   setUserOwnedCurrencies(updatedUserOwnedCurrencies);
 }
 
@@ -133,6 +134,7 @@ const setCurrencyRate = async () => {
     return { ...currency, rate };
   }));
   setUserOwnedCurrencies(updatedUserOwnedCurrencies);
+
 };
 
 
@@ -147,21 +149,24 @@ const setConvertedAmount = async () => {
 }
 
 useEffect(() => {
-  const updateData = async () => {
-    await setCurrencyRate();
-    setConvertedAmount();
-  };
-
-  updateData();
+  setCurrencyRate();
+  setConvertedAmount();
 }, [quoteCurrencyState]);
 
 useEffect(() => {
   setConvertedAmount();
 }, [valueToExchangeState]);
 
+
 useEffect(() => {
   console.log(userOwnedCurrencies);
 }, [userOwnedCurrencies]);
+
+
+const saveExchange = async (index: number) => {
+  console.log(userOwnedCurrencies[index]);
+}
+
 
 const mapUserCurrencies = () => {
     if (!isLoading && userOwnedCurrencies.length > 0 && currenciesNames.length > 0 && exchangeRates.length > 0 )  {
@@ -200,7 +205,7 @@ const mapUserCurrencies = () => {
                     </td>
                     <td>{userOwnedCurrencies[index].rate ? userOwnedCurrencies[index].rate : "-"}</td>
                     <td>{userOwnedCurrencies[index].converted_amount ? <span> {userOwnedCurrencies[index].converted_amount} {findCurrencyName(userOwnedCurrencies[index].quoteCurrency)} </span>: "0.00"}</td>
-                    <td className='flex items-center justify-center'><LiaExchangeAltSolid className = "text-white cursor-pointer text-2xl"/></td>
+                    <td onClick={() => saveExchange(index)} className='flex items-center justify-center'><LiaExchangeAltSolid className="text-white cursor-pointer text-2xl" /></td>
                     </tr>
                   );
                 })}
