@@ -1,8 +1,8 @@
 import Layout from '@/app/layoutPattern';
 import React, { useEffect, useState } from 'react';
-import { getWalletData, handleCreateWallet, handleDeleteWallet} from './api/services/walletService';
-import { getCurrencies } from './api/services/currencyService';
-import { getCurrencyStorage } from './api/services/currencyStorageService';
+import { getWalletData, handleCreateWallet, handleDeleteWallet} from '../services/walletService';
+import { getCurrencies } from '../services/currencyService';
+import { getCurrencyStorage } from '../services/currencyStorageService';
 import WalletModal from '@/components/WalletModal';
 import { BsCurrencyExchange } from "react-icons/bs";
 import '@/components/css/home.css';
