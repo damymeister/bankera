@@ -19,11 +19,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   }
   if (req.method === 'POST') {
-    
+    try{
     let token = getCookie('token', { req, res });
 
     if (token !== undefined) {
-    console.log(req.body);
     await prisma.inner_Transaction.create({data: {
         wallet_id: req.body.wallet_id,
         currency_pair_id: req.body.currency_pair_id,
@@ -31,7 +30,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         converted_amount: req.body.converted_amount,
         transaction_date: req.body.transaction_date
     }})
-    return res.status(201).json({ message: "InnerTransactionAdded." })
-}
+    return res.status(201).json({ message: "Currency exchange completed successfully." })
+  }
+    } catch(error){
+      return res.status(500).json({ message: 'Error while trying to exchange currencies.' });
+    }
   }
 }  

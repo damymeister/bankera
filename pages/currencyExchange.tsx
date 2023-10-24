@@ -9,16 +9,27 @@ import { handleCreateInnerTransaction } from './api/services/innerTransactionSer
 import { updateCurrencyStorage, deleteCurrencyStorage, postCurrencyStorage} from '@/pages/api/services/currencyStorageService';
 import { CurrencyPair } from './api/interfaces/currencyPair';
 import { ICurrency } from './api/interfaces/currency';
+import SnackBar from '@/components/snackbar'
+import {FaExclamation}  from "react-icons/fa";
 
 export default function currencyExchange(){
     const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<any[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0.0, currency_pair_id: 0} ])
     const [currenciesNames, setCurrenciesNames] = useState<ICurrency[]>([]);
     const [userWalletData, setUserWalletData] =  useState({wallet_id:null, firstName:"", lastName: ""})
-    const [error, setError] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [exchangeRates, setExchangeRates] = useState<CurrencyPair[]>([]);
     const [quoteCurrencyState, setQuoteCurrencyState] = useState<number | null>(null);
     const [valueToExchangeState, setvalueToExchangeState] = useState<number | null>(null);
+
+    const [showSnackbar, setShowSnackbar] = useState(false)
+    const [snackMess, setsnackMess] = useState("")
+    const [snackStatus, setsnackStatus] = useState("danger")
+    const snackbarProps = {
+      status: snackStatus,
+      icon: <FaExclamation />,
+      description: snackMess
+  };
+
 
 const loadData = async () =>{
     try{
@@ -51,8 +62,7 @@ const loadData = async () =>{
             }));
         }
     }catch(error){
-        console.error('Error while fetching data', error);
-        setError('Error while fetching wallet data.');
+      setSnackbarProps({snackStatus: "danger", message: "Nie udało się pobrać danych portfela.", showSnackbar: true});
     }finally{
         setIsLoading(false);
     }
@@ -61,6 +71,13 @@ const loadData = async () =>{
 useEffect(()=>{
   loadData();
 },[])
+
+
+useEffect(()=>{
+  setTimeout(()=>{
+    setShowSnackbar(false);
+   }, 4000)
+},[showSnackbar])
 
 const findCurrencyName = (currencyID : number) =>{
     var currencyname = null;
@@ -187,18 +204,32 @@ const decideAddOrUpdateCurrencyStorage = (index: number) => {
   return false;
 }
 
+const saveInnerTransaction = async (userCurr: any) =>{
+  const currentDate = new Date();
+  currentDate.setHours(currentDate.getHours() + 2);
+
+  const transactionData = {
+    wallet_id: userCurr.wallet_id,
+    currency_pair_id: userCurr.currency_pair_id,
+    initial_amount: userCurr.value,
+    converted_amount: parseFloat(userCurr.converted_amount),
+    transaction_date: currentDate,
+  }
+  return await handleCreateInnerTransaction(transactionData);
+}
+
+
 const saveExchange = async (index: number) => {
   if (checkValues(index)) {
     const userCurr = userOwnedCurrencies[index];
     const newCurrentValueBalance = parseFloat(userCurr.amount) - parseFloat(userCurr.value);
+    const dataToSubtract = { id: userCurr.id, amount: parseFloat(newCurrentValueBalance.toFixed(2))};
 
-    const dataToSubtract = { id: userCurr.id, amount: parseFloat(newCurrentValueBalance.toFixed(2)) };
     try {
-
       const currValueRes = await updateCurrencyStorage(dataToSubtract);
 
       if(newCurrentValueBalance == 0 && currValueRes.status === 200){
-        const deleteCurrStorage = await deleteCurrencyStorage(userCurr.id);
+         await deleteCurrencyStorage(userCurr.id);
       }
 
       if (currValueRes.status === 200) {
@@ -209,42 +240,50 @@ const saveExchange = async (index: number) => {
           let newCurrBalanceToAdd = parseFloat(findIndex.amount) + parseFloat(userCurr.converted_amount);
 
           const dataToAdd = { id: operation, amount: parseFloat(newCurrBalanceToAdd.toFixed(2)) };
-          const quoteValueRes = await updateCurrencyStorage(dataToAdd);
+          await updateCurrencyStorage(dataToAdd);
         }
-        else{
-          let newCurrBalanceToAdd = parseFloat(userOwnedCurrencies[index].converted_amount);
+      else{
+        let newCurrBalanceToAdd = parseFloat(userOwnedCurrencies[index].converted_amount);
 
-          const addNewCurrStorage = {
-            wallet_id : userOwnedCurrencies[index].wallet_id,
-            currency_id : parseInt(userOwnedCurrencies[index].quoteCurrency),
-            amount: parseFloat((newCurrBalanceToAdd).toFixed(2)),
-          }
-          const addNewCurrStorageRes = await postCurrencyStorage(addNewCurrStorage);
+        const addNewCurrStorage = {
+          wallet_id : userOwnedCurrencies[index].wallet_id,
+          currency_id : parseInt(userOwnedCurrencies[index].quoteCurrency),
+          amount: parseFloat((newCurrBalanceToAdd).toFixed(2)),
         }
+        await postCurrencyStorage(addNewCurrStorage);
+      }
+      const saveTransaction = await saveInnerTransaction(userCurr);
+      let snackStatus = 'danger';
+      if(saveTransaction.status == 201){
+        snackStatus = 'success'
+      }
 
-        const currentDate = new Date();
-        currentDate.setHours(currentDate.getHours() + 2);
+      setSnackbarProps({snackStatus: snackStatus, message: saveTransaction.message, showSnackbar: true});
 
-        const transactionData = {
-          wallet_id: userCurr.wallet_id,
-          currency_pair_id: userCurr.currency_pair_id,
-          initial_amount: userCurr.value,
-          converted_amount: parseFloat(userCurr.converted_amount),
-          transaction_date: currentDate,
-        }
-        const saveTransaction = await handleCreateInnerTransaction(transactionData);
-        console.log(saveTransaction);
       } else {
-        setError("Nie udalo sie dokonac wymiany")
+        setSnackbarProps({snackStatus: "danger", message: "Nie udało się dokonać wymiany.", showSnackbar: true});
         return 
       }
     } catch (error) {
-      console.error('Błąd podczas komunikacji z serwerem:', error);
+      setSnackbarProps({snackStatus: "danger", message: "Błąd podczas komunikacji z serwerem.", showSnackbar: true});
     }finally{
       loadData();
     }
   }
 }
+
+const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus: string, message: string, showSnackbar?: boolean }) => {
+    if (snackStatus && message) {
+      setsnackStatus(snackStatus);
+      setsnackMess(message);
+
+      if (showSnackbar !== undefined) {
+        setShowSnackbar(showSnackbar);
+      }
+  };
+}
+
+
 const setMaxAmountToExchange = async (ind: number) =>{
   const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map((currency, index) => {
     if(index == ind){
@@ -308,6 +347,7 @@ const mapUserCurrencies = () => {
 
     return(
         <Layout>
+            {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
             {isLoading ? (<h1>Please wait...</h1>) : userWalletData && exchangeRates ? (
                 <div className='m-8'>
                    <h1 className='text-2xl'>Hello {userWalletData.firstName} {userWalletData.lastName}</h1>

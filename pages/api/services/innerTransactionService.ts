@@ -24,7 +24,6 @@ export const getUserInnerTransactions = async () => {
 export const handleCreateInnerTransaction = async (data : IinnerTransaction) => {
         try{
             const res  = await axios.post(url, data, {headers: {Accept: 'application/json'}})
-            console.log(res);
             return {message: res.data.message, status: res.status};
         } catch (error) {
             if (axios.isAxiosError(error)) {
