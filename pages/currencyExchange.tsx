@@ -269,7 +269,10 @@ const saveExchange = async (index: number) => {
     }finally{
       loadData();
     }
+    return
   }
+  setSnackbarProps({snackStatus: "danger", message: "Wprowadziłeś nieprawidłowe wartości.", showSnackbar: true});
+  return
 }
 
 const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus: string, message: string, showSnackbar?: boolean }) => {
