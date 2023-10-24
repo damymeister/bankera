@@ -4,6 +4,10 @@
 
 git push https://github.com/RaViii1/engineering-thesis main
 
+## Documentation Repository
+
+[https://github.com/RaViii1/praca-dyplomowa](https://github.com/RaViii1/praca-dyplomowa)
+
 ## Development Version
 
 First, run the development server:
