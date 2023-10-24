@@ -2,7 +2,7 @@ import api_url from '@/lib/api_url';
 import axios from 'axios'
 
 
-const url = api_url('wallet')
+const url = api_url('auth/wallet')
 
 export const getWalletData = async () => {
         try {
@@ -34,7 +34,7 @@ export const handleCreateWallet = async () => {
 
 export const handleDeleteWallet = async (id: number) => {
         try {
-          const urll = api_url('wallet?id=' + id.toString())
+          const urll = api_url('auth/wallet?id=' + id.toString())
           const res = await axios.delete(urll, {
               headers: { Accept: 'application/json' },    
           });

@@ -3,4 +3,9 @@ export interface IcurrencyStorage {
     wallet_id : number,
     amount: number;
   }
+
+  export interface IEditCurrencyStorage {
+    id: number,
+    amount:number
+  }
   

@@ -1,18 +1,23 @@
 import Layout from '@/app/layoutPattern';
 import '@/components/css/home.css';
 import { GrClose } from "react-icons/gr";
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEventHandler, useEffect, useState } from 'react';
 import { postCurrencyStorage, updateCurrencyStorage, deleteCurrencyStorage } from '@/pages/api/services/currencyStorageService';
 import { GrMoney } from "react-icons/gr";
 import { GiMoneyStack } from "react-icons/gi";
 import { GoSingleSelect } from "react-icons/go";
 import { FaWindowClose, FaMoneyBillWaveAlt}  from "react-icons/fa";
 
-export default function WalletModal(props) {
+enum Operation {
+  Withdraw = 2,
+  Deposit = 1
+}
+
+export default function WalletModal(props: any) {
   const [currencies, setCurrencies] = useState([]);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [data, setData] = useState({ currencyRow_id: null, wallet_id:"", currency_id: "", amount: "" });
+  const [data, setData] = useState({ currencyRow_id: -1, wallet_id:"", currency_id: "", amount: "" });
   const [amountToChange, setAmountToChange] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [operationType, setOperationType] = useState(1);
@@ -46,13 +51,13 @@ export default function WalletModal(props) {
     setupProps();
   }, [props.currencies, props.walletData]);
 
-  const handleAmountChange = (e) => {
-    const enteredAmount = e.target.value;
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const enteredAmount = parseInt(e.target.value);
     setAmountToChange(enteredAmount);
   };
 
-  const handleOperationTypeChange = (e) => {
-    const operation = e.target.value;
+  const handleOperationTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const operation = parseInt(e.target.value);
     setOperationType(operation);
   };
 
@@ -61,7 +66,7 @@ export default function WalletModal(props) {
     return (
       <select className="w-1/2 bgdark" onChange={handleCurrencyChange} value={data.currency_id}>
         {currencies.length !== 0
-          ? currencies.map((currency) => (
+          ? currencies.map((currency: any) => (
               <option key={currency.id} value={currency.id}>
                 {currency.name}
               </option>
@@ -71,7 +76,7 @@ export default function WalletModal(props) {
     );
   };
 
-  const handleCurrencyChange = (e) => {
+  const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedCurrencyId = e.target.value;
     setData((prevData) => ({
       ...prevData,
@@ -80,15 +85,15 @@ export default function WalletModal(props) {
   };
 
   const addBalanceToAccount = async () =>{
-    if(parseFloat(amountToChange) === 0){
+    if(amountToChange === 0){
       setMessage("Incorrect value.")
     }else{
-    const newCurrentValueBalance = parseFloat(data.amount) + parseFloat(amountToChange);
+    const newCurrentValueBalance = parseFloat(data.amount) + amountToChange;
     if(newCurrentValueBalance >= 0){
       const dataa = {id: data.currencyRow_id, amount: newCurrentValueBalance}
       const res = await updateCurrencyStorage(dataa);
       if(res.status === 200){
-        setData((dat) => ({
+        setData((dat: any) => ({
           ...dat,
           amount: newCurrentValueBalance,
         }));
@@ -102,15 +107,15 @@ export default function WalletModal(props) {
   }
   
   const withDrawMoneyFromAccount = async () =>{
-    if(parseFloat(amountToChange) === 0){
+    if(amountToChange === 0){
       setMessage("Incorrect value.")
     }else{
-    const newCurrentValueBalance = parseFloat(data.amount) - parseFloat(amountToChange);
+    const newCurrentValueBalance = parseFloat(data.amount) - amountToChange;
     if(newCurrentValueBalance >= 0){
       const dataa = {id: data.currencyRow_id, amount: newCurrentValueBalance}
       const res = await updateCurrencyStorage(dataa);
       if(res.status === 200){
-        setData((dat) => ({
+        setData((dat: any) => ({
           ...dat,
           amount: newCurrentValueBalance,
         }));
@@ -128,13 +133,13 @@ export default function WalletModal(props) {
   }
   
   const addNewCurrency = async () =>{
-    if(parseFloat(amountToChange) === 0){
+    if(amountToChange === 0){
       setMessage("Incorrect value.")
     }else{
     const dataCurr = {
-      wallet_id : data.wallet_id,
+      wallet_id : parseInt(data.wallet_id),
       currency_id : parseInt(data.currency_id),
-      amount: parseFloat(amountToChange),
+      amount: amountToChange,
     }
     const res = await postCurrencyStorage(dataCurr);
     setAmountToChange(0);
@@ -143,45 +148,44 @@ export default function WalletModal(props) {
   }
   
 const displayButton = () =>{
-  if(operationType == 1 && data.currencyRow_id){
-    return <button onClick={() => addBalanceToAccount()} className="py-4 button2 text-white  rounded-xl ">Deposit</button>
-  }else if(operationType == 2 && data.currencyRow_id){
-    return <button onClick={() => withDrawMoneyFromAccount()} className="py-4 button2  text-white rounded-xl  ">Withdraw</button>
+  if(operationType == Operation.Deposit && data.currencyRow_id !== -1){
+    return <button onClick={() => addBalanceToAccount()} className="py-4 button2 text-white rounded-xl">Deposit</button>
   }
-  else if(data.currencyRow_id == null){
-    return <button onClick={() => addNewCurrency()} className="py-4 button2 text-white rounded-xl  ">Add</button>
+  else if(operationType == Operation.Withdraw && data.currencyRow_id !== -1){
+    return <button onClick={() => withDrawMoneyFromAccount()} className="py-4 button2 text-white rounded-xl">Withdraw</button>
   }
+  return <button onClick={() => addNewCurrency()} className="py-4 button2 text-white rounded-xl">Add</button>
 }
 
   return (
     
       <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black bg-opacity-80 text-white ">
-        <div className="lg:w-2/5 w-2/3 py-2 lg:h-1/3 min-h-2/3 h-auto bgdark text-white rounded-xl relative border-2  border-black borderLight p-6">
+        <div className="lg:w-2/5 w-2/3 py-2 lg:h-1/3 min-h-2/3 h-auto bgdark text-white rounded-xl relative border-2 border-black borderLight p-6">
           {isLoading ? (
             <div>Is loading...</div>
           ) : (
-            <div className="text-white flex flex-col items-center  ">
+            <div className="text-white flex flex-col items-center">
             <div className='flex flex-row font-bold mb-4 py-6'>
               {/* <FaMoneyBillWaveAlt className="cursor-pointer text-white text-2xl mr-3" /> */}
               <label htmlFor="currentAmount" className="text-lg">
                 Current Value: {data.amount} {currencyName ? currencyName : null}
               </label>
             </div>
-              {!data.currencyRow_id ? (
+              {data.currencyRow_id === -1 ? (
                 <div>
                   <p className="font-bold">Choose currency</p>
                   {mapCurrencies()}
                 </div>
               ) : null }
-              {data.currencyRow_id ? (
+              {data.currencyRow_id !== -1 ? (
                 <div className='flex flex-row bgdark'>
                  <label htmlFor="operationType" className="font-bold flex flex-row">
                  {/* <GoSingleSelect className = "text-white cursor-pointer text-2xl mr-1"/>  */}
                  <p className='px-2'>Operation:</p>
                  </label>
                   <select
-                    id="operationType "
-                    className="w-38  font-bold text-white bgdark"
+                    id="operationType"
+                    className="w-38 font-bold text-white bgdark"
                     onChange={handleOperationTypeChange}
                     value={operationType}
                   >
@@ -197,7 +201,7 @@ const displayButton = () =>{
                   id="name"
                   type="number"
                   min="0"
-                  className="w-24 font-bold  border border-white rounded-lg px-1  bgdark focus:border-black overflow-y-auto resize-none"
+                  className="w-24 font-bold border border-white rounded-lg px-1 bgdark focus:border-black overflow-y-auto resize-none"
                   onChange={handleAmountChange}
                   value={amountToChange}
                 />
