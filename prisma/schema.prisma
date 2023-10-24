@@ -112,7 +112,7 @@ model User_to_User_Transaction {
 }
 
 model Inner_Transaction {
-  id                   String @id
+  id                  Int  @id @default(autoincrement())
   wallet_id            Int
   currency_pair_id     Int
   inital_amount        Float

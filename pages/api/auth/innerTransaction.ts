@@ -23,11 +23,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let token = getCookie('token', { req, res });
 
     if (token !== undefined) {
-
+    console.log(req.body);
     await prisma.inner_Transaction.create({data: {
         wallet_id: req.body.wallet_id,
         currency_pair_id: req.body.currency_pair_id,
-        initial_amount: req.body.initial_amount,
+        inital_amount: req.body.initial_amount,
         converted_amount: req.body.converted_amount,
         transaction_date: req.body.transaction_date
     }})
