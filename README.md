@@ -17,4 +17,4 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## DingoMC Systems Production Version
 
 Click [here](http://dingomc.net:3001) to test officialy deployed production version  
-Click [here](http://dingomc.net:3001) to connect to phpMyAdmin
+Click [here](http://dingomc.net:3002) to connect to phpMyAdmin
