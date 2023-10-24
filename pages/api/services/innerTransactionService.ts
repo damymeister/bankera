@@ -1,13 +1,30 @@
 import api_url from '@/lib/api_url';
 import axios from 'axios'
 
-
 const url = api_url('innerTransaction')
 
-export const handleCreateInnerTransaction = async () => {
+export const getUserInnerTransactions = async () => {
+    try{
+        const {data: res}  = await axios.get(url, {headers: {Accept: 'application/json'}})
+        return {data: res}
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+        if (
+            error.response &&
+            error.response.status >= 400 &&
+            error.response.status <= 500
+        ) {
+            return(error.response.data.message);
+        }
+        }
+        else console.log('unexpected error: ', error)
+    }
+}
+
+export const handleCreateInnerTransaction = async (data : IinnerTransaction) => {
         try{
-            const { data: res } = await axios.post(url, {headers: {Accept: 'application/json'}})
-            console.log(res);
+            const res  = await axios.post(url, data, {headers: {Accept: 'application/json'}})
+            return {message: res.data.message, status: res.status};
         } catch (error) {
             if (axios.isAxiosError(error)) {
             if (
@@ -21,4 +38,5 @@ export const handleCreateInnerTransaction = async () => {
             else console.log('unexpected error: ', error)
         }
     }
+
 

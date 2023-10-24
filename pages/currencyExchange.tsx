@@ -5,10 +5,12 @@ import { getCurrencyPairs } from './api/services/currencyPairService';
 import React, { useEffect, useState } from 'react';
 import { getWalletData } from './api/services/walletService';
 import { LiaExchangeAltSolid } from "react-icons/lia";
-import { handleCreateInnerTransaction } from './api/services/innerTransactionService';
+import { handleCreateInnerTransaction, getUserInnerTransactions } from './api/services/innerTransactionService';
+import { updateCurrencyStorage, deleteCurrencyStorage, postCurrencyStorage} from '@/pages/api/services/currencyStorageService';
+import { data } from 'autoprefixer';
 
 export default function currencyExchange(){
-    const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<any[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0.0} ])
+    const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<any[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0.0, currency_pair_id: 0} ])
     const [currenciesNames, setCurrenciesNames] = useState<any[]>([]);
     const [userWalletData, setUserWalletData] =  useState({wallet_id:null, firstName:"", lastName: ""})
     const [error, setError] = useState<string>("");
@@ -19,6 +21,8 @@ export default function currencyExchange(){
 
 const loadData = async () =>{
     try{
+        const innertr = await getUserInnerTransactions();
+        console.log(innertr);
          const currencies = await getCurrencies();
         setCurrenciesNames(currencies);
         const resExchangeRates = await getCurrencyPairs();
@@ -34,7 +38,8 @@ const loadData = async () =>{
               quoteCurrency: 0,
               value: 0,
               rate: 0,
-              converted_amount: 0
+              converted_amount: 0,
+              currency_pair_id: 0
             }));
 
             setUserOwnedCurrencies(newupdatedUserCurrencies);
@@ -119,10 +124,11 @@ const handleCurrencyChange = async (e: any, currencyNumber: number) => {
 }
 
 const findCurrencyRate = (ownedCurrencyID: number, currencyToBuyID: number) => {
-  var ratetoReturn = 0;
+  var ratetoReturn = {rate: 0.0, exchangeRateID: 0};
     exchangeRates.map((rate: any) => {
       if(rate.sell_currency_id == ownedCurrencyID && rate.buy_currency_id == currencyToBuyID){
-        ratetoReturn = rate.conversion_value;
+        ratetoReturn.rate = rate.conversion_value;
+        ratetoReturn.exchangeRateID = rate.id;
       }
     })
   return ratetoReturn;
@@ -130,8 +136,10 @@ const findCurrencyRate = (ownedCurrencyID: number, currencyToBuyID: number) => {
 
 const setCurrencyRate = async () => {
   const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map(async (currency) => {
-    const rate = await findCurrencyRate(currency.currency_id, currency.quoteCurrency);
-    return { ...currency, rate };
+    const fCurrencyRate = await findCurrencyRate(currency.currency_id, currency.quoteCurrency);
+    const rate = fCurrencyRate.rate;
+    const currency_pair_id = fCurrencyRate.exchangeRateID;
+    return { ...currency, rate, currency_pair_id };
   }));
   setUserOwnedCurrencies(updatedUserOwnedCurrencies);
 
@@ -158,15 +166,98 @@ useEffect(() => {
 }, [valueToExchangeState]);
 
 
-useEffect(() => {
-  console.log(userOwnedCurrencies);
-}, [userOwnedCurrencies]);
-
-
-const saveExchange = async (index: number) => {
-  console.log(userOwnedCurrencies[index]);
+const checkValues = (index: number) => {
+  const currency = userOwnedCurrencies[index];
+  return (
+    currency.amount !== 0 &&
+    currency.currency_id !== 0 &&
+    currency.wallet_id !== 0 &&
+    currency.quoteCurrency !== 0 &&
+    currency.value !== 0 &&
+    currency.rate !== 0 &&
+    currency.converted_amount !== 0 &&
+    currency.currency_pair_id !== 0 && 
+    currency.amount >= currency.value
+  );
 }
 
+const decideAddOrUpdateCurrencyStorage = (index: number) => {
+  const targetCurrency = userOwnedCurrencies.find(element => element.currency_id === userOwnedCurrencies[index].quoteCurrency);
+  if (targetCurrency) {
+    return targetCurrency.id;
+  }
+  return false;
+}
+
+const saveExchange = async (index: number) => {
+  if (checkValues(index)) {
+    const userCurr = userOwnedCurrencies[index];
+    const newCurrentValueBalance = parseFloat(userCurr.amount) - parseFloat(userCurr.value);
+
+    const dataToSubtract = { id: userCurr.id, amount: parseFloat(newCurrentValueBalance.toFixed(2)) };
+    try {
+
+      const currValueRes = await updateCurrencyStorage(dataToSubtract);
+
+      if(newCurrentValueBalance == 0 && currValueRes.status === 200){
+        const deleteCurrStorage = await deleteCurrencyStorage(userCurr.id);
+      }
+
+      if (currValueRes.status === 200) {
+        const operation = decideAddOrUpdateCurrencyStorage(index);
+        if(operation){
+
+          const findIndex = userOwnedCurrencies.find((data) => data.id == operation);
+          let newCurrBalanceToAdd = parseFloat(findIndex.amount) + parseFloat(userCurr.converted_amount);
+
+          const dataToAdd = { id: operation, amount: parseFloat(newCurrBalanceToAdd.toFixed(2)) };
+          const quoteValueRes = await updateCurrencyStorage(dataToAdd);
+        }
+        else{
+          let newCurrBalanceToAdd = parseFloat(userOwnedCurrencies[index].converted_amount);
+
+          const addNewCurrStorage = {
+            wallet_id : userOwnedCurrencies[index].wallet_id,
+            currency_id : parseInt(userOwnedCurrencies[index].quoteCurrency),
+            amount: parseFloat((newCurrBalanceToAdd).toFixed(2)),
+          }
+
+          const addNewCurrStorageRes = await postCurrencyStorage(addNewCurrStorage);
+
+          const transactionData = {
+            wallet_id: Number(userCurr.wallet_id),
+            currency_pair_id: Number(userCurr.currency_pair_id),
+            initial_amount: Number(userCurr.value),
+            converted_amount: Number(userCurr.converted_amount),
+            transaction_date: new Date(),
+          }
+
+          const saveTransaction = await handleCreateInnerTransaction(transactionData);
+          console.log(saveTransaction);
+        }
+      } else {
+        setError("Nie udalo sie dokonac wymiany")
+        return 
+      }
+    } catch (error) {
+      console.error('Błąd podczas komunikacji z serwerem:', error);
+    }finally{
+      loadData();
+    }
+  }
+}
+const setMaxAmountToExchange = async (ind:number) =>{
+  const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map((currency, index) => {
+    if(index == ind){
+    return {
+      ...currency,
+      value: currency.amount
+    }};
+    return currency;
+  }));
+  setvalueToExchangeState(ind);
+  setUserOwnedCurrencies(updatedUserOwnedCurrencies);
+}
 
 const mapUserCurrencies = () => {
     if (!isLoading && userOwnedCurrencies.length > 0 && currenciesNames.length > 0 && exchangeRates.length > 0 )  {
@@ -189,11 +280,11 @@ const mapUserCurrencies = () => {
                   return (
                     <tr key={currency.id}>
                     <td>{findCurrencyName(currency.currency_id)}</td>
-                    <td>{currency.amount}</td>
+                    <td className='hover:cursor-pointer' onClick={() => setMaxAmountToExchange(index)}>{currency.amount}</td>
                     <td>{displaySelectOfAvailableCurrencies(currency.currency_id, currency.id)}</td>
                     <td className="flex items-center justify-center">
                         <input 
-                            className='w-1/4 text-white bg-transparent border-white'
+                            className='w-1/2 text-white bg-transparent border-white'
                             placeholder='0'
                             type="number"
                             value={userOwnedCurrencies[index].value}
