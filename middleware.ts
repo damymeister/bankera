@@ -69,5 +69,5 @@ export async function middleware(request: NextRequest) {
 // Middleware configuration
 export const config = {
     // Add paths here that need to be controlled by middleware
-    matcher: ['/:path*'],
+    matcher: ['/api/auth/:path*', '/user/:path*', '/dashboard', '/admin/:path*'],
 }
