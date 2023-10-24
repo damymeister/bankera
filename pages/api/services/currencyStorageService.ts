@@ -2,11 +2,11 @@ import api_url from '@/lib/api_url';
 import axios from 'axios'
 import { IcurrencyStorage } from '@/pages/api/interfaces/currencyStorage';
 
-const url = api_url('currencyStorage')
+const url = api_url('auth/currencyStorage')
 
 export const getCurrencyStorage = async (wallet_id: number) => {
     try {
-        const urll = api_url('currencyStorage?id=' + wallet_id.toString())
+        const urll = api_url('auth/currencyStorage?id=' + wallet_id.toString())
         const res  = await axios.get(urll, {headers: {Accept: 'application/json'}})
         return {data: res.data};
     } catch (error) {
@@ -35,7 +35,7 @@ export const updateCurrencyStorage = async (data : IcurrencyStorage) => {
     };
     export const deleteCurrencyStorage = async (id: number) => {
         try {
-            const urll = api_url('currencyStorage?id=' + id.toString())
+            const urll = api_url('auth/currencyStorage?id=' + id.toString())
             const res = await axios.delete(urll, {
                 headers: { Accept: 'application/json' },    
             });
