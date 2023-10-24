@@ -8,11 +8,16 @@ import { GiMoneyStack } from "react-icons/gi";
 import { GoSingleSelect } from "react-icons/go";
 import { FaWindowClose, FaMoneyBillWaveAlt}  from "react-icons/fa";
 
+enum Operation {
+  Withdraw = 2,
+  Deposit = 1
+}
+
 export default function WalletModal(props: any) {
   const [currencies, setCurrencies] = useState([]);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [data, setData] = useState({ currencyRow_id: 0, wallet_id:"", currency_id: "", amount: "" });
+  const [data, setData] = useState({ currencyRow_id: -1, wallet_id:"", currency_id: "", amount: "" });
   const [amountToChange, setAmountToChange] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [operationType, setOperationType] = useState(1);
@@ -143,45 +148,44 @@ export default function WalletModal(props: any) {
   }
   
 const displayButton = () =>{
-  if(operationType == 1 && data.currencyRow_id){
-    return <button onClick={() => addBalanceToAccount()} className="py-4 button2 text-white  rounded-xl ">Deposit</button>
-  }else if(operationType == 2 && data.currencyRow_id){
-    return <button onClick={() => withDrawMoneyFromAccount()} className="py-4 button2  text-white rounded-xl  ">Withdraw</button>
+  if(operationType == Operation.Deposit && data.currencyRow_id !== -1){
+    return <button onClick={() => addBalanceToAccount()} className="py-4 button2 text-white rounded-xl">Deposit</button>
   }
-  else if(data.currencyRow_id == null){
-    return <button onClick={() => addNewCurrency()} className="py-4 button2 text-white rounded-xl  ">Add</button>
+  else if(operationType == Operation.Withdraw && data.currencyRow_id !== -1){
+    return <button onClick={() => withDrawMoneyFromAccount()} className="py-4 button2 text-white rounded-xl">Withdraw</button>
   }
+  return <button onClick={() => addNewCurrency()} className="py-4 button2 text-white rounded-xl">Add</button>
 }
 
   return (
     
       <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black bg-opacity-80 text-white ">
-        <div className="lg:w-2/5 w-2/3 py-2 lg:h-1/3 min-h-2/3 h-auto bgdark text-white rounded-xl relative border-2  border-black borderLight p-6">
+        <div className="lg:w-2/5 w-2/3 py-2 lg:h-1/3 min-h-2/3 h-auto bgdark text-white rounded-xl relative border-2 border-black borderLight p-6">
           {isLoading ? (
             <div>Is loading...</div>
           ) : (
-            <div className="text-white flex flex-col items-center  ">
+            <div className="text-white flex flex-col items-center">
             <div className='flex flex-row font-bold mb-4 py-6'>
               {/* <FaMoneyBillWaveAlt className="cursor-pointer text-white text-2xl mr-3" /> */}
               <label htmlFor="currentAmount" className="text-lg">
                 Current Value: {data.amount} {currencyName ? currencyName : null}
               </label>
             </div>
-              {!data.currencyRow_id ? (
+              {data.currencyRow_id === -1 ? (
                 <div>
                   <p className="font-bold">Choose currency</p>
                   {mapCurrencies()}
                 </div>
               ) : null }
-              {data.currencyRow_id ? (
+              {data.currencyRow_id !== -1 ? (
                 <div className='flex flex-row bgdark'>
                  <label htmlFor="operationType" className="font-bold flex flex-row">
                  {/* <GoSingleSelect className = "text-white cursor-pointer text-2xl mr-1"/>  */}
                  <p className='px-2'>Operation:</p>
                  </label>
                   <select
-                    id="operationType "
-                    className="w-38  font-bold text-white bgdark"
+                    id="operationType"
+                    className="w-38 font-bold text-white bgdark"
                     onChange={handleOperationTypeChange}
                     value={operationType}
                   >
@@ -197,7 +201,7 @@ const displayButton = () =>{
                   id="name"
                   type="number"
                   min="0"
-                  className="w-24 font-bold  border border-white rounded-lg px-1  bgdark focus:border-black overflow-y-auto resize-none"
+                  className="w-24 font-bold border border-white rounded-lg px-1 bgdark focus:border-black overflow-y-auto resize-none"
                   onChange={handleAmountChange}
                   value={amountToChange}
                 />
