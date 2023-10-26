@@ -11,6 +11,7 @@
  * NEXT_PUBLIC_API to define whole API link
  */
 export default function api_url (endpoint: string) {
- 
-    return 'http://localhost:3000/api/' + endpoint;
+    if (process.env.NEXT_PUBLIC_API !== undefined) return process.env.NEXT_PUBLIC_API + endpoint
+    if (process.env.NEXT_PUBLIC_PORT !== undefined) return 'http://localhost:' + process.env.NEXT_PUBLIC_PORT + '/api/' + endpoint
+    return 'http://localhost:3000/api/' + endpoint
 }

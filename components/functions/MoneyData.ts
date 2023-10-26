@@ -17,7 +17,7 @@ export function useExchangeRates() {
     fetch('https://api.frankfurter.app/latest?from=PLN')
       .then(response => response.json())
       .then(data => {
-        console.log("Received data:", data);
+        // console.log("Received data:", data);
         const newCurrencies = Object.entries(data.rates).map(([code, rate]) => ({
           currency: `PLN ${code}`,
           name: '', 

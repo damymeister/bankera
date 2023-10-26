@@ -13,7 +13,7 @@ import SnackBar from '@/components/snackbar'
 import {FaExclamation}  from "react-icons/fa";
 import { IcurrencyStorage } from './api/interfaces/currencyStorage';
 
-export default function currencyExchange(){
+export default function CurrencyExchange(){
     const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<any[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0.0, currency_pair_id: 0} ])
     const [currenciesNames, setCurrenciesNames] = useState<ICurrency[]>([]);
     const [userWalletData, setUserWalletData] =  useState({wallet_id:null, firstName:"", lastName: ""})
