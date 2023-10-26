@@ -24,11 +24,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (token !== undefined) {
     await prisma.inner_Transaction.create({data: {
-        wallet_id: req.body.wallet_id,
-        currency_pair_id: req.body.currency_pair_id,
-        inital_amount: req.body.initial_amount,
-        converted_amount: req.body.converted_amount,
-        transaction_date: req.body.transaction_date
+        wallet_id: parseInt(req.body.wallet_id),
+        currency_pair_id: parseInt(req.body.currency_pair_id),
+        inital_amount: parseFloat(req.body.initial_amount),
+        converted_amount: parseFloat(req.body.converted_amount),
+        transaction_date: new Date(req.body.transaction_date)
     }})
     return res.status(201).json({ message: "Currency exchange completed successfully." })
   }
