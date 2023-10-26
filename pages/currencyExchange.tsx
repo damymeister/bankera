@@ -226,6 +226,8 @@ const saveExchange = async (index: number) => {
     return;
   }
 
+  if (!window.confirm("Czy na pewno chcesz wymienić tą walutę?")) return
+
   const userCurr = userOwnedCurrencies[index];
   const newCurrentValueBalance = parseFloat(userCurr.amount) - parseFloat(userCurr.value);
   const dataToSubtract = { id: userCurr.id, amount: parseFloat(newCurrentValueBalance.toFixed(2)) };
@@ -322,7 +324,7 @@ const mapUserCurrencies = () => {
                         ></input>
                     </td>
                     <td>{userOwnedCurrencies[index].rate ? userOwnedCurrencies[index].rate : "-"}</td>
-                    <td>{userOwnedCurrencies[index].converted_amount ? <span> {userOwnedCurrencies[index].converted_amount} {findCurrencyName(userOwnedCurrencies[index].quoteCurrency)} </span>: "0.00"}</td>
+                    <td>{userOwnedCurrencies[index].converted_amount && !isNaN(userOwnedCurrencies[index].converted_amount) ? <span> {userOwnedCurrencies[index].converted_amount} {findCurrencyName(userOwnedCurrencies[index].quoteCurrency)} </span>: "0.00"}</td>
                     <td onClick={() => saveExchange(index)} className='flex items-center justify-center'><LiaExchangeAltSolid className="text-white cursor-pointer text-2xl" /></td>
                     </tr>
                   );

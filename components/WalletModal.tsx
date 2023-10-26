@@ -91,6 +91,7 @@ export default function WalletModal(props: any) {
     const newCurrentValueBalance = parseFloat(data.amount) + amountToChange;
     if(newCurrentValueBalance >= 0){
       const dataa = {id: data.currencyRow_id, amount: newCurrentValueBalance}
+      if (!window.confirm("Czy na pewno chcesz dodać wartości do swojego portfela?")) return
       const res = await updateCurrencyStorage(dataa);
       if(res.status === 200){
         setData((dat: any) => ({
@@ -113,6 +114,7 @@ export default function WalletModal(props: any) {
     const newCurrentValueBalance = parseFloat(data.amount) - amountToChange;
     if(newCurrentValueBalance >= 0){
       const dataa = {id: data.currencyRow_id, amount: newCurrentValueBalance}
+      if (!window.confirm("Czy na pewno chcesz wypłacić pieniądze z konta?")) return
       const res = await updateCurrencyStorage(dataa);
       if(res.status === 200){
         setData((dat: any) => ({
@@ -141,6 +143,7 @@ export default function WalletModal(props: any) {
       currency_id : parseInt(data.currency_id),
       amount: amountToChange,
     }
+    if (!window.confirm("Czy na pewno chcesz dodać wartości do swojego portfela?")) return
     const res = await postCurrencyStorage(dataCurr);
     setAmountToChange(0);
     setMessage(res.message);
