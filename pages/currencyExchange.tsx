@@ -143,7 +143,7 @@ const handleCurrencyChange = async (e: React.ChangeEvent<HTMLSelectElement>, cur
 const findCurrencyRate = (ownedCurrencyID: number, currencyToBuyID: number) => {
   var ratetoReturn = {rate: 0.0, exchangeRateID: 0};
     exchangeRates.map((rate: CurrencyPair) => {
-      if(rate.sell_currency_id == ownedCurrencyID && rate.buy_currency_id == currencyToBuyID){
+      if(rate.id && rate.sell_currency_id == ownedCurrencyID && rate.buy_currency_id == currencyToBuyID){
         ratetoReturn.rate = rate.conversion_value;
         ratetoReturn.exchangeRateID = rate.id;
       }
