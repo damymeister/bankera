@@ -96,6 +96,8 @@ model Currency_Pair {
   uu_trns           User_to_User_Transaction[]
   inner_trns        Inner_Transaction[]
   spec_trns         Speculative_Transaction[]
+  @@unique([sell_currency_id, buy_currency_id], name: "unique_pair")
+  @@index([sell_currency_id, buy_currency_id])
 }
 
 model User_to_User_Transaction {
