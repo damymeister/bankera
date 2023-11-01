@@ -21,7 +21,6 @@ async function transform (api_data: {base: string, rates: {[key: string]: number
                 let buy_id = c.get(key1) ?? 0
                 let sell_id = c.get(key2) ?? 0
                 pairs.push({sell_currency_id: sell_id, buy_currency_id: buy_id, conversion_value: rate})
-                pairs.push({sell_currency_id: buy_id, buy_currency_id: sell_id, conversion_value: 1.0 / rate})
             }
         }
     }
