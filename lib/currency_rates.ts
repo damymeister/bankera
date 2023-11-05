@@ -62,6 +62,7 @@ async function getFromFreecurrency () {
 }
 
 export default async function getCurrencyPairs () {
+    console.log('[CRON] Updating currency pairs...')
     let date = new Date()
     let pairs = (date.getHours() % 2 === 0 ? await getFromFixer() : await getFromFreecurrency())
     for (let i = 0; i < pairs.length; i++) {
@@ -71,6 +72,7 @@ export default async function getCurrencyPairs () {
             where: {unique_pair: {buy_currency_id: pairs[i].buy_currency_id, sell_currency_id: pairs[i].sell_currency_id}}
         })
     }
+    console.log('[CRON] Done.')
     //return pairs
     return {message: 'Rates updated successfully'}
 }

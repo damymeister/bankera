@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "ts-node --project tsconfig.server.json server.ts",
+    "build:next": "next build",
+    "build:server": "tsc --project tsconfig.server.json",
+    "build": "npm run build:next && npm run build:server",
+    "start": "NODE_ENV=production node dist/server.js",
     "lint": "next lint"
   },
   "dependencies": {
@@ -13,6 +15,7 @@
     "autoprefixer": "10.4.15",
     "bcrypt": "^5.1.1",
     "cookies-next": "^4.0.0",
+    "cron-async": "^1.0.5",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
     "jsonwebtoken": "^9.0.2",
@@ -29,13 +32,14 @@
     "@prisma/client": "^5.5.2",
     "@types/bcrypt": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.3",
-    "@types/node": "20.8.0",
+    "@types/node": "^20.8.0",
     "@types/react": "18.2.24",
     "axios": "^1.5.1",
     "joi": "^17.10.2",
     "joi-password-complexity": "^5.2.0",
     "jwt-decode": "^3.1.2",
     "prisma": "^5.5.2",
+    "ts-node": "^10.9.1",
     "typescript": "5.2.2"
   }
 }
