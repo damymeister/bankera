@@ -12,6 +12,7 @@ import { ICurrency } from './api/interfaces/currency';
 import SnackBar from '@/components/snackbar'
 import {FaExclamation}  from "react-icons/fa";
 import { IcurrencyStorage } from './api/interfaces/currencyStorage';
+import SidePanel from '@/components/sidepanel';
 
 export default function CurrencyExchange(){
     const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<any[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0.0, currency_pair_id: 0} ])
@@ -291,7 +292,9 @@ const setMaxAmountToExchange = async (ind: number) =>{
 const mapUserCurrencies = () => {
     if (!isLoading && userOwnedCurrencies.length > 0 && currenciesNames.length > 0 && exchangeRates.length > 0 )  {
       return (
+        
         <div>
+          
             <table className='w-full py-4 m-4 borderLightY text-white'>
               <thead>
                 <tr>
@@ -338,6 +341,7 @@ const mapUserCurrencies = () => {
 
     return(
         <Layout>
+          <SidePanel></SidePanel>
             {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
             {isLoading ? (<h1>Please wait...</h1>) : userWalletData && exchangeRates ? (
                 <div className='m-8'>

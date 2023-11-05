@@ -6,6 +6,7 @@ import { getCurrencyStorage } from './api/services/currencyStorageService';
 import WalletModal from '@/components/WalletModal';
 import { BsCurrencyExchange } from "react-icons/bs";
 import '@/components/css/home.css';
+import SidePanel from '@/components/sidepanel';
 // import Loader from '@/components/loader';
 
 export default function Wallet() {
@@ -132,6 +133,7 @@ const mapUserCurrencies = () => {
 
   return (
     <Layout>
+      <SidePanel></SidePanel>
       <div className="containerCustom borderLightY text-white">
       <div className="items-center bg-[#1f1b24b2] justify-center flex h-full w-full">
         {isLoading ? (<div>Is loading... </div>):

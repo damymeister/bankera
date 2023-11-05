@@ -5,7 +5,7 @@ import '../components/css/post.css';
 import { useState } from 'react';
 import  Link  from 'next/link';
 import { usePathname } from 'next/navigation';
-import {FaHome, FaEdit, FaUser , FaExchangeAlt}  from "react-icons/fa";
+import {FaHome, FaEdit, FaUser , FaExchangeAlt, FaWallet, FaDeezer}  from "react-icons/fa";
 export default function SidePanel() {
     const [isUsersExpanded, setIsUsersExpanded] = useState(false);
 
@@ -27,24 +27,24 @@ export default function SidePanel() {
       };
 
     return (
-   
+
       <div
-      className={`side-panel z9 flex flex-col flex-shrink-0 bgdark border-r borderLight p-0 ${
+      className={`side-panel absolute z9 flex flex-col flex-shrink-0 bgdark border-r borderLight p-0 ${
         isSidebarHidden ? ' opacity-75 w-16 h-16 button4 fixed left-0 rounded-r-full' : 'w-80 ease-in duration-500'
       }`}
     >
-      <div className="flex items-center justify-between h-16">
+      <div className="flex items-center h-16 fixed left-0">
         <span className={`text-lg font-bold text-white p-3 ${isSidebarHidden ? 'hidden' : ''}`}>Kokipt</span>
-        <div className="  p-0 w-16">
+        <div className="p-0 w-16">
           <button
-            className={`h-16 w-16 flex items-center justify-center text-white ${
-              isSidebarHidden ? 'rounded-r-full' : ''
+            className={`h-16 w-16 flex items-center justify-center text-white  ${
+              isSidebarHidden ? '' : 'rounded-r-full'
             }`}
             onClick={toggleSidebar}
           >
             {isSidebarHidden ? (
               <svg
-                className="w-5 h-5  justify-center"
+                className="w-5 h-5  justify-right"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -67,8 +67,9 @@ export default function SidePanel() {
         </div>
       </div>
       {!isSidebarHidden && (
-        <nav className="flex flex-col flex-grow p-4 borderLightY">
-          <Link href="/dashboard" className={`flex items-center space-x-2 py-2 ${isActive('/dashboard')}`}>
+        <nav className="flex flex-col flex-grow p-4 borderLightY pt-16">
+          <div className='textOverline'></div>
+          <Link href="/dashboard" className={`flex items-center space-x-2 py-2  ${isActive('/dashboard')}`}>
             <FaHome />
             <span>Kokpit</span>
           </Link>
@@ -77,8 +78,16 @@ export default function SidePanel() {
             <span>Posts</span>
           </Link>
           <Link href="/exchangeRates" className={`flex items-center space-x-2 py-2 ${isActive('/exchangeRates')}`}>
-            <FaEdit />
+            <FaDeezer />
             <span>Kursy walut</span>
+          </Link>
+          <Link href="/currencyExchange" className={`flex items-center space-x-2 py-2 ${isActive('/currencyExchange')}`}>
+            <FaExchangeAlt />
+            <span>Wymiana walut</span>
+          </Link>
+          <Link href="/wallet" className={`flex items-center space-x-2 py-2 ${isActive('/wallet')}`}>
+            <FaWallet />
+            <span>Portfel</span>
           </Link>
           <div className="relative">
             <input type="checkbox" id="users-dropdown" className="hidden" />
