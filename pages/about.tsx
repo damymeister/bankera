@@ -10,15 +10,25 @@ export default function About() {
     return (
         <Layout>
         <div className="containerCustom borderLightY">
-            <div className=" py1 my1 anim3">
-            <h1 className='py1'>O nas</h1>
-            <h4 className='py1 '>Projekt został zrealizowany przez:</h4>
+            <div className="my1 ">
+            
             <div className="contact">
-            <a>Mateusz Adamczyk</a>
-            <a>Jakub Baran</a>
-            <a>Marcin Basak</a>
-            
-            
+            <h1 className='py1 textUnderline text-3xl'>O nas:</h1>
+            <h4 className=''>Projekt został zrealizowany przez:</h4>
+                <a>Mateusz Adamczyk</a>
+                <a>Jakub Baran</a>
+                <a>Marcin Basak</a>
+                <h2 className='textUnderline  text-3xl'>Co możesz robić na naszej stronie?</h2>
+                <div className='flex flex-row '>
+                    <h4 className='flex items-center text-xl'>Nasza strona oferuje:</h4>
+                    <div className='px-8 flex flex-col items-start justify-center'>
+                        <a className='py-1'>Możliwość wymiany walut</a>
+                        <a className='py-1'>Dokonywanie transakcji z innymi użytkownikami</a>
+                        <a className='py-1'>Dokonywanie spekulacji na rynku forex</a>
+                        <a className='py-1'>Śledzenie aktualnych kursów walut</a>
+                        <a className='py-1'>Przeglądania najnowszych informacji o stanie walut</a>
+                    </div>
+                </div>
             </div>
             </div>
         </div>
