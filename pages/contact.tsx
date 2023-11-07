@@ -9,7 +9,7 @@ export default function Contact() {
     return (
         <Layout>
             <div className="containerCustom borderLightY">
-                <div className=" py1 my1 anim3">
+                <div className=" py1 my1">
                 <h1 className='py1'>Kontakt</h1>
                 <h4 className='py1 '>W razie potrzeby skontaktuj się znami za pomocą podanych metod:</h4>
                 <div className="contact">

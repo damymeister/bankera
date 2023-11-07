@@ -23,7 +23,7 @@ export default function Dashboard() {
 
     return (
     <Layout>
-        <div className="flex  md:min-h-screen w-full">
+        <div className="flex">
         <SidePanel></SidePanel>
         <div className="container bgdark borderLightY p0 h-3/5 ">
         

@@ -1,11 +1,11 @@
 .contact{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: flex-start;
-    align-content: flex-start;
-    gap:2rem;
+    align-items: center;
+    align-content: center;
+    gap:1rem;
 }
 
 .contactCard{

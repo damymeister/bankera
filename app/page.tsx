@@ -62,8 +62,7 @@ export default function Home() {
         {/* <button className="button" text="Register">Register</button> */}
         {/* <button className="button2" text="Register">Login</button> */}
         <button className="button"><Link href="/zzz">check out new offer</Link></button>
-        <div className="circleTop"></div>
-        <div className="circleTop2"></div>
+  
         {/* <img src={phone} alt="My Image" style={{ maxWidth: '100%' }} /> */}
         <div className="services ">
                 <Service 

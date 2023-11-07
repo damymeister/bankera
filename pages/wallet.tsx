@@ -6,6 +6,7 @@ import { getCurrencyStorage } from './api/services/currencyStorageService';
 import WalletModal from '@/components/WalletModal';
 import { BsCurrencyExchange } from "react-icons/bs";
 import '@/components/css/home.css';
+import SidePanel from '@/components/sidepanel';
 // import Loader from '@/components/loader';
 
 export default function Wallet() {
@@ -132,6 +133,7 @@ const mapUserCurrencies = () => {
 
   return (
     <Layout>
+      <SidePanel></SidePanel>
       <div className="containerCustom borderLightY text-white">
       <div className="items-center bg-[#1f1b24b2] justify-center flex h-full w-full">
         {isLoading ? (<div>Is loading... </div>):
@@ -140,7 +142,7 @@ const mapUserCurrencies = () => {
             <h3>You do not have a wallet yet! Create one below!</h3>
             <button onClick={() => { handleCreateWallet().then(() => window.location.reload()) }} className="p-4 rounded-xl mt-4 button2 mb-4 cursor-pointer ">Create Wallet</button>
           </div> :
-          <div className=" p-8 borderLight rounded-xl m-8 containerCustom min-h-400">
+          <div className=" p-8 borderLight rounded-xl m-8  min-h-400">
             {!walletData || walletData.length === 0 ? (
            <button onClick={() => {handleDeleteWallet(walletID).then(() => window.location.reload()) }} className="w-3/5 px-4 py-2 bg-[#ff0000c0] hover:bg-[#5c2121] text-[white] rounded-md">Delete Wallet</button>) : null }
            <h1 className='text-2xl   border-[#BB86FC] border-b-2 py-2 my-4'>Hello { userData.firstName } { userData.surname }!</h1>
