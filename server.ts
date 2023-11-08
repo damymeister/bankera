@@ -3,8 +3,21 @@ import { parse } from 'url'
 import { createServer } from 'http'
 import { startCron } from './cron'
 
+const hostnameSelector = () => {
+    if (process.env.NEXT_PUBLIC_NET_TYPE) {
+        if (process.env.NEXT_PUBLIC_NET_TYPE === 'LOCAL' && process.env.LOCAL_HOSTNAME) {
+            return process.env.LOCAL_HOSTNAME
+        }
+        if (process.env.NEXT_PUBLIC_NET_TYPE === 'REMOTE' && process.env.REMOTE_HOSTNAME) {
+            return process.env.REMOTE_HOSTNAME
+        }
+        return 'dingomc.net'
+    }
+    return 'localhost'
+}
+
 const dev = process.env.NODE_ENV !== 'production'
-const hostname = (process.env.HOSTNAME !== undefined ? process.env.HOSTNAME : 'localhost')
+const hostname = hostnameSelector()
 const port = (process.env.NEXT_PUBLIC_PORT !== undefined ? parseInt(process.env.NEXT_PUBLIC_PORT) : 3000)
 const app = next({dev, hostname, port})
 const handle = app.getRequestHandler()
