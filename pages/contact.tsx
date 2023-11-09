@@ -14,8 +14,8 @@ export default function Contact() {
     return (
         <Layout>
             <div className="containerCustom borderLightY">
-                <div className=" py1 my1">
-                <h1 className='py1 textUnderline text-3xl mb-2'>Kontakt dla klientów</h1>
+                <div className="flex flex-col items-center justify-center py1 my1">
+                <h1 className='py1 textUnderline text-3xl mb-2 max-w-fit'>Kontakt dla klientów</h1>
                 <div className='flex flex-row gap-2 items-center justify-center flex-wrap'>
                     <AiOutlineCheck className='text-white'></AiOutlineCheck>
                     <div>
