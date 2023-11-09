@@ -8,6 +8,10 @@ git push https://github.com/RaViii1/engineering-thesis main
 
 [https://github.com/RaViii1/praca-dyplomowa](https://github.com/RaViii1/praca-dyplomowa)
 
+## Enviornment variables
+
+DATABASE_URL=mysql://ei_project:Project2023!@dingomc.net:3306/ei_project
+
 ## Development Version
 
 First, run the development server:

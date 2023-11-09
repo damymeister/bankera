@@ -51,7 +51,7 @@ model Wallet {
 }
 
 model Forex_Wallet {
-  id                      Int @id
+  id                      Int @id @default(autoincrement())
   created_on              DateTime
   user                    User?
   forex_currency_storage  Forex_Currency_Storage[]
@@ -79,7 +79,7 @@ model Currency_Storage {
 }
 
 model Forex_Currency_Storage {
-  id                        Int @id
+  id                        Int @id @default(autoincrement())
   forex_currency_id         Int 
   forex_currency_amount     Float
   forex_wallet_id           Int
@@ -102,7 +102,7 @@ model Currency_Pair {
 }
 
 model User_to_User_Transaction {
-  id         String   @id
+  id                     Int   @id @default(autoincrement())
   wallet_sender_id       Int      
   wallet_recipient_id    Int      
   currency_pair_id       Int            
@@ -126,7 +126,7 @@ model Inner_Transaction {
 }
 
 model Wallet_Forex_Wallet_Transaction {
-  id                                 Int @id
+  id                                 Int @id @default(autoincrement())
   wallet_id                          Int
   forex_wallet_id                    Int
   currency_id                        Int
@@ -138,7 +138,7 @@ model Wallet_Forex_Wallet_Transaction {
 }
 
 model Speculative_Transaction {
-  id                         Int @id
+  id                         Int @id @default(autoincrement())
   forex_wallet_id            Int
   transaction_type           Int
   currency_pair_id           Int
