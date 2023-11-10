@@ -9,6 +9,7 @@ import { handleCreateInnerTransaction } from './api/services/innerTransactionSer
 import { updateCurrencyStorage, deleteCurrencyStorage, postCurrencyStorage} from '@/pages/api/services/currencyStorageService';
 import { CurrencyPair } from './api/interfaces/currencyPair';
 import { ICurrency } from './api/interfaces/currency';
+import { IWallet } from './api/interfaces/wallet';
 import SnackBar from '@/components/snackbar'
 import {FaExclamation}  from "react-icons/fa";
 import { IcurrencyStorage } from './api/interfaces/currencyStorage';
@@ -17,7 +18,7 @@ import SidePanel from '@/components/sidepanel';
 export default function CurrencyExchange(){
     const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<any[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0.0, currency_pair_id: 0} ])
     const [currenciesNames, setCurrenciesNames] = useState<ICurrency[]>([]);
-    const [userWalletData, setUserWalletData] =  useState({wallet_id:null, firstName:"", lastName: ""})
+    const [userWalletData, setUserWalletData] =  useState<IWallet>({wallet_id:0, first_name:"", last_name: ""})
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [showSnackbar, setShowSnackbar] = useState(false)
     const [snackMess, setsnackMess] = useState("")
@@ -317,7 +318,7 @@ const mapUserCurrencies = () => {
             {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
             {isLoading ? (<h1>Please wait...</h1>) : userWalletData ? (
                 <div className='m-8'>
-                   <h1 className='text-2xl'>Hello {userWalletData.firstName} {userWalletData.lastName}</h1>
+                   <h1 className='text-2xl'>Hello {userWalletData.first_name} {userWalletData.last_name}</h1>
                     <p>You can exchange currencies in your wallet below.</p>
                     {mapUserCurrencies()}
                 </div>
