@@ -1,7 +1,7 @@
 import Layout from '@/app/layoutPattern';
 import { getCurrencies } from './api/services/currencyService';
 import { getCurrencyStorage } from './api/services/currencyStorageService';
-import { getCurrencyPairs } from './api/services/currencyPairService';
+import { getCurrencyPair } from './api/services/currencyPairService';
 import React, { useEffect, useState } from 'react';
 import { getWalletData } from './api/services/walletService';
 import { LiaExchangeAltSolid } from "react-icons/lia";
@@ -19,10 +19,6 @@ export default function CurrencyExchange(){
     const [currenciesNames, setCurrenciesNames] = useState<ICurrency[]>([]);
     const [userWalletData, setUserWalletData] =  useState({wallet_id:null, firstName:"", lastName: ""})
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [exchangeRates, setExchangeRates] = useState<CurrencyPair[]>([]);
-    const [quoteCurrencyState, setQuoteCurrencyState] = useState<number>(0);
-    const [valueToExchangeState, setValueToExchangeState] = useState<number>(0);
-
     const [showSnackbar, setShowSnackbar] = useState(false)
     const [snackMess, setsnackMess] = useState("")
     const [snackStatus, setsnackStatus] = useState("danger")
@@ -35,34 +31,33 @@ export default function CurrencyExchange(){
 
 const loadData = async () =>{
     try{
-        const currencies = await getCurrencies();
+      const currencies = await getCurrencies();
+      if(currencies){
         setCurrenciesNames(currencies);
-        const resExchangeRates = await getCurrencyPairs();
-        setExchangeRates(resExchangeRates.data);
-        var walletData = await getWalletData();
-        if(walletData.wallet_id){
-            const userCurrencies = await getCurrencyStorage(walletData.wallet_id);
-            const newupdatedUserCurrencies = userCurrencies.data.map((data: any) => ({
-              id: data.id, 
-              amount: data.amount,
-              currency_id: data.currency_id,
-              wallet_id: data.wallet_id,
-              quoteCurrency: 0,
-              value: 0,
-              rate: 0,
-              converted_amount: 0,
-              currency_pair_id: 0
-            }));
-
-            setUserOwnedCurrencies(newupdatedUserCurrencies);
+      }
     
-            setUserWalletData((data) =>({
-                ...data,
-                wallet_id : walletData.wallet_id,
-                firstName : walletData.first_name,
-                lastName : walletData.last_name,
-            }));
-        }
+      var walletData = await getWalletData();
+      const userCurrencies = await getCurrencyStorage(walletData.wallet_id);
+      const newupdatedUserCurrencies = userCurrencies.data.map((data: any) => ({
+        id: data.id, 
+        amount: data.amount,
+        currency_id: data.currency_id,
+        wallet_id: data.wallet_id,
+        quoteCurrency: 0,
+        value: 0,
+        rate: 0,
+        converted_amount: 0,
+        currency_pair_id: 0
+      }));
+
+      setUserOwnedCurrencies(newupdatedUserCurrencies);
+
+      setUserWalletData((data) =>({
+          ...data,
+          wallet_id : walletData.wallet_id,
+          firstName : walletData.first_name,
+          lastName : walletData.last_name,
+      }));
     }catch(error){
       setSnackbarProps({snackStatus: "danger", message: "Nie udało się pobrać danych portfela.", showSnackbar: true});
     }finally{
@@ -94,22 +89,23 @@ const findCurrencyName = (currencyID : number) =>{
 const handleValueToExchange = async (e: React.ChangeEvent<HTMLInputElement>, currencyID: number) => {
   const insertedValue = e.target.value;
 
-  const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map((currency) => {
+  const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map(async (currency) => {
     if (currency.id === currencyID) {
+      const convertedAmount = await setConvertedAmount(parseFloat(insertedValue), currency.rate);
       return {
         ...currency,
         value: parseFloat(insertedValue),
+        converted_amount : convertedAmount,
       };
     }
     return currency;
   }));
-  setValueToExchangeState(valueToExchangeState + 1);
-  setUserOwnedCurrencies(updatedUserOwnedCurrencies);
+    setUserOwnedCurrencies(updatedUserOwnedCurrencies);
 }
 
 const displaySelectOfAvailableCurrencies = (currencyID: number, currencyNumber: number) =>{
   const newCurrenciesAvailable = currenciesNames.filter((currency) => currency.id !== currencyID)
-  newCurrenciesAvailable.unshift({ id: 0, name: "Choose" });
+  newCurrenciesAvailable.unshift({ id: 0, name: "Select" });
         return (
             <select className="w-1/2 text-black" onChange={(e) => handleCurrencyChange(e, currencyNumber)} >
               {currenciesNames.length !== 0
@@ -125,62 +121,38 @@ const displaySelectOfAvailableCurrencies = (currencyID: number, currencyNumber: 
  
 const handleCurrencyChange = async (e: React.ChangeEvent<HTMLSelectElement>, currencyNumber: number) => {
   const selectID = e.target.value;
-  const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map((currency) => {
+  const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map(async (currency) => {
+    const rateReturned = await findCurrencyRate(currency.currency_id, parseInt(selectID));
     if (currency.id == currencyNumber) {
       return {
         ...currency,
         value:0,
         converted_amount: 0.00,
         quoteCurrency: parseInt(selectID),
+        rate: rateReturned.rate,
+        currency_pair_id: rateReturned.exchangeRateID
       };
     }
     
     return currency
   }));
-  setQuoteCurrencyState(quoteCurrencyState + 1);
   setUserOwnedCurrencies(updatedUserOwnedCurrencies);
 }
 
-const findCurrencyRate = (ownedCurrencyID: number, currencyToBuyID: number) => {
+const findCurrencyRate = async (ownedCurrencyID: number, currencyToBuyID: number) => {
   var ratetoReturn = {rate: 0.0, exchangeRateID: 0};
-    exchangeRates.map((rate: CurrencyPair) => {
-      if(rate.id && rate.sell_currency_id == ownedCurrencyID && rate.buy_currency_id == currencyToBuyID){
-        ratetoReturn.rate = rate.conversion_value;
-        ratetoReturn.exchangeRateID = rate.id;
-      }
-    })
+  const exChangeRate = await getCurrencyPair(ownedCurrencyID, currencyToBuyID);
+  if(exChangeRate.data){
+    ratetoReturn.rate = exChangeRate.data.conversion_value;
+    ratetoReturn.exchangeRateID = exChangeRate.data.id;
+  }
   return ratetoReturn;
 }
 
-const setCurrencyRate = async () => {
-  const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map(async (currency) => {
-    const fCurrencyRate = await findCurrencyRate(currency.currency_id, currency.quoteCurrency);
-    const rate = fCurrencyRate.rate;
-    const currency_pair_id = fCurrencyRate.exchangeRateID;
-    return { ...currency, rate, currency_pair_id };
-  }));
-  setUserOwnedCurrencies(updatedUserOwnedCurrencies);
-};
 
-
-const setConvertedAmount = async () => {
-  const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map((currency) => {
-    return {
-      ...currency,
-      converted_amount: (currency.value * currency.rate).toFixed(2)
-    };
-  }));
-  setUserOwnedCurrencies(updatedUserOwnedCurrencies);
+const setConvertedAmount = async (inputValue: number, currencyRate: number) => {
+  return (inputValue * currencyRate).toFixed(2);
 }
-
-useEffect(() => {
-  setCurrencyRate();
-}, [quoteCurrencyState]);
-
-useEffect(() => {
-  setConvertedAmount();
-}, [valueToExchangeState]);
-
 
 const checkValues = (index: number) => {
   const currency = userOwnedCurrencies[index];
@@ -277,20 +249,20 @@ const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus:
 
 
 const setMaxAmountToExchange = async (ind: number) =>{
-  const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map((currency, index) => {
+  const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map(async (currency, index) => {
     if(index == ind){
     return {
       ...currency,
-      value: currency.amount
+      value: currency.amount,
+      converted_amount: await setConvertedAmount(currency.amount, currency.rate)
     }};
     return currency;
   }));
   setUserOwnedCurrencies(updatedUserOwnedCurrencies);
-  setValueToExchangeState(valueToExchangeState + 1);
 }
 
 const mapUserCurrencies = () => {
-    if (!isLoading && userOwnedCurrencies.length > 0 && currenciesNames.length > 0 && exchangeRates.length > 0 )  {
+    if (!isLoading && userOwnedCurrencies.length > 0 && currenciesNames.length > 0 )  {
       return (
         
         <div>
@@ -326,7 +298,7 @@ const mapUserCurrencies = () => {
                             disabled={userOwnedCurrencies[index].quoteCurrency === 0} 
                         ></input>
                     </td>
-                    <td>{userOwnedCurrencies[index].rate ? userOwnedCurrencies[index].rate : "-"}</td>
+                    <td>{userOwnedCurrencies[index].rate ? userOwnedCurrencies[index].rate.toFixed(2) : "-"}</td>
                     <td>{userOwnedCurrencies[index].converted_amount && !isNaN(userOwnedCurrencies[index].converted_amount) ? <span> {userOwnedCurrencies[index].converted_amount} {findCurrencyName(userOwnedCurrencies[index].quoteCurrency)} </span>: "0.00"}</td>
                     <td onClick={() => saveExchange(index)} className='flex items-center justify-center'><LiaExchangeAltSolid className="text-white cursor-pointer text-2xl" /></td>
                     </tr>
@@ -343,7 +315,7 @@ const mapUserCurrencies = () => {
         <Layout>
           <SidePanel></SidePanel>
             {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
-            {isLoading ? (<h1>Please wait...</h1>) : userWalletData && exchangeRates ? (
+            {isLoading ? (<h1>Please wait...</h1>) : userWalletData ? (
                 <div className='m-8'>
                    <h1 className='text-2xl'>Hello {userWalletData.firstName} {userWalletData.lastName}</h1>
                     <p>You can exchange currencies in your wallet below.</p>

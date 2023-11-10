@@ -7,7 +7,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       let token = getCookie('token', { req, res });
       if (token !== undefined) {
-      const response =  await prisma.currency_Pair.findMany({});
+
+      const response = await prisma.currency_Pair.findFirst({
+        where: {
+          sell_currency_id: parseInt(req.query.sell_currency_id as string),
+          buy_currency_id: parseInt(req.query.buy_currency_id as string),
+        },
+      });
+        
         return res.status(200).json(response);
       } else {
         return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
