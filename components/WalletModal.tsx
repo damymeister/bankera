@@ -7,6 +7,8 @@ import { GrMoney } from "react-icons/gr";
 import { GiMoneyStack } from "react-icons/gi";
 import { GoSingleSelect } from "react-icons/go";
 import { FaWindowClose, FaMoneyBillWaveAlt}  from "react-icons/fa";
+import SnackBar from '@/components/snackbar';
+import {FaExclamation}  from "react-icons/fa";
 
 enum Operation {
   Withdraw = 2,
@@ -15,13 +17,40 @@ enum Operation {
 
 export default function WalletModal(props: any) {
   const [currencies, setCurrencies] = useState([]);
-  const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [data, setData] = useState({ currencyRow_id: -1, wallet_id:"", currency_id: "", amount: "" });
   const [amountToChange, setAmountToChange] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [operationType, setOperationType] = useState(1);
   const [currencyName, setCurrencyName] = useState(null);
+
+const [showSnackbar, setShowSnackbar] = useState(false)
+const [snackMess, setsnackMess] = useState("")
+const [snackStatus, setsnackStatus] = useState("danger")
+
+const snackbarProps = {
+  status: snackStatus,
+  icon: <FaExclamation />,
+  description: snackMess
+};
+
+useEffect(()=>{
+  setTimeout(()=>{
+    setShowSnackbar(false);
+   }, 4000)
+},[showSnackbar])
+
+const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus: string, message: string, showSnackbar?: boolean }) => {
+  if (snackStatus && message) {
+    setsnackStatus(snackStatus);
+    setsnackMess(message);
+
+    if (showSnackbar !== undefined) {
+      setShowSnackbar(showSnackbar);
+    }
+};
+}
+
   useEffect(() => {
     const setupProps = () => {
       if(props.currenciesToSend){
@@ -86,58 +115,63 @@ export default function WalletModal(props: any) {
 
   const addBalanceToAccount = async () =>{
     if(amountToChange === 0){
-      setMessage("Incorrect value.")
-    }else{
-    const newCurrentValueBalance = parseFloat(data.amount) + amountToChange;
-    if(newCurrentValueBalance >= 0){
-      const dataa = {id: data.currencyRow_id, amount: newCurrentValueBalance}
-      if (!window.confirm("Czy na pewno chcesz dodać wartości do swojego portfela?")) return
-      const res = await updateCurrencyStorage(dataa);
-      if(res.status === 200){
-        setData((dat: any) => ({
-          ...dat,
-          amount: newCurrentValueBalance,
-        }));
-      }
-      setMessage(res.message);
-    }else{
-      setMessage("You do not have that amount of money.");
+      setSnackbarProps({snackStatus: "danger", message: "Incorrect value.", showSnackbar: true});
+      return;
     }
-  }
-  setAmountToChange(0);
+
+    const newCurrentValueBalance = parseFloat(data.amount) + amountToChange;
+    if(newCurrentValueBalance <= 0){
+      setSnackbarProps({snackStatus: "danger", message: "You don't have that amount of money.", showSnackbar: true}); 
+      setAmountToChange(0);
+      return;
+    }
+
+    const dataa = {id: data.currencyRow_id, amount: newCurrentValueBalance}
+    if (!window.confirm("Czy na pewno chcesz dodać wartości do swojego portfela?")) return
+    const res = await updateCurrencyStorage(dataa);
+    setData((dat: any) => ({
+      ...dat,
+      amount: newCurrentValueBalance,
+    }));
+
+    setSnackbarProps({snackStatus: "danger", message: res.message, showSnackbar: true});
+    setAmountToChange(0);
   }
   
   const withDrawMoneyFromAccount = async () =>{
     if(amountToChange === 0){
-      setMessage("Incorrect value.")
-    }else{
+      setSnackbarProps({snackStatus: "danger", message: "Incorrect value.", showSnackbar: true});
+      return;
+    }
     const newCurrentValueBalance = parseFloat(data.amount) - amountToChange;
-    if(newCurrentValueBalance >= 0){
+    if(newCurrentValueBalance <= 0){
+      setSnackbarProps({snackStatus: "danger", message: "You dont have that amount of money.", showSnackbar: true});
+      setAmountToChange(0);
+      return
+    }
       const dataa = {id: data.currencyRow_id, amount: newCurrentValueBalance}
       if (!window.confirm("Czy na pewno chcesz wypłacić pieniądze z konta?")) return
       const res = await updateCurrencyStorage(dataa);
-      if(res.status === 200){
+    
         setData((dat: any) => ({
           ...dat,
           amount: newCurrentValueBalance,
         }));
-      }
-      setMessage(res.message);
+    
+      setSnackbarProps({snackStatus: "danger", message: res.message, showSnackbar: true});
+
       if(newCurrentValueBalance == 0 && res.status === 200){
         const resDel = await deleteCurrencyStorage(data.currencyRow_id);
-        setMessage(resDel.message);
       }
-    }else{
-      setMessage("You do not have that amount of money.");
-    }
-  }
-  setAmountToChange(0);
+
+      setAmountToChange(0);
   }
   
   const addNewCurrency = async () =>{
     if(amountToChange === 0){
-      setMessage("Incorrect value.")
-    }else{
+      setSnackbarProps({snackStatus: "danger", message: "Incorrect value.", showSnackbar: true});
+      return;
+    }
     const dataCurr = {
       wallet_id : parseInt(data.wallet_id),
       currency_id : parseInt(data.currency_id),
@@ -146,8 +180,7 @@ export default function WalletModal(props: any) {
     if (!window.confirm("Czy na pewno chcesz dodać wartości do swojego portfela?")) return
     const res = await postCurrencyStorage(dataCurr);
     setAmountToChange(0);
-    setMessage(res.message);
-  }
+    setSnackbarProps({snackStatus: "danger", message: res.message, showSnackbar: true});
   }
   
 const displayButton = () =>{
@@ -163,6 +196,7 @@ const displayButton = () =>{
   return (
     
       <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black bg-opacity-80 text-white ">
+          {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
         <div className="lg:w-2/5 w-2/3 py-2 lg:h-1/3 min-h-2/3 h-auto bgdark text-white rounded-xl relative border-2 border-black borderLight p-6">
           {isLoading ? (
             <div>Is loading...</div>

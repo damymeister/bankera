@@ -25,25 +25,19 @@ export default function Wallet() {
       const walletId = await getWalletData();
       const currencyData = await getCurrencies();
       let currenciesSaved : {data: any} = {data: []}
-      if(walletId.wallet_id){
+  
+      currenciesSaved = await getCurrencyStorage(walletId.wallet_id);
+      setWalletID(walletId.wallet_id);
 
-        currenciesSaved = await getCurrencyStorage(walletId.wallet_id);
-        setWalletID(walletId.wallet_id);
-
-        setuserData((data) => ({
-          ...data,
-          firstName: walletId.first_name,
-          surname: walletId.last_name,
-        }));
-
-        if(currenciesSaved){
-          setWalletData(currenciesSaved.data);
-        }
-      }
-      if (currencyData) {
-        setCurrencies(currencyData);
-        checkRemainingCurrencies(currenciesSaved.data, currencyData);
-      }
+      setuserData((data) => ({
+        ...data,
+        firstName: walletId.first_name,
+        surname: walletId.last_name,
+      }));
+      setWalletData(currenciesSaved.data);
+      setCurrencies(currencyData);
+      checkRemainingCurrencies(currenciesSaved.data, currencyData);
+      
     } catch (error) {
       console.error('Error while fetching wallet data:', error);
       setError('Error while fetching wallet data.');
