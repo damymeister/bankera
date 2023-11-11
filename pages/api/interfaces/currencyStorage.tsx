@@ -1,4 +1,5 @@
 export interface IcurrencyStorage {
+    id?: number,
     currency_id : number;
     wallet_id : number,
     amount: number;

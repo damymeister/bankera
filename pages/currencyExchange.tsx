@@ -317,9 +317,9 @@ const mapUserCurrencies = () => {
           <SidePanel></SidePanel>
             {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
             {isLoading ? (<h1>Please wait...</h1>) : userWalletData ? (
-                <div className='m-8'>
-                   <h1 className='text-2xl'>Hello {userWalletData.first_name} {userWalletData.last_name}</h1>
-                    <p>You can exchange currencies in your wallet below.</p>
+                <div className='m-8'>   <h1 className='text-2xl'>Hello {userWalletData.first_name} {userWalletData.last_name}</h1>
+                    <p>You can exchange currencies in your wallet below
+                .</p>
                     {mapUserCurrencies()}
                 </div>
                 ) 
