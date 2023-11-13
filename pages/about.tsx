@@ -10,28 +10,27 @@ export default function About() {
     return (
         <Layout>
         <div className="containerCustom borderLightY">
-            <div className="my1 ">
-            
+            <div className="my-1">
             <div className="contact">
-            <h1 className='py1 textUnderline text-3xl'>O nas:</h1>
-            <h4 className=''>Projekt został zrealizowany przez:</h4>
+                <h1 className="py-1 textUnderline text-3xl bold">O nas:</h1>
+                <h4>Projekt został zrealizowany przez:</h4>
                 <a>Mateusz Adamczyk</a>
                 <a>Jakub Baran</a>
                 <a>Marcin Basak</a>
-                <h2 className='textUnderline  text-3xl'>Co możesz robić na naszej stronie?</h2>
-                <div className='flex flex-row '>
-                    <h4 className='flex items-center text-xl'>Nasza strona oferuje:</h4>
-                    <div className='px-8 flex flex-col items-start justify-center'>
-                        <a className='py-1'>Możliwość wymiany walut</a>
-                        <a className='py-1'>Dokonywanie transakcji z innymi użytkownikami</a>
-                        <a className='py-1'>Dokonywanie spekulacji na rynku forex</a>
-                        <a className='py-1'>Śledzenie aktualnych kursów walut</a>
-                        <a className='py-1'>Przeglądania najnowszych informacji o stanie walut</a>
-                    </div>
+                <h2 className="textUnderline text-3xl">Co możesz robić na naszej stronie?</h2>
+                <div className="flex flex-col md:flex-row">
+                    <h4 className="flex items-center text-xl md:p-2">Nasza strona oferuje:</h4>
+                    <ul className="list-disc px-8 flex flex-col items-start justify-center">
+                        <li className="py-1">Wymieniać waluty</li>
+                        <li className="py-1">Dokonywać transakcji z innymi użytkownikami</li>
+                        <li className="py-1">Dokonywać spekulacji na rynku forex</li>
+                        <li className="py-1">Śledzić aktualne kursy walut</li>
+                        <li className="py-1">Przeglądać najnowsze informacje o stanie walut</li>
+                    </ul>
                 </div>
             </div>
             </div>
         </div>
-        </Layout>  
+        </Layout> 
     )
 }
