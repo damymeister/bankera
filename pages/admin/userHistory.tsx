@@ -92,17 +92,7 @@ export default function History() {
       
         return { sellCurrencyName: sellCurrencyName || '', buyCurrencyName: buyCurrencyName || '' };
       };
-
-      function formatDate(dateString : string) {
-        const date = new Date(dateString);
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
-        const formattedDate = date.toISOString().split('T')[0];
-        return `${hours}:${minutes} ${formattedDate}`;
-      }
       
-      
-
     return (
     <Layout>
       <div className="containerCustom borderLightY">
@@ -110,7 +100,7 @@ export default function History() {
         
           <div className="relative px-6 pb-8 pt-10 shadow-xl ring-1 ring-gray-900/5 sm:mx-auto sm:rounded-lg sm:px-10 ">
               <div className='textUnderline mb-2'>
-                <div className='text-[#BB86FC] flex flex-row mx-3 items-center textleft  hover:text-[#9073ff] mx-3'> <FaHome/> - <Link href={`/admin/adminPanel`} className="">Powrót</Link></div>
+                <div className='text-[#BB86FC] flex flex-row items-center textleft  hover:text-[#9073ff] mx-3'> <FaHome/> - <Link href={`/admin/adminPanel`} className="">Powrót</Link></div>
                 <h1 className='text-3xl'> Historia transakcji: {userData.first_name} {userData.last_name}</h1>
               </div>
             
@@ -139,7 +129,7 @@ export default function History() {
                         return (
                           <tr className='border-b border-gray-700 hover:bg-gray-700 text-center items-center' key={transaction.id}>
                             <td className="py-1">{transaction.id}</td>
-                            <td className="py-1">{formatDate(transaction.transaction_date)}</td>
+                            <td className="py-1">{new Date(transaction.transaction_date).toLocaleString()}</td>
                             <td className="py-1">{transaction.inital_amount} {sellCurrencyName}</td>
                             <td className="py-1">{transaction.converted_amount} {buyCurrencyName}</td>
                           </tr>
@@ -148,7 +138,7 @@ export default function History() {
                     </tbody>
                   </table>
 
-                  <h1 className='m-5 text-3xl'>Wymiany Z użytkownikami</h1>
+                  <h1 className='m-5 text-3xl'>Wymiany z użytkownikami</h1>
                   <table className="w-10/12 mx-auto border-collapse border-b-1 border-gray-300">
                     <thead>
                       <tr className='border-b border-gray-300'>
@@ -167,7 +157,7 @@ export default function History() {
                           <tr className='border-b border-gray-700 hover:bg-gray-700 text-center items-center' key={transactionWithUser.id}>
                             <td className="py-1">{transactionWithUser.id}</td>
                             <td className="py-1">{transactionWithUser.wallet_recipient_id}</td>
-                            <td className="py-1">{formatDate(transactionWithUser.transaction_date)}</td>
+                            <td className="py-1">{new Date(transactionWithUser.transaction_date).toLocaleString()}</td>
                             <td className="py-1">{transactionWithUser.inital_amount} {sellCurrencyName} na {transactionWithUser.converted_amount} {buyCurrencyName}</td>
                           </tr>
                         );
