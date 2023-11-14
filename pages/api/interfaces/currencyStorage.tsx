@@ -13,4 +13,7 @@ export interface ICreateCurrencyStorage{
     id: number,
     amount:number
   }
-  
+  export interface CurrencyMapItem {
+    id: number;
+    name: string;
+  }

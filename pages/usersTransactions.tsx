@@ -9,7 +9,7 @@ import SnackBar from '@/components/snackbar'
 import { ICurrency } from './api/interfaces/currency';
 import { IWallet } from './api/interfaces/wallet';
 import '@/components/css/home.css';
-import { IcurrencyStorage } from './api/interfaces/currencyStorage';
+import { IcurrencyStorage, CurrencyMapItem } from './api/interfaces/currencyStorage';
 
 export default function usersTransactions(){
     const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<IcurrencyStorage[]>([])
@@ -20,7 +20,7 @@ export default function usersTransactions(){
     const [snackMess, setsnackMess] = useState<string>("")
     const [snackStatus, setsnackStatus] = useState<string>("danger")
     const [amountToChange, setAmountToChange] = useState<number>(0.0);
-    const currencyMap = new Map<number, object>();
+    const [currencyMap, setCurrencyMap] = useState(new Map<number, CurrencyMapItem>());
 
     const snackbarProps = {
       status: snackStatus,
@@ -28,7 +28,7 @@ export default function usersTransactions(){
       description: snackMess
   };
 
-  const setCurrencyMap = (userCurrencies: IcurrencyStorage[], currenciesNames: ICurrency[]) =>{
+  const setCurrencyMapData = (userCurrencies: IcurrencyStorage[], currenciesNames: ICurrency[]) =>{
     for (let i = 0; i < userCurrencies.length; i++) {
         for (let j = 0; j < currenciesNames.length; j++) {
           if (userCurrencies[i].currency_id === currenciesNames[j].id && userCurrencies[i].id != undefined) {
@@ -39,9 +39,11 @@ export default function usersTransactions(){
           }
         }
       }
-      console.log(currencyMap);
   }
 
+  useEffect(() => {
+    console.log("Currency Map in useEffect:", currencyMap);
+  }, [currencyMap]);
 
   const loadData = async () =>{
     try{
@@ -53,7 +55,7 @@ export default function usersTransactions(){
         setUserWalletData(walletData);
         const userCurrencies = await getCurrencyStorage(walletData.wallet_id);
         setUserOwnedCurrencies(userCurrencies.data);
-        setCurrencyMap(userCurrencies.data, currencies);
+        setCurrencyMapData(userCurrencies.data, currencies);
       
     }catch(error){
         setSnackbarProps({snackStatus: "danger", message: "Nie udało się pobrać danych portfela.", showSnackbar: true});
@@ -94,11 +96,12 @@ const displayUserCurrencies = () =>{
     if(!isLoading && userOwnedCurrencies.length == 0){
         return "You have empty wallet!"
     }
+    const currencyMapArray = Array.from(currencyMap);
     return(
         <select className="w-1/2 text-black">
-            {userOwnedCurrencies.map((currency)=>(
-            <option key = {currency.id} value={currency.id}>
-                {currency.currency_id}
+            {currencyMapArray.map(([key, value])=>(
+            <option key = {key} value={value.id}>
+                {value.name}
             </option>
             ))}
         </select>
