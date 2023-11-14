@@ -179,7 +179,6 @@ const decideAddOrUpdateCurrencyStorage = (index: number) => {
 
 const saveInnerTransaction = async (userCurr: any) =>{
   const currentDate = new Date();
-  currentDate.setHours(currentDate.getHours() + 2);
 
   const transactionData: IinnerTransaction = {
     wallet_id: userCurr.wallet_id,
