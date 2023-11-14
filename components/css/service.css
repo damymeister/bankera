@@ -54,6 +54,7 @@
   @media screen and (max-width: 768px) {
     .services {
       grid-template-columns: 1fr;
+      max-width: 100%;
     }
     .service{
       clip-path: fill-box;

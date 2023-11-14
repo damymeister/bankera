@@ -23,11 +23,6 @@
   justify-content: center;
 }
 .FooterinfoText {
-  /* position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-20%, -60%);
-   */
    max-width: calc((100% - 5rem));
    display: grid;
    grid-template-columns: 1fr 1fr 1fr;
@@ -64,5 +59,31 @@
 
 .footerLinks a:hover{
   color: var(--text-mid);
+
+}
+
+@media screen and (max-width: 768px) {
+  
+  .FooterinfoText{
+    grid-template-columns: 1fr;
+    justify-content: center;
+    align-items: center;
+    
+  }
+  .footerLinks, .footerMoreInfo, .FooterTitle{
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+    padding: 0.2rem;
+    max-width: 100%;
+  }
+  
+
+}
+
+@media screen and (max-width: 480px) {
+  .footerLinks{
+    flex-direction: column;
+  }
 
 }

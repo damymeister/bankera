@@ -73,6 +73,11 @@
 	  animation: text-shadow-drop-center 1s both;
 }
 
+.admin{
+  color: red !important;
+  -webkit-animation: text-shadow-drop-red 1s both !important;
+  animation: text-shadow-drop-red 1s both !important;
+}
 
  @-webkit-keyframes text-shadow-drop-center {
     0% {
@@ -90,9 +95,9 @@
       text-shadow: 0 0 18px var(--primary-purple-color);
     }
   }
-  
 
-  @media screen and (max-width: 768px) {
+
+  /* @media screen and (max-width: 768px) {
     a{
       font-size: var(--text-small) !important;
     }
@@ -100,4 +105,4 @@
       clip-path: fill-box;
     }
 
-  }
+  } */
