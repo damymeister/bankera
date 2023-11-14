@@ -32,3 +32,13 @@
     padding-bottom: 3rem;
     
 }
+
+@media screen and (max-width: 768px) {
+    .currencies {
+      
+        max-width: 100%;
+        justify-content: center;
+        align-items: center;
+    }
+   
+  }
