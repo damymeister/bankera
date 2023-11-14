@@ -20,11 +20,27 @@ export default function usersTransactions(){
     const [snackMess, setsnackMess] = useState<string>("")
     const [snackStatus, setsnackStatus] = useState<string>("danger")
     const [amountToChange, setAmountToChange] = useState<number>(0.0);
+    const currencyMap = new Map<number, object>();
+
     const snackbarProps = {
       status: snackStatus,
       icon: <FaExclamation />,
       description: snackMess
   };
+
+  const setCurrencyMap = (userCurrencies: IcurrencyStorage[], currenciesNames: ICurrency[]) =>{
+    for (let i = 0; i < userCurrencies.length; i++) {
+        for (let j = 0; j < currenciesNames.length; j++) {
+          if (userCurrencies[i].currency_id === currenciesNames[j].id && userCurrencies[i].id != undefined) {
+            currencyMap.set(userCurrencies[i].id, {
+              id: currenciesNames[j].id,
+              name: currenciesNames[j].name
+            });
+          }
+        }
+      }
+      console.log(currencyMap);
+  }
 
 
   const loadData = async () =>{
@@ -36,9 +52,8 @@ export default function usersTransactions(){
         const walletData = await getWalletData();
         setUserWalletData(walletData);
         const userCurrencies = await getCurrencyStorage(walletData.wallet_id);
-        console.log(userCurrencies);
         setUserOwnedCurrencies(userCurrencies.data);
-      
+        setCurrencyMap(userCurrencies.data, currencies);
       
     }catch(error){
         setSnackbarProps({snackStatus: "danger", message: "Nie udało się pobrać danych portfela.", showSnackbar: true});
@@ -103,7 +118,7 @@ const displayUserCurrencies = () =>{
                     <label htmlFor="currencyToSend" className="font-bold mr-1 flex items-center justify-center">Currency to send:
                         {displayUserCurrencies()}
                     </label>
-                    <label htmlFor="amount" className="font-bold mr-1 flex items-center justify-center">Amount:
+                    <label htmlFor="amount" className="font-bold mr-1 flex items-center justify-center mr-2">Amount:
                         <input
                         placeholder="0"
                         id="amount"

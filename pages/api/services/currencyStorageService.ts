@@ -1,6 +1,6 @@
 import api_url from '@/lib/api_url';
 import axios from 'axios'
-import { IEditCurrencyStorage, IcurrencyStorage } from '@/pages/api/interfaces/currencyStorage';
+import { IEditCurrencyStorage, ICreateCurrencyStorage} from '@/pages/api/interfaces/currencyStorage';
 
 const url = api_url('auth/currencyStorage')
 
@@ -15,7 +15,7 @@ export const getCurrencyStorage = async (wallet_id: number) => {
     }
 };
 
-export const postCurrencyStorage = async (data : IcurrencyStorage ) => {
+export const postCurrencyStorage = async (data : ICreateCurrencyStorage ) => {
         try {
             const res  = await axios.post(url, data, {headers: {Accept: 'application/json'}})
             return {message: res.data.message, status: res.status};

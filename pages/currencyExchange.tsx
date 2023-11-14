@@ -12,7 +12,7 @@ import { ICurrency } from './api/interfaces/currency';
 import { IWallet } from './api/interfaces/wallet';
 import SnackBar from '@/components/snackbar'
 import {FaExclamation}  from "react-icons/fa";
-import { IcurrencyStorage } from './api/interfaces/currencyStorage';
+import { ICreateCurrencyStorage } from './api/interfaces/currencyStorage';
 import SidePanel from '@/components/sidepanel';
 
 export default function CurrencyExchange(){
@@ -221,7 +221,7 @@ const saveExchange = async (index: number) => {
       await updateCurrencyStorage(dataToAdd);
     } else {
       let newCurrBalanceToAdd = parseFloat(userOwnedCurrencies[index].converted_amount);
-      const addNewCurrStorage :IcurrencyStorage = {
+      const addNewCurrStorage :ICreateCurrencyStorage = {
         wallet_id: userOwnedCurrencies[index].wallet_id,
         currency_id: userOwnedCurrencies[index].quoteCurrency,
         amount: parseFloat(newCurrBalanceToAdd.toFixed(2)),
