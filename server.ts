@@ -22,7 +22,8 @@ const port = (process.env.NEXT_PUBLIC_PORT !== undefined ? parseInt(process.env.
 const app = next({dev, hostname, port})
 const handle = app.getRequestHandler()
 app.prepare().then(() => {
-    startCron()
+    if (!dev) startCron()
+    else console.log('[Server][Info] CRON is disabled in dev mode.')
     const server = createServer(async (req: any, res: any) => {
     try {
         // Be sure to pass `true` as the second argument to `url.parse`.
