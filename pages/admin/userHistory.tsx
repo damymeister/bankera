@@ -40,10 +40,10 @@ export default function History() {
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
             
-            const urlWithQuery = api_url(`/auth/admin/transactionHistory?id=${id}`);
+            const urlWithQuery = api_url(`auth/admin/transactionHistory?id=${id}`);
             const res = await axios.get(urlWithQuery, { headers: { Accept: 'application/json' } });
             
-            const userDataUrl = api_url(`/auth/admin/manageUser?id=${id}`);
+            const userDataUrl = api_url(`auth/admin/manageUser?id=${id}`);
             const userRes = await axios.get(userDataUrl, { headers: { Accept: 'application/json' } });
             
             setUserData(userRes.data);
