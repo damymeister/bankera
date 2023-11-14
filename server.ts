@@ -2,6 +2,7 @@ import next from 'next'
 import { parse } from 'url'
 import { createServer } from 'http'
 import { startCron } from './cron'
+import { CHeaders, Color } from './lib/console'
 
 const hostnameSelector = () => {
     if (process.env.NEXT_PUBLIC_NET_TYPE) {
@@ -22,25 +23,26 @@ const port = (process.env.NEXT_PUBLIC_PORT !== undefined ? parseInt(process.env.
 const app = next({dev, hostname, port})
 const handle = app.getRequestHandler()
 app.prepare().then(() => {
+    console.log(Color.formatted(`${CHeaders.Server}${CHeaders.Info} Starting server...`))
     if (!dev) startCron()
-    else console.log('[Server][Info] CRON is disabled in dev mode.')
+    else console.log(Color.formatted(`${CHeaders.Server}${CHeaders.Info} CRON is disabled in dev mode.`))
     const server = createServer(async (req: any, res: any) => {
-    try {
-        // Be sure to pass `true` as the second argument to `url.parse`.
-        // This tells it to parse the query portion of the URL.
-        const parsedUrl = parse(req.url, true)
-        await handle(req, res, parsedUrl)
-    } catch (err) {
-        console.error('Error occurred handling', req.url, err)
-        res.statusCode = 500
-        res.end('Internal server error')
-    }
+        try {
+            // Be sure to pass `true` as the second argument to `url.parse`.
+            // This tells it to parse the query portion of the URL.
+            const parsedUrl = parse(req.url, true)
+            await handle(req, res, parsedUrl)
+        } catch (err) {
+            console.error('Error occurred handling', req.url, err)
+            res.statusCode = 500
+            res.end('Internal server error')
+        }
     })
     .once('error', (err: any) => {
         console.error(err)
         process.exit(1)
     })
     .listen(port, () => {
-        console.log(`> Ready on http://${hostname}:${port}`)
+        console.log(Color.formatted(`${CHeaders.Server}${CHeaders.Info} Ready on http://${hostname}:${port}`))
     })
 })

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import api_url from '@/lib/api_url'
+import { CHeaders, Color } from './lib/console'
 
 // This fetches the privilege (Axios cannot be used in middleware)
 const getPrivilege = async (token: string) => {
@@ -46,7 +47,7 @@ export async function middleware(request: NextRequest) {
     let token_old = request.nextUrl.searchParams.get('token')   // by url param ?token=
     // No token - no Auth
     if (token === undefined && token_old === null) {
-        console.log(`[Mid]No token - Privilege: 0. Denying access to ${request.nextUrl.pathname}`,)
+        console.log(Color.formatted(`${CHeaders.Mid}${CHeaders.Error} No token - Privilege: 0. Denying access to ${request.nextUrl.pathname}`))
         return NextResponse.redirect(new URL('/', request.url))
     }
     // Determine which one is available
@@ -59,11 +60,11 @@ export async function middleware(request: NextRequest) {
     })
     // Privilege less than threshold - No Auth
     if (user_privilege < privilege_required) {
-        console.log(`[Mid] Privilege ${user_privilege}, Denying access to: ${request.nextUrl.pathname}`)
+        console.log(Color.formatted(`${CHeaders.Mid}${CHeaders.Error} Privilege: ${user_privilege}, Denying access to: ${request.nextUrl.pathname}`))
         return NextResponse.redirect(new URL('/', request.url))
     }
     // Otherwise it passes through
-    console.log(`[Mid] Privilege ${user_privilege}, Accessing: ${request.nextUrl.pathname}`)
+    console.log(Color.formatted(`${CHeaders.Mid}${CHeaders.ACK} Privilege ${user_privilege}, Accessing: ${request.nextUrl.pathname}`))
 }
 
 // Middleware configuration
