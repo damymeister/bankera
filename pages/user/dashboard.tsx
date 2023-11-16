@@ -1,6 +1,6 @@
-import '../components/css/home.css';
-import '../components/css/dashboard.css';
-import '../components/css/post.css';
+import '@/components/css/home.css';
+import '@/components/css/dashboard.css';
+import '@/components/css/post.css';
 import '@/components/css/tailwind.css';
 import SidePanel from'@/components/sidepanel';
 import { useState } from 'react';

@@ -8,11 +8,11 @@ type LayoutProps = {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <>
+    <div className='min-h-screen flex flex-col'>
       <Navbar />
       {children}
       <Footer />
-    </>
+    </div>
   );
 };
 

@@ -13,8 +13,8 @@
 
 .containerCustom {
     background-color: var(--primary-dark-color);
-    margin-top: 5rem;
-    margin-bottom: 10rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1920' height='1080' preserveAspectRatio='none' viewBox='0 0 1920 1080'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1508%26quot%3b)' fill='none'%3e%3crect width='1920' height='1080' x='0' y='0' fill='url(%26quot%3b%23SvgjsRadialGradient1509%26quot%3b)'%3e%3c/rect%3e%3cpath d='M1920 0L1664.02 0L1920 5.54z' fill='rgba(255%2c 255%2c 255%2c .1)'%3e%3c/path%3e%3cpath d='M1664.02 0L1920 5.54L1920 54.449999999999996L1174.32 0z' fill='rgba(255%2c 255%2c 255%2c .075)'%3e%3c/path%3e%3cpath d='M1174.3200000000002 0L1920 54.449999999999996L1920 476.13L1044.9500000000003 0z' fill='rgba(255%2c 255%2c 255%2c .05)'%3e%3c/path%3e%3cpath d='M1044.95 0L1920 476.13L1920 645.25L1038.7 0z' fill='rgba(255%2c 255%2c 255%2c .025)'%3e%3c/path%3e%3cpath d='M0 1080L344.94 1080L0 884z' fill='rgba(0%2c 0%2c 0%2c .1)'%3e%3c/path%3e%3cpath d='M0 884L344.94 1080L957.5799999999999 1080L0 504.19z' fill='rgba(0%2c 0%2c 0%2c .075)'%3e%3c/path%3e%3cpath d='M0 504.19000000000005L957.5799999999999 1080L1377.6499999999999 1080L0 269.7900000000001z' fill='rgba(0%2c 0%2c 0%2c .05)'%3e%3c/path%3e%3cpath d='M0 269.7900000000001L1377.6499999999999 1080L1639.34 1080L0 118.64000000000007z' fill='rgba(0%2c 0%2c 0%2c .025)'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1508'%3e%3crect width='1920' height='1080' fill='white'%3e%3c/rect%3e%3c/mask%3e%3cradialGradient cx='0%25' cy='100%25' r='2202.91' gradientUnits='userSpaceOnUse' id='SvgjsRadialGradient1509'%3e%3cstop stop-color='rgba(31%2c 27%2c 36%2c 1)' offset='0.82'%3e%3c/stop%3e%3cstop stop-color='rgba(26%2c 23%2c 30%2c 1)' offset='0.94'%3e%3c/stop%3e%3c/radialGradient%3e%3c/defs%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-size: cover;

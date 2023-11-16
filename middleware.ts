@@ -29,8 +29,8 @@ const getPrivilege = async (token: string) => {
 const privilegeTable : {path: string, value: number}[] = [
     {path: '/api/auth/', value: 1},
     {path: '/user/', value: 1},
-    {path: '/dashboard', value: 1},
     {path: '/api/auth/redaktor/', value: 2},
+    {path: '/posts/', value: 2},
     {path: '/admin/', value: 3},
     {path: '/api/auth/admin/', value: 3},
 ]
@@ -70,5 +70,5 @@ export async function middleware(request: NextRequest) {
 // Middleware configuration
 export const config = {
     // Add paths here that need to be controlled by middleware
-    matcher: ['/api/auth/:path*', '/user/:path*', '/dashboard', '/admin/:path*'],
+    matcher: ['/api/auth/:path*', '/user/:path*', '/admin/:path*', '/posts/:path*'],
 }
