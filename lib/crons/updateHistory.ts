@@ -1,6 +1,5 @@
 import prisma from "../prisma"
-
-const MILLIS_IN_DAY = 24 * 60 * 60 * 1000
+import { getPastTimestamp } from "../time"
 
 export const name = 'Update Currency History'
 export const schedule = '0 10 * * * *'
@@ -19,7 +18,7 @@ export const run = async () => {
     }
     // Set date of history expiration
     let date_threshold = new Date()
-    date_threshold.setTime(date_threshold.getTime() - (MILLIS_IN_DAY * 30))
+    date_threshold.setTime(getPastTimestamp('1d'))
     await prisma.currency_History.deleteMany({where: {
         date: {lt: date_threshold}
     }})
