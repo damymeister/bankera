@@ -1,17 +1,16 @@
 import Layout from '@/app/layoutPattern';
-import { getCurrencies } from './api/services/currencyService';
-import { getCurrencyStorage } from './api/services/currencyStorageService';
-import { getCurrencyPair } from './api/services/currencyPairService';
+import { getCurrencies } from '@/pages/api/services/currencyService';
+import { getCurrencyStorage } from '@/pages/api/services/currencyStorageService';
+import { getCurrencyPair } from '@/pages/api/services/currencyPairService';
 import React, { useEffect, useState } from 'react';
-import { getWalletData } from './api/services/walletService';
+import { getWalletData } from '@/pages/api/services/walletService';
 import { LiaExchangeAltSolid } from "react-icons/lia";
-import { handleCreateInnerTransaction } from './api/services/innerTransactionService';
+import { handleCreateInnerTransaction } from '@/pages/api/services/innerTransactionService';
 import { updateCurrencyStorage, deleteCurrencyStorage, postCurrencyStorage} from '@/pages/api/services/currencyStorageService';
-import { CurrencyPair } from './api/interfaces/currencyPair';
-import { ICurrency } from './api/interfaces/currency';
+import { ICurrency } from '@/pages/api/interfaces/currency';
 import SnackBar from '@/components/snackbar'
 import {FaExclamation}  from "react-icons/fa";
-import { IcurrencyStorage } from './api/interfaces/currencyStorage';
+import { IcurrencyStorage } from '@/pages/api/interfaces/currencyStorage';
 import SidePanel from '@/components/sidepanel';
 
 export default function CurrencyExchange(){
@@ -264,7 +263,7 @@ const mapUserCurrencies = () => {
     if (!isLoading && userOwnedCurrencies.length > 0 && currenciesNames.length > 0 )  {
       return (
         
-        <div>
+        <div className='containerCustom borderLight'>
           
             <table className='w-full py-4 m-4 borderLightY text-white'>
               <thead>

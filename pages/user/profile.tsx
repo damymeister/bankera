@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { PrismaClient } from '@prisma/client';
 import '@/components/css/home.css';
 import '@/components/css/forms.css';
+import '@/components/css/post.css';
 import  '@/app/globals.css';
 import Layout from '@/app/layoutPattern';
 import '@/components/css/tailwind.css';
-import  Link  from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import api_url from '@/lib/api_url';
 import axios from 'axios';

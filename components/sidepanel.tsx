@@ -69,7 +69,7 @@ export default function SidePanel() {
       {!isSidebarHidden && (
         <nav className="flex flex-col flex-grow p-4 borderLightY pt-16">
           <div className='textOverline'></div>
-          <Link href="/dashboard" className={`flex items-center space-x-2 py-2  ${isActive('/dashboard')}`}>
+          <Link href="/user/dashboard" className={`flex items-center space-x-2 py-2  ${isActive('/user/dashboard')}`}>
             <FaHome />
             <span>Kokpit</span>
           </Link>
@@ -81,11 +81,11 @@ export default function SidePanel() {
             <FaDeezer />
             <span>Kursy walut</span>
           </Link>
-          <Link href="/currencyExchange" className={`flex items-center space-x-2 py-2 ${isActive('/currencyExchange')}`}>
+          <Link href="/user/currencyExchange" className={`flex items-center space-x-2 py-2 ${isActive('/user/currencyExchange')}`}>
             <FaExchangeAlt />
             <span>Wymiana walut</span>
           </Link>
-          <Link href="/wallet" className={`flex items-center space-x-2 py-2 ${isActive('/wallet')}`}>
+          <Link href="/user/wallet" className={`flex items-center space-x-2 py-2 ${isActive('/user/wallet')}`}>
             <FaWallet />
             <span>Portfel</span>
           </Link>
