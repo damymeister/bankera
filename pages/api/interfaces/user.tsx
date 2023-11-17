@@ -23,3 +23,10 @@ export interface RegisteringUser {
   password: string;
   phone_number: string;
 }
+
+export interface IUserSearch {
+  id: number,
+  first_name:string,
+  last_name: string,
+  email:string,
+}
