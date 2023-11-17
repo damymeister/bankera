@@ -1,6 +1,6 @@
-import '../components/css/home.css';
-import '../components/css/dashboard.css';
-import '../components/css/post.css';
+import '@/components/css/home.css';
+import '@/components/css/dashboard.css';
+import '@/components/css/post.css';
 
 import { useState } from 'react';
 import  Link  from 'next/link';
@@ -34,7 +34,7 @@ export default function SidePanel() {
       }`}
     >
       <div className="flex items-center h-16 fixed left-0">
-        <span className={`text-lg font-bold text-white p-3 ${isSidebarHidden ? 'hidden' : ''}`}>Kokipt</span>
+        <span className={`text-lg font-bold text-white p-3 ${isSidebarHidden ? 'hidden' : ''}`}>Kokpit</span>
         <div className="p-0 w-16">
           <button
             className={`h-16 w-16 flex items-center justify-center text-white  ${

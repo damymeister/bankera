@@ -2,6 +2,7 @@
 
 import '../components/css/post.css';
 import '../components/css/home.css';
+import '../components/css/header.css';
 import './globals.css';
 
 import React, { useEffect, useState } from "react";
@@ -9,7 +10,7 @@ import Service from '../components/service';
 import Currency from '../components/site-elements/currency';
 import { useExchangeRates } from '../components/functions/MoneyData';
 import Post_t from '@/components/post';
-import {FaChartLine, FaWallet, FaRegCreditCard}  from "react-icons/fa";
+import {FaChartLine, FaWallet, FaRegCreditCard, FaExchangeAlt}  from "react-icons/fa";
 import  Link  from 'next/link';
 import Layout from './layoutPattern';
 
@@ -57,53 +58,41 @@ export default function Home() {
     <main>
         {/* <Navbar></Navbar> */}
     <div className="content">    
-        <h1 className='Title uppercase'>Wielowalutowe usługi finansowe</h1>
-        {/* <div className='rotating'></div> */}
-        {/* <button className="button" text="Register">Register</button> */}
-        {/* <button className="button2" text="Register">Login</button> */}
-        <button className="button"><Link href="/zzz">check out new offer</Link></button>
-  
-        {/* <img src={phone} alt="My Image" style={{ maxWidth: '100%' }} /> */}
-        <div className="services ">
-                <Service 
-                    service={{
-                    name: 'Karty wielowalutowe',
-                    icon: <FaRegCreditCard/>,
-                    }}
-                />
-                <Service 
-                    service={{
-                    name: 'Rynek Forex',
-                    icon: <FaChartLine/>,
-                    }}
-                />
-                <Service 
-                    service={{
-                    name: 'Financial Planning',
-                    icon: <FaWallet/>,
-                    }}
-                />
-                <Service 
-                    service={{
-                    name: 'Financial Planning',
-                    icon: <FaWallet/>,
-                    }}
-                />
-                <Service 
-                    service={{
-                    name: 'Financial Planning',
-                    icon: <FaWallet/>,
-                    }}
-                />
-                <Service 
-                    service={{
-                    name: 'Financial Planning',
-                    icon: <FaWallet/>,
-                    }}
-                />
+        <div className='header mt-6 p-4'>
+            <h1 className='Title uppercase lg:text-2xl md:text-xl'>Wielowalutowe usługi finansowe</h1>
+            {/* <div className='rotating'></div> */}
+            {/* <button className="button" text="Register">Register</button> */}
+            {/* <button className="button2" text="Register">Login</button> */}
+            {/* <button className="button"><Link href="/zzz">check out new offer</Link></button> */}
+            {/* <img src={phone} alt="My Image" style={{ maxWidth: '100%' }} /> */}
+            { privilege === 0 &&
+                <div className='mt-8 mb-8'><Link href="/register" className="button2">Zarejestruj się za darmo</Link></div>
+            }
+            
+            <div className="servicesContainer py-4 mt-4  ">
+            <a className='lg:text-3xl md:text-2xl textUnderline'>Strona umożlwia</a>
+                <div className="services mt-4 lg:text-2xl">
+                    <a className='flex flex-row items-center'>
+                        <div className="mr-2"><FaChartLine/></div>
+                        <div> Rynek Forex</div>
+                    </a>
+                    <a className='flex flex-row items-center'>
+                        <div className="mr-2"><FaChartLine/></div>
+                        <div> Kursy wymiany walut</div>
+                    </a>
+                    <a className='flex flex-row items-center'> 
+                        <div className="mr-2"><FaExchangeAlt/></div>
+                        <div> Wymiana walut</div>
+                    </a>
+                    <a className='flex flex-row items-center'> 
+                        <div className="mr-2"><FaExchangeAlt/></div>
+                        <div> Wymiany z innymi użytkownikami</div>
+                    </a>
+                </div>
+            </div>
         </div>
         <div className="currencies">
-            <h1 className='py-1'>Kursy walut</h1>
+            <h1 className='py-4 lg:text-3xl md:text-2xl textUnderline'>Kursy walut</h1>
             <h4 className="textLeft">Ostatnia aktualizacja: {date}</h4>
             
             <div className="Topcurrencies">
@@ -119,8 +108,8 @@ export default function Home() {
             {/* <img src={BottomSectionSvg} alt="Bottom Section Image"  className="svg2"/> */}
         <div className="site-element mx-1"></div>
         <div className='postSection py1 my1 anim3 borderLight'>
-            <h1 className='pb-3'>Recent Posts</h1>
-            <div className='postContainer px-1'>
+            <h1 className='pb-4 lg:text-3xl md:text-2xl textUnderline'>Recent Posts</h1>
+            <div className='pt-4 postContainer px-1'>
                 {posts.map((post, index) => (
                     <Post_t key={index} post={post} />
                 ))}
@@ -133,13 +122,12 @@ export default function Home() {
             <div className="register">
             <h1 className='py-5'>Załóż darmowe konto już dziś</h1>
             <Link href="/register" className="button4 py-3">Zarejestruj się za darmo</Link>
-            {/* <button className="button2" text="Register">Zarejestruj się za darmo</button> */}
-            {/* <CurrencyDataComponent /> */}
+
             </div>
         </div>
         }
     </div>
-    {/* <Footer></Footer> */}
+   
 </main>
 </Layout>
   );

@@ -13,7 +13,6 @@
     margin-top: 3rem;
     border-top: 1px solid var(--text-mid);
     background-color:var(--primary-dark-color);
-    max-width: calc(100% - 5rem);
     position: relative;
 }
 .currencies::after{
@@ -34,11 +33,6 @@
 }
 
 @media screen and (max-width: 768px) {
-    .currencies {
-      
-        max-width: 100%;
-        justify-content: center;
-        align-items: center;
-    }
+
    
   }
