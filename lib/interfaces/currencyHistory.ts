@@ -1,8 +1,11 @@
+import { LinearModel } from "./regression"
+
 export interface ICurrencyHistory {
     sell_currency_id: number,
     buy_currency_id: number,
     diffTotal?: number,
     invertedDiffTotal?: number,
+    future?: LinearModel,
     history: {
         conversion_value: number,
         invertedConversion?: number,
