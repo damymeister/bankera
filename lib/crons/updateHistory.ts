@@ -18,7 +18,7 @@ export const run = async () => {
     }
     // Set date of history expiration
     let date_threshold = new Date()
-    date_threshold.setTime(getPastTimestamp('1d'))
+    date_threshold.setTime(getPastTimestamp('7d'))
     await prisma.currency_History.deleteMany({where: {
         date: {lt: date_threshold}
     }})
