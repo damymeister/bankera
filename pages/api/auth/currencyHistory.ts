@@ -86,6 +86,17 @@ function transform (data: {
     return transformed
 }
 
+/**
+ * auth/currencyHistory endpoint
+ * Query parameters:
+ * sell_currency_id: Selling currency (if not provided selects all)
+ * buy_currency_id: Buying currency (if not provided selects all)
+ * timestamp: History timespan. Format #h for hours and #d for days. Default to 1h
+ * includeDiff: If set to true, will calculate differences between each conversion value
+ * invert: If set to true, will calculate inversions of conversion values
+ *        (If both includeDiff and invert are true, it will aswell calculate differences for inversions)
+ * @returns history response
+ */
 export default async function handler(req: NextApiRequest, res: NextApiResponse)  {
     if (req.method === 'GET') {
         let sell_currency_id = 0, buy_currency_id = 0, timestamp = '1h'
@@ -136,5 +147,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const response : ICurrencyHistory[] = transform(data, includeDiff, invert)
         return res.status(200).json(response)
     }
-    res.status(500).json({message: "This HTTP method is not supported on this endpoint"})
+    return res.status(500).json({message: "This HTTP method is not supported on this endpoint"})
 }
