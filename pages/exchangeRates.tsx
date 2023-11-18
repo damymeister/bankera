@@ -9,6 +9,7 @@ import axios from "axios";
 import api_url from "@/lib/api_url";
 import { getCurrencyIdByName, getCurrencyNameById, inZeroRange, significantDigits } from "@/lib/currency";
 import { FaExchangeAlt } from "react-icons/fa";
+import { ICurrency } from "@/lib/interfaces/currency";
 
 export default function ExchangeRates() {
   //const { currencies, date } = useExchangeRates();
