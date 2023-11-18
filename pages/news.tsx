@@ -39,10 +39,10 @@ export default function News() {
     
     return (
         <Layout>
-            <div className="containerCustom borderLightY p0">
-            <h1 className="text-2xl mb-8 textleft">Najnowsze Posty</h1>
+            <div className="containerCustom borderLightY p-0">
+            <h1 className="py-4 text-2xl mb-8 textleft">Najnowsze Posty</h1>
             { privilege > 1 && <Link href="/posts/editor" className="button2">Dodaj nowy post</Link>}
-                <div className="py-5 my1">
+                <div className="py-5 m-[1rem]">
                     
                     <div className="px-1">
                         {posts.map((post, index) => (

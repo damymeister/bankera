@@ -57,9 +57,9 @@ export default function Dashboard() {
 
     return (
         <Layout>
-        <div className="">
+        <div className="h-full">
             <SidePanel></SidePanel>
-            <div className="bgdark borderLightY p-0 flex justify-center text-center">
+            <div className="bgdark borderLightY p-0 flex justify-center text-center my-10">
             <div className="dashboard py-1 my-1">
                 <div className="dashboardBody px-1 flex flex-col items-center">
                 <div className="dashboardContent ">

@@ -59,7 +59,7 @@ export default function Home() {
         {/* <Navbar></Navbar> */}
     <div className="content">    
         <div className='header mt-6 p-4'>
-            <h1 className='Title uppercase lg:text-2xl md:text-xl'>Wielowalutowe usługi finansowe</h1>
+            <h1 className='Title uppercase lg:text-2xl md:text-xl mb-4'>Wielowalutowe usługi finansowe</h1>
             {/* <div className='rotating'></div> */}
             {/* <button className="button" text="Register">Register</button> */}
             {/* <button className="button2" text="Register">Login</button> */}
@@ -107,8 +107,8 @@ export default function Home() {
 
             {/* <img src={BottomSectionSvg} alt="Bottom Section Image"  className="svg2"/> */}
         <div className="site-element mx-1"></div>
-        <div className='postSection py1 my1 anim3 borderLight'>
-            <h1 className='pb-4 lg:text-3xl md:text-2xl textUnderline'>Recent Posts</h1>
+        <div className='postSection  anim3 borderLight'>
+            <h1 className='py-4 lg:text-3xl md:text-2xl textUnderline'>Recent Posts</h1>
             <div className='pt-4 postContainer px-1'>
                 {posts.map((post, index) => (
                     <Post_t key={index} post={post} />
@@ -118,9 +118,9 @@ export default function Home() {
             <Link href="/news" className="button2 ">Zobacz więcej</Link>
         </div>
         { privilege === 0 &&
-        <div className="site-element2 mx1 anim3 py-1 borderLightY">
+        <div className="site-element2 mx-4 anim3 py-1 borderLightY">
             <div className="register">
-            <h1 className='py-5'>Załóż darmowe konto już dziś</h1>
+            <h1 className='py-5 my-4 lg:text-3xl md:text-2xl'>Załóż darmowe konto już dziś</h1>
             <Link href="/register" className="button4 py-3">Zarejestruj się za darmo</Link>
 
             </div>

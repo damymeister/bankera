@@ -45,28 +45,7 @@
 .z9{
   z-index: 9999;
 }
-.mx1{
-  margin-left: 1rem;
-  margin-right: 1rem;
-}
-.my1{
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-.p1{
-  padding: 1rem;
-}
-.px1{
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-.py1{
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-.p0{
-  padding: 0;
-}
+
 .bold{
   font-weight: bold;
 }
@@ -82,36 +61,6 @@ body{
     
 }
 
-.circleTop{
-  left: 0;
-  position: absolute;
-  height: calc(100vh - 20rem); 
-  width: calc(100vw - 20rem); 
-  background-color: var(--primary-blue-color);
-  border-radius: 30%;
-  display: flex;
-  justify-content: flex-start; 
-  align-items: flex-start; 
-  filter: blur(120px);
-  z-index: 0;
-  opacity: 0.3;
-  overflow: hidden;
-}
-.circleTop2{
-  right: 0;
-  position: absolute;
-  height: 40rem;
-  width: 60rem;
-  background-color: var(--primary-purple-color);
-  border-radius: 30%;
-  display: flex;
-  justify-content: flex-start; 
-  align-items: flex-start; 
-  filter: blur(120px);
-  z-index: 0;
-  opacity: 0.2;
-  overflow: hidden;
-}
 .circleBottom {
   right: 0;
   bottom: 0;
