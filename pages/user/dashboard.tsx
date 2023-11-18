@@ -66,7 +66,8 @@ export default function Dashboard() {
                     <div className='text-xl'>Kokpit</div>
                     <div className='flex flex-row textUnderline p-2 m-2 text-2xl'> 
                         <div className='pr-2 '>Hello </div>
-                        <div className='text-[#BB86FC]'>{name} {surname}!</div>
+                        <div className='text-[#BB86FC]'>{name} {surname}</div>
+                        <div className='pr-2 '>! </div>
                     </div>
                 </div>
                 <div className='mt-8'>
