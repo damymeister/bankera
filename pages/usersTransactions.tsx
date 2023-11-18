@@ -13,6 +13,7 @@ import '@/components/css/home.css';
 import { IcurrencyStorage, CurrencyMapItem } from './api/interfaces/currencyStorage';
 import { ICurrencyNameBalance } from './api/interfaces/usersTransactions';
 import { IUser, IUserSearch } from './api/interfaces/user';
+import { BsReverseLayoutSidebarInsetReverse } from 'react-icons/bs';
 
 export default function usersTransactions(){
     const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<IcurrencyStorage[]>([])
@@ -66,21 +67,20 @@ export default function usersTransactions(){
   },[showSnackbar])
 
 
-  const loadUsers = async ()  =>{
-    const searchedUsersTemp = await searchUsers(searchPhrase);
-    console.log(searchedUsersTemp);
-  }
-
   useEffect(() =>{
 
     const delaySearch = setTimeout(async () => {
-      if(searchPhrase.trim() !==''){
-
-      await loadUsers();
-        
-      }else{
-      setSearchedUsers([]);
+      if(searchPhrase.trim() === '') {
+        setSearchedUsers([]);
+        return
       }
+      const searchedUsersTemp = await searchUsers(searchPhrase);
+      if(searchedUsersTemp.userProfiles.length == 0){
+        setSearchedUsers([]);
+        return;
+      }
+      console.log(searchedUsersTemp.userProfiles);
+      setSearchedUsers(searchedUsersTemp.userProfiles);
     }, 500);
 
     return () => clearTimeout(delaySearch);
@@ -162,10 +162,10 @@ const displayUserCurrencies = () =>{
          {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
         <div className="w-full flex items-center justify-center">
         {isLoading ? <h1>Is loading...</h1> : 
-        <div className='w-3/4 my-4 mz-2 flex items-center justify-center flex-col'>
+        <div className='w-3/4 my-4 mz-2 flex items-center flex-col'>
             <h1 className='text-2xl textUnderline'>Hello {userWalletData.first_name} {userWalletData.last_name}</h1>
             <h4 className='text-wrap textUnderline mx-2'>Do you want to send a transfer to another user in our application? It has never been easier than now. With the Bankera app, all you need to do is search for the other user by personal information or email address, choose the amount and the currency you want to send. It's that simple!</h4>
-            <div className='flex flex-col gap-4 items-center w-full'>
+            <div className='flex flex-col items-center w-full'>
                 <div className='flex flex-row gap-6 mt-4'>
                 {valueToSendBalance.currency !== '' ? 
                     <div className='hover:cursor-pointer' onClick={() => setMaximumAmountToSend()}>
@@ -188,19 +188,28 @@ const displayUserCurrencies = () =>{
                         value={amountToChange}
                         />
                     </div>
-                    <div>
-                        <label htmlFor="user" className="font-bold mr-1 flex items-center justify-center mr-2">Select User:</label>
-                        <input
-                        placeholder="Type..."
-                        id="user"
-                        type="text"
-                        className="w-48 font-bold border border-white rounded-lg px-1 bgdark focus:border-black overflow-y-auto resize-none ml-2"
-                        onChange={handleSearchPhrase}
-                        value={searchPhrase}
-                        />
+                    <div className="relative w-64 mb-16">
+                      <div>
+                          <label htmlFor="user" className="font-bold mr-1 flex items-center justify-center mr-2">Select User:</label>
+                          <input
+                          placeholder="Type..."
+                          id="user"
+                          type="text"
+                          className="font-bold border border-white rounded-lg px-1 bgdark focus:border-black overflow-y-auto resize-none ml-2"
+                          onChange={handleSearchPhrase}
+                          value={searchPhrase}
+                          />
+                      </div>
+                    {searchedUsers.length != 0 ? 
+                      <div className='absolute text-xs flex flex-col gap-2 max-h-12 overflow-y-auto overflow-x-hidden w-full'>
+                        {searchedUsers.map((user)=>(
+                          <span key={user.id}>{user.first_name} {user.last_name} - {user.email}</span>
+                        ))}
+                      </div> 
+                      : null}
                   </div>
               </div>
-                <button className="py-4 button2 text-white rounded-xl hover:cursor-pointer text-xs w-48">Send a transfer</button>
+                <button className="py-4 button2 text-white rounded-xl hover:cursor-pointer text-xs w-48 mt-8">Send a transfer</button>
             </div>
         </div>
         }
