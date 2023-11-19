@@ -91,7 +91,9 @@ h1.Title {
     color: var(--text-light);
 }
 .register{
-    padding-bottom: 4.6rem ;
+    display: flex;
+    flex-direction: column;
+    
     
 }
 .svg, .svg2{
@@ -267,14 +269,13 @@ h1.Title {
   }
 
   .bgGlass{
-    
-/* From https://css.glass */
-background: rgba(31, 27, 36, 0.38);
-border-radius: 16px;
-box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-backdrop-filter: blur(5.9px);
--webkit-backdrop-filter: blur(5.9px);
-border: 1px solid rgba(31, 27, 36, 0.38);
+
+  background: rgba(31, 27, 36, 0.38);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5.9px);
+  -webkit-backdrop-filter: blur(5.9px);
+  border: 1px solid rgba(31, 27, 36, 0.38);
   }
  
 

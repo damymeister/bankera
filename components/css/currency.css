@@ -1,10 +1,10 @@
 .currency{
-    padding: 3rem;
+    
     width: fit-content;
     border: solid 1px;
     backdrop-filter : blur(10px);
     filter:brightness(.8);
-    margin: 1rem;
+    margin: 0.5rem;
     transition: filter 0.3s ease-in-out;
     
 }
