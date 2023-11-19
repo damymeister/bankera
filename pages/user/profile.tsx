@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import '@/components/css/home.css';
 import '@/components/css/forms.css';
-import '@/components/css/post.css';
 import  '@/app/globals.css';
 import Layout from '@/app/layoutPattern';
 import '@/components/css/tailwind.css';

@@ -4,7 +4,7 @@
     font-size: var(--text-small);
     background-color: #1f1b24;
     opacity: 1;
-    background-image:  repeating-radial-gradient( circle at 0 0, transparent 0, #1f1b24 12px ), repeating-linear-gradient( #12121255, #121212 );
+    
   }
   
   .row {
