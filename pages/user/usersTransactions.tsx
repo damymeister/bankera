@@ -1,18 +1,17 @@
-import { getCurrencies } from './api/services/currencyService';
-import { getCurrencyStorage } from './api/services/currencyStorageService';
-import { getCurrencyPair } from './api/services/currencyPairService';
-import { searchUsers } from './api/services/userSearchService';
+import { getCurrencies } from '../api/services/currencyService';
+import { getCurrencyStorage } from '../api/services/currencyStorageService';
+import { searchUsers } from '../api/services/userSearchService';
 import React, { useEffect, useState } from 'react';
-import { getWalletData } from './api/services/walletService';
+import { getWalletData } from '../api/services/walletService';
 import Layout from "@/app/layoutPattern";
 import {FaExclamation}  from "react-icons/fa";
 import SnackBar from '@/components/snackbar'
-import { ICurrency } from './api/interfaces/currency';
-import { IWallet } from './api/interfaces/wallet';
+import { ICurrency } from '../api/interfaces/currency';
+import { IWallet } from '../api/interfaces/wallet';
 import '@/components/css/home.css';
-import { IcurrencyStorage, CurrencyMapItem } from './api/interfaces/currencyStorage';
-import { ICurrencyNameBalance, IUserTransactionValueTypes, IUserTransaction } from './api/interfaces/usersTransactions';
-import { IUserSearch } from './api/interfaces/user';
+import { IcurrencyStorage, CurrencyMapItem } from '../api/interfaces/currencyStorage';
+import { ICurrencyNameBalance, IUserTransactionValueTypes, IUserTransaction } from '../api/interfaces/usersTransactions';
+import { IUserSearch } from '../api/interfaces/user';
 import { updateCurrencyStorage, updateSelectedCurrencyStorage } from '@/pages/api/services/currencyStorageService';
 import { handleCreateUsersTransactions } from '@/pages/api/services/usersTransactionsService';
 import { FaWindowClose }  from "react-icons/fa";

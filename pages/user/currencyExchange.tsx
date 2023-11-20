@@ -10,7 +10,8 @@ import { updateCurrencyStorage, deleteCurrencyStorage, postCurrencyStorage} from
 import { ICurrency } from '@/pages/api/interfaces/currency';
 import SnackBar from '@/components/snackbar'
 import {FaExclamation}  from "react-icons/fa";
-import { IcurrencyStorage } from '@/pages/api/interfaces/currencyStorage';
+import { IcurrencyStorage, ICreateCurrencyStorage } from '@/pages/api/interfaces/currencyStorage';
+import { IWallet } from '@/pages/api/interfaces/wallet';
 import SidePanel from '@/components/sidepanel';
 
 export default function CurrencyExchange(){

@@ -6,6 +6,7 @@ import { useState } from 'react';
 import  Link  from 'next/link';
 import { usePathname } from 'next/navigation';
 import {FaHome, FaEdit, FaUser , FaExchangeAlt, FaWallet, FaDeezer}  from "react-icons/fa";
+import { FaMoneyBillTransfer } from "react-icons/fa6";
 export default function SidePanel() {
     const [isUsersExpanded, setIsUsersExpanded] = useState(false);
 
@@ -88,6 +89,10 @@ export default function SidePanel() {
           <Link href="/user/wallet" className={`flex items-center space-x-2 py-2 ${isActive('/user/wallet')}`}>
             <FaWallet />
             <span>Portfel</span>
+          </Link>
+          <Link href="/user/usersTransactions" className={`flex items-center space-x-2 py-2 ${isActive('/user/usersTransactions')}`}>
+            <FaMoneyBillTransfer />
+            <span>Przelewy</span>
           </Link>
           <div className="relative">
             <input type="checkbox" id="users-dropdown" className="hidden" />
