@@ -13,9 +13,10 @@ import {FaExclamation}  from "react-icons/fa";
 import { IcurrencyStorage, ICreateCurrencyStorage } from '@/pages/api/interfaces/currencyStorage';
 import { IWallet } from '@/pages/api/interfaces/wallet';
 import SidePanel from '@/components/sidepanel';
+import { significantDigits } from '@/lib/currency';
 
 export default function CurrencyExchange(){
-    const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<any[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0.0, currency_pair_id: 0} ])
+    const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<{id:number,amount:number,currency_id:number,wallet_id:number,quoteCurrency:number,value:number,rate:number,converted_amount:number,currency_pair_id:number}[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0.0, currency_pair_id: 0} ])
     const [currenciesNames, setCurrenciesNames] = useState<ICurrency[]>([]);
     const [userWalletData, setUserWalletData] =  useState<IWallet>({wallet_id:0, first_name:"", last_name: ""})
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -151,7 +152,7 @@ const findCurrencyRate = async (ownedCurrencyID: number, currencyToBuyID: number
 
 
 const setConvertedAmount = async (inputValue: number, currencyRate: number) => {
-  return (inputValue * currencyRate).toFixed(2);
+  return (inputValue * currencyRate);
 }
 
 const checkValues = (index: number) => {
@@ -201,7 +202,7 @@ const saveExchange = async (index: number) => {
   if (!window.confirm("Czy na pewno chcesz wymienić tą walutę?")) return
 
   const userCurr = userOwnedCurrencies[index];
-  const newCurrentValueBalance = parseFloat(userCurr.amount) - parseFloat(userCurr.value);
+  const newCurrentValueBalance = userCurr.amount - userCurr.value;
   const dataToSubtract = { id: userCurr.id, amount: parseFloat(newCurrentValueBalance.toFixed(2)) };
 
   try {
@@ -209,11 +210,11 @@ const saveExchange = async (index: number) => {
     const operation = decideAddOrUpdateCurrencyStorage(index);
     if (operation) {
       const findIndex = userOwnedCurrencies.find((data) => data.id == operation);
-      let newCurrBalanceToAdd = parseFloat(findIndex.amount) + parseFloat(userCurr.converted_amount);
+      let newCurrBalanceToAdd = findIndex?.amount ?? 0 + userCurr.converted_amount;
       const dataToAdd = { id: operation, amount: parseFloat(newCurrBalanceToAdd.toFixed(2)) };
       await updateCurrencyStorage(dataToAdd);
     } else {
-      let newCurrBalanceToAdd = parseFloat(userOwnedCurrencies[index].converted_amount);
+      let newCurrBalanceToAdd = userOwnedCurrencies[index].converted_amount;
       const addNewCurrStorage :ICreateCurrencyStorage = {
         wallet_id: userOwnedCurrencies[index].wallet_id,
         currency_id: userOwnedCurrencies[index].quoteCurrency,
@@ -292,8 +293,13 @@ const mapUserCurrencies = () => {
                             disabled={userOwnedCurrencies[index].quoteCurrency === 0} 
                         ></input>
                     </td>
-                    <td>{userOwnedCurrencies[index].rate ? userOwnedCurrencies[index].rate.toFixed(2) : "-"}</td>
-                    <td>{userOwnedCurrencies[index].converted_amount && !isNaN(userOwnedCurrencies[index].converted_amount) ? <span> {userOwnedCurrencies[index].converted_amount} {findCurrencyName(userOwnedCurrencies[index].quoteCurrency)} </span>: "0.00"}</td>
+                    <td>{userOwnedCurrencies[index].rate ? userOwnedCurrencies[index].rate.toFixed(significantDigits(userOwnedCurrencies[index].rate)) : "-"}</td>
+                    <td>{
+                      userOwnedCurrencies[index].converted_amount && !isNaN(userOwnedCurrencies[index].converted_amount) ? 
+                        <span> {userOwnedCurrencies[index].converted_amount.toFixed(significantDigits(userOwnedCurrencies[index].converted_amount))} {findCurrencyName(userOwnedCurrencies[index].quoteCurrency)} </span>
+                        : "0.00"
+                        }
+                    </td>
                     <td onClick={() => saveExchange(index)} className='flex items-center justify-center'><LiaExchangeAltSolid className="text-white cursor-pointer text-2xl" /></td>
                     </tr>
                   );

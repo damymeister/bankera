@@ -16,7 +16,7 @@ import { updateCurrencyStorage, updateSelectedCurrencyStorage } from '@/pages/ap
 import { handleCreateUsersTransactions } from '@/pages/api/services/usersTransactionsService';
 import { FaWindowClose }  from "react-icons/fa";
 
-export default function usersTransactions(){
+export default function UsersTransactions() {
     const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<IcurrencyStorage[]>([])
     const [currenciesNames, setCurrenciesNames] = useState<ICurrency[]>([]);
     const [userWalletData, setUserWalletData] =  useState<IWallet>({wallet_id:0, first_name:"", last_name: ""})
@@ -285,7 +285,7 @@ const resetData = () =>{
         {isLoading ? <h1>Is loading...</h1> : 
         <div className='w-4/5 my-4 mz-2 flex items-center flex-col'>
             <h1 className='text-2xl textUnderline'>Hello {userWalletData.first_name} {userWalletData.last_name}</h1>
-            <h4 className='text-wrap textUnderline mx-2'>Do you want to send a transfer to another user in our application? It has never been easier than now. With the Bankera app, all you need to do is search for the other user by personal information or email address, choose the amount and the currency you want to send. It's that simple!</h4>
+            <h4 className='text-wrap textUnderline mx-2'>Do you want to send a transfer to another user in our application? It has never been easier than now. With the Bankera app, all you need to do is search for the other user by personal information or email address, choose the amount and the currency you want to send. It&apos;s that simple!</h4>
             <div className='flex flex-col w-full items-center justify-center'>
                 <div className='flex flex-col gap-6 mt-8 w-full flex-wrap items-center justify-center'>
                   <div className='flex gap-8 flex-wrap flex-col items-center justify-center'>
