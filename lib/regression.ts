@@ -1,4 +1,4 @@
-import { ICurrencyHistory } from "./interfaces/currencyHistory";
+import ICurrencyHistory from "./interfaces/currencyHistory";
 import { LinearModel, Point } from "./interfaces/regression";
 
 function transofrmHistory (currencyHistory: ICurrencyHistory) {

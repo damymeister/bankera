@@ -4,7 +4,7 @@ import Joi from "joi"
 import jwt, { Secret } from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import { setCookie } from 'cookies-next'
-import { LoginUser } from './interfaces/user'
+import { ILoginUser } from '@/lib/interfaces/user'
 
 
 const SECRET_KEY: Secret = "3abFA7c2Quf52601SGMS5w780"
@@ -16,7 +16,7 @@ const generateAuthToken = (id: number) => {
     return token
 }
 
-const validate = (data : LoginUser) => {
+const validate = (data : ILoginUser) => {
     const schema = Joi.object({
         email: Joi.string().email().required().label("Email"),
         password: Joi.required().label("Password"),

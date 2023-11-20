@@ -7,16 +7,18 @@ import { getWalletData } from '@/pages/api/services/walletService';
 import { LiaExchangeAltSolid } from "react-icons/lia";
 import { handleCreateInnerTransaction } from '@/pages/api/services/innerTransactionService';
 import { updateCurrencyStorage, deleteCurrencyStorage, postCurrencyStorage} from '@/pages/api/services/currencyStorageService';
-import { ICurrency } from '@/pages/api/interfaces/currency';
 import SnackBar from '@/components/snackbar'
 import {FaExclamation}  from "react-icons/fa";
-import { IcurrencyStorage, ICreateCurrencyStorage } from '@/pages/api/interfaces/currencyStorage';
-import { IWallet } from '@/pages/api/interfaces/wallet';
 import SidePanel from '@/components/sidepanel';
 import { significantDigits } from '@/lib/currency';
+import { ICreateCurrencyStorage } from '@/lib/interfaces/currencyStorage';
+import IInnerTransaction from '@/lib/interfaces/innerTransaction';
+import ICurrencyExchange from '@/lib/interfaces/currencyExchange';
+import ICurrency from '@/lib/interfaces/currency';
+import IWallet from '@/lib/interfaces/wallet';
 
 export default function CurrencyExchange(){
-    const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<{id:number,amount:number,currency_id:number,wallet_id:number,quoteCurrency:number,value:number,rate:number,converted_amount:number,currency_pair_id:number}[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0.0, currency_pair_id: 0} ])
+    const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<ICurrencyExchange[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0.0, currency_pair_id: 0} ])
     const [currenciesNames, setCurrenciesNames] = useState<ICurrency[]>([]);
     const [userWalletData, setUserWalletData] =  useState<IWallet>({wallet_id:0, first_name:"", last_name: ""})
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -181,7 +183,7 @@ const decideAddOrUpdateCurrencyStorage = (index: number) => {
 const saveInnerTransaction = async (userCurr: any) =>{
   const currentDate = new Date();
 
-  const transactionData: IinnerTransaction = {
+  const transactionData: IInnerTransaction = {
     wallet_id: userCurr.wallet_id,
     currency_pair_id: userCurr.currency_pair_id,
     initial_amount: userCurr.value,
@@ -215,7 +217,7 @@ const saveExchange = async (index: number) => {
       await updateCurrencyStorage(dataToAdd);
     } else {
       let newCurrBalanceToAdd = userOwnedCurrencies[index].converted_amount;
-      const addNewCurrStorage :ICreateCurrencyStorage = {
+      const addNewCurrStorage : ICreateCurrencyStorage = {
         wallet_id: userOwnedCurrencies[index].wallet_id,
         currency_id: userOwnedCurrencies[index].quoteCurrency,
         amount: parseFloat(newCurrBalanceToAdd.toFixed(2)),

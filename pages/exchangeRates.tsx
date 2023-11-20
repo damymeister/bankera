@@ -4,12 +4,12 @@ import '../components/css/home.css';
 import '../components/css/exchangeRates.css';
 import '../components/css/post.css';
 import Layout from '@/app/layoutPattern';
-import { ICurrencyHistory } from "@/lib/interfaces/currencyHistory";
 import axios from "axios";
 import api_url from "@/lib/api_url";
 import { getCurrencyIdByName, getCurrencyNameById, inZeroRange, significantDigits } from "@/lib/currency";
 import { FaExchangeAlt } from "react-icons/fa";
-import { ICurrency } from "@/lib/interfaces/currency";
+import ICurrency from "@/lib/interfaces/currency";
+import ICurrencyHistory from "@/lib/interfaces/currencyHistory";
 
 export default function ExchangeRates() {
   //const { currencies, date } = useExchangeRates();

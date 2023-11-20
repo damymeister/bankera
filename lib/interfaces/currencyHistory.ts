@@ -1,6 +1,6 @@
 import { LinearModel } from "./regression"
 
-export interface ICurrencyHistory {
+export default interface ICurrencyHistory {
     sell_currency_id: number,
     buy_currency_id: number,
     diffTotal?: number,

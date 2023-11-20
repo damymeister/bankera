@@ -1,4 +1,4 @@
-import { ICurrency } from "./interfaces/currency"
+import ICurrency from "./interfaces/currency"
 
 export function getCurrencyNameById (currencies: ICurrency[], id: number): string {
     for (let i = 0; i < currencies.length; i++) {

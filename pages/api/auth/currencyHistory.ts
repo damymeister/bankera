@@ -1,4 +1,5 @@
-import { ICurrencyHistory } from "@/lib/interfaces/currencyHistory";
+
+import ICurrencyHistory from "@/lib/interfaces/currencyHistory";
 import prisma from "@/lib/prisma";
 import { linearRegression } from "@/lib/regression";
 import { getPastTimestamp } from "@/lib/time";

@@ -1,6 +1,6 @@
-import { CurrencyPair } from "@/pages/api/interfaces/currencyPair";
 import prisma from "./prisma"
 import api_url from "./api_url";
+import ICurrencyPair from "./interfaces/currencyPair";
 
 const currencies = async () => {
     const data = await prisma.currency.findMany();
@@ -13,7 +13,7 @@ const currencies = async () => {
 
 async function transform (api_data: {base: string, rates: {[key: string]: number}}) {
     let c = await currencies()
-    let pairs : CurrencyPair[] = []
+    let pairs : ICurrencyPair[] = []
     for (const key1 in api_data.rates) {
         for (const key2 in api_data.rates) {
             if (key1 !== key2) {

@@ -1,6 +1,6 @@
 import api_url from '@/lib/api_url';
+import { ICreateCurrencyStorage, IEditCurrencyStorage, IUpdateSelectedStorage } from '@/lib/interfaces/currencyStorage';
 import axios from 'axios'
-import { IEditCurrencyStorage, ICreateCurrencyStorage, IUpdateSelectedStorage} from '@/pages/api/interfaces/currencyStorage';
 
 const url = api_url('auth/currencyStorage')
 
