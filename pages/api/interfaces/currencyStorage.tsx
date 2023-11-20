@@ -17,3 +17,9 @@ export interface ICreateCurrencyStorage{
     id: number;
     name: string;
   }
+  export interface IUpdateSelectedStorage{
+    id?: number,
+    wallet_id: number,
+    amount: number,
+    currency_id: number,
+  }

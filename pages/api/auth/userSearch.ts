@@ -1,15 +1,10 @@
 import prisma from '@/lib/prisma';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getCookie } from 'cookies-next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'GET') {
         try {
-          let token = getCookie('token', { req, res });
-          if (!token) {
-            return res.status(404).json({ error: 'You need to Log in!' });
-          }
-          
+
           const { searchPhrase } = req.query;
           if(!searchPhrase){
             return res.status(404).json({ error: 'You need to change searching phrase!' });
@@ -36,7 +31,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               first_name: true,
               last_name: true,
               email: true,
-              id: true
+              id: true,
+              wallet_id: true,
             }
           });
           

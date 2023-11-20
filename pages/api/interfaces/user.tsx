@@ -29,4 +29,5 @@ export interface IUserSearch {
   first_name:string,
   last_name: string,
   email:string,
+  wallet_id: number,
 }

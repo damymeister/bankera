@@ -54,10 +54,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
   }
   if (req.method === "PUT") {
-    let token = getCookie('token', { req, res });
-    if (token !== undefined) {
       try {
-        await prisma.currency_Storage.update({
+        const amountLeft = await prisma.currency_Storage.update({
           where: {
             id: req.body.id, 
           },
@@ -65,16 +63,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             amount: req.body.amount,
           }
         });
-
-        return res.status(200).json({ message: "Currency Storage updated." });
+        if(amountLeft.amount == 0){
+          await prisma.currency_Storage.delete({
+            where: {id: amountLeft.id}, 
+          });
+        }
+        return res.status(200).json('Currency storage updated.');
       } catch (error) {
         console.error('Error while updating currency storage', error);
         return res.status(500).json({ error: 'Server error occurred.' });
       }
-    } else {
-      return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
     }
-  }
   if (req.method === 'DELETE') {
     let token = getCookie('token', { req, res });
     if (token !== undefined) {

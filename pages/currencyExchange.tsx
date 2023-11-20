@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { getWalletData } from './api/services/walletService';
 import { LiaExchangeAltSolid } from "react-icons/lia";
 import { handleCreateInnerTransaction } from './api/services/innerTransactionService';
-import { updateCurrencyStorage, deleteCurrencyStorage, postCurrencyStorage} from '@/pages/api/services/currencyStorageService';
+import { updateCurrencyStorage, postCurrencyStorage} from '@/pages/api/services/currencyStorageService';
 import { CurrencyPair } from './api/interfaces/currencyPair';
 import { ICurrency } from './api/interfaces/currency';
 import { IWallet } from './api/interfaces/wallet';
@@ -208,12 +208,7 @@ const saveExchange = async (index: number) => {
 
   try {
     await updateCurrencyStorage(dataToSubtract);
-    if(newCurrentValueBalance === 0){
-      await deleteCurrencyStorage(userCurr.id);
-    }
-
     const operation = decideAddOrUpdateCurrencyStorage(index);
-
     if (operation) {
       const findIndex = userOwnedCurrencies.find((data) => data.id == operation);
       let newCurrBalanceToAdd = parseFloat(findIndex.amount) + parseFloat(userCurr.converted_amount);

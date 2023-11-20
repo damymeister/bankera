@@ -2,7 +2,7 @@ import Layout from '@/app/layoutPattern';
 import '@/components/css/home.css';
 import { GrClose } from "react-icons/gr";
 import React, { ChangeEventHandler, useEffect, useState } from 'react';
-import { postCurrencyStorage, updateCurrencyStorage, deleteCurrencyStorage } from '@/pages/api/services/currencyStorageService';
+import { postCurrencyStorage, updateCurrencyStorage } from '@/pages/api/services/currencyStorageService';
 import { GrMoney } from "react-icons/gr";
 import { GiMoneyStack } from "react-icons/gi";
 import { GoSingleSelect } from "react-icons/go";
@@ -144,7 +144,7 @@ const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus:
       return;
     }
     const newCurrentValueBalance = parseFloat(data.amount) - amountToChange;
-    if(newCurrentValueBalance <= 0){
+    if(newCurrentValueBalance < 0){
       setSnackbarProps({snackStatus: "danger", message: "You dont have that amount of money.", showSnackbar: true});
       setAmountToChange(0);
       return
@@ -159,10 +159,6 @@ const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus:
         }));
     
       setSnackbarProps({snackStatus: "danger", message: res.message, showSnackbar: true});
-
-      if(newCurrentValueBalance == 0 && res.status === 200){
-        const resDel = await deleteCurrencyStorage(data.currencyRow_id);
-      }
 
       setAmountToChange(0);
   }

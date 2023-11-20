@@ -1,6 +1,6 @@
 import api_url from '@/lib/api_url';
 import axios from 'axios'
-import { IEditCurrencyStorage, ICreateCurrencyStorage} from '@/pages/api/interfaces/currencyStorage';
+import { IEditCurrencyStorage, ICreateCurrencyStorage, IUpdateSelectedStorage} from '@/pages/api/interfaces/currencyStorage';
 
 const url = api_url('auth/currencyStorage')
 
@@ -33,17 +33,29 @@ export const updateCurrencyStorage = async (data : IEditCurrencyStorage) => {
             throw error;
         }
     };
-    export const deleteCurrencyStorage = async (id: number) => {
-        try {
-            const urll = api_url('auth/currencyStorage?id=' + id.toString())
-            const res = await axios.delete(urll, {
-                headers: { Accept: 'application/json' },    
-            });
-            return { message: res.data.message, status: res.status };
-        } catch (error) {
-            console.log('unexpected error: ', error);
-            throw error;
-        }
-    };
-    
+export const deleteCurrencyStorage = async (id: number) => {
+    try {
+        const urll = api_url('auth/currencyStorage?id=' + id.toString())
+        const res = await axios.delete(urll, {
+            headers: { Accept: 'application/json' },    
+        });
+        return { message: res.data.message, status: res.status };
+    } catch (error) {
+        console.log('unexpected error: ', error);
+        throw error;
+    }
+};
+export const updateSelectedCurrencyStorage = async (data: IUpdateSelectedStorage) => {
+    try {
+        const specified_URL = api_url('auth/currencyStorageUser');
+        const res = await axios.put(specified_URL, data, {
+            headers: { Accept: 'application/json' },    
+        });
+        return { message: res.data.message, status: res.status };
+    } catch (error) {
+        console.log('unexpected error: ', error);
+        throw error;
+    }
+};
+updateSelectedCurrencyStorage
 

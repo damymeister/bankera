@@ -11,9 +11,11 @@ import { ICurrency } from './api/interfaces/currency';
 import { IWallet } from './api/interfaces/wallet';
 import '@/components/css/home.css';
 import { IcurrencyStorage, CurrencyMapItem } from './api/interfaces/currencyStorage';
-import { ICurrencyNameBalance } from './api/interfaces/usersTransactions';
-import { IUser, IUserSearch } from './api/interfaces/user';
-import { BsReverseLayoutSidebarInsetReverse } from 'react-icons/bs';
+import { ICurrencyNameBalance, IUserTransactionValueTypes, IUserTransaction } from './api/interfaces/usersTransactions';
+import { IUserSearch } from './api/interfaces/user';
+import { updateCurrencyStorage, updateSelectedCurrencyStorage } from '@/pages/api/services/currencyStorageService';
+import { handleCreateUsersTransactions } from '@/pages/api/services/usersTransactionsService';
+import { FaWindowClose }  from "react-icons/fa";
 
 export default function usersTransactions(){
     const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<IcurrencyStorage[]>([])
@@ -23,12 +25,26 @@ export default function usersTransactions(){
     const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
     const [snackMess, setsnackMess] = useState<string>("")
     const [snackStatus, setsnackStatus] = useState<string>("danger")
-    const [amountToChange, setAmountToChange] = useState<number>(0.0);
-    const [currencyToSend, setCurrencyToSend] = useState<number>(0);
     const [currencyMap, setCurrencyMap] = useState(new Map<number, CurrencyMapItem>());
     const [valueToSendBalance, setValueToSendBalance] = useState<ICurrencyNameBalance>({balance: 0, currency:''});
     const [searchPhrase, setSearchPhrase] = useState<string>('');
-    const [searchedUsers, setSearchedUsers] = useState<IUser[]>([]);
+    const [searchedUsers, setSearchedUsers] = useState<IUserSearch[]>([]);
+    const [userCliked, setUserCliked] = useState<boolean>(false);
+    const [userClikedWallet, setUserClikedWallet] = useState<number>(0);
+    const [transferToSend, setTransferToSend] = useState<IUserTransactionValueTypes>({amountToChange: 0.0, currencyToSend:0});
+    const [displayComment, setDisplayComment] = useState<boolean>(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
+
+  useEffect(()=>{
+    const setButtonAvailability = () =>{
+      if(!userCliked || transferToSend.amountToChange == 0.0 || transferToSend.currencyToSend == 0){
+        setIsButtonDisabled(true);
+        return
+      }
+      setIsButtonDisabled(false);
+    }
+    setButtonAvailability();
+  }, [userCliked, transferToSend.amountToChange, transferToSend.currencyToSend])
 
     const snackbarProps = {
       status: snackStatus,
@@ -41,18 +57,28 @@ export default function usersTransactions(){
         setIsLoading(true);
         const currencies = await getCurrencies();
         setCurrenciesNames(currencies);
-        
         const walletData = await getWalletData();
         setUserWalletData(walletData);
         const userCurrencies = await getCurrencyStorage(walletData.wallet_id);
         setUserOwnedCurrencies(userCurrencies.data);
         setCurrencyMapData(userCurrencies.data, currencies);
-      
+        setLoadedCurrentBalance(userCurrencies.data);
     }catch(error){
         setSnackbarProps({snackStatus: "danger", message: "Nie udało się pobrać danych portfela.", showSnackbar: true});
     }finally{
         setIsLoading(false);
     }
+}
+
+const setLoadedCurrentBalance = async (userCurrencies : IcurrencyStorage[]) =>{
+  const mapArray = Array.from(currencyMap.entries())
+  const firstMapElement = mapArray[0];
+  const findCurrencyBalance = userCurrencies.filter((currency) => currency.currency_id == firstMapElement[1].id)
+  setValueToSendBalance({balance: findCurrencyBalance[0].amount , currency: firstMapElement[1].name});
+  setTransferToSend((prevValues) =>({
+    ...prevValues,
+    currencyToSend: firstMapElement[1].id
+  }))
 }
 
   useEffect(()=>{
@@ -70,17 +96,21 @@ export default function usersTransactions(){
   useEffect(() =>{
 
     const delaySearch = setTimeout(async () => {
-      if(searchPhrase.trim() === '') {
+      if(searchPhrase.trim() === '' || userCliked) {
         setSearchedUsers([]);
         return
       }
       const searchedUsersTemp = await searchUsers(searchPhrase);
       if(searchedUsersTemp.userProfiles.length == 0){
+        if(searchPhrase.length > 0){
+          setDisplayComment(true);
+        }
         setSearchedUsers([]);
         return;
       }
-      console.log(searchedUsersTemp.userProfiles);
-      setSearchedUsers(searchedUsersTemp.userProfiles);
+      const deleteCurrUserWallet = searchedUsersTemp.userProfiles.filter((user: IUserSearch) => user.wallet_id !== userWalletData.wallet_id )
+        setDisplayComment(false);
+      setSearchedUsers(deleteCurrUserWallet);
     }, 500);
 
     return () => clearTimeout(delaySearch);
@@ -119,17 +149,26 @@ export default function usersTransactions(){
 
 const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const enteredAmount = parseFloat(e.target.value);
-    setAmountToChange(enteredAmount);
+    setTransferToSend((prevValues) =>({
+      ...prevValues,
+      amountToChange: enteredAmount
+    }))
   };
 
 
 const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
   const newCurrency = parseFloat(e.target.value);
-  setCurrencyToSend(newCurrency);
+  setTransferToSend((prevValues) =>({
+    ...prevValues,
+    currencyToSend: newCurrency
+  }))
   const findCurrencyName = Array.from(currencyMap.entries()).filter(([key, value]) => value.id === newCurrency);
   const findCurrencyBalance = userOwnedCurrencies.filter((currency) => currency.currency_id == newCurrency)
   setValueToSendBalance({balance: findCurrencyBalance[0].amount , currency: findCurrencyName[0][1].name});
-  setAmountToChange(0);
+  setTransferToSend((prevValues) =>({
+    ...prevValues,
+    amountToChange: 0
+  }))
 };
 
 
@@ -138,7 +177,10 @@ const handleSearchPhrase = (e: React.ChangeEvent<HTMLInputElement>) => {
   setSearchPhrase(enteredPhrase);
 }
 const setMaximumAmountToSend = () =>{
-  setAmountToChange(valueToSendBalance.balance);
+  setTransferToSend((prevValues) =>({
+    ...prevValues,
+    amountToChange: valueToSendBalance.balance
+  }))
 }
 
 const displayUserCurrencies = () =>{
@@ -146,8 +188,9 @@ const displayUserCurrencies = () =>{
         return "You have empty wallet!"
     }
     const currencyMapArray = Array.from(currencyMap);
+
     return(
-        <select className="w-1/2 text-black" onChange={handleCurrencyChange}>
+        <select className="min-w-16 text-white h-6 font-bold border border-white rounded-lg px-1 bgdark focus:border-black overflow-y-auto resize-none ml-2" onChange={handleCurrencyChange}>
             {currencyMapArray.map(([key, value])=>(
             <option key = {key} value={value.id}>
                 {value.name}
@@ -156,60 +199,159 @@ const displayUserCurrencies = () =>{
         </select>
     )
 }
+const selectedUser = (user: IUserSearch) =>{
+  const userData = `${user.first_name} ${user.last_name} - ${user.email}`
+  setUserClikedWallet(user.wallet_id);
+  setSearchPhrase(userData);
+  setUserCliked(true);
+  setSearchedUsers([]);
+}
+
+const unselectUser = () =>{
+  setUserCliked(false);
+  setSearchPhrase("");
+}
+
+const sendMoneyTransfer = async () => {
+  if(!userCliked || transferToSend.amountToChange === 0.0 || transferToSend.currencyToSend === 0){
+    return
+  }
+
+  try{
+    await withDrawMoneyFromAccount()
+    await transferMoneyToSelectedUser()
+    await informUsersTransactions()
+  }catch(error){
+    setSnackbarProps({ snackStatus: "danger", message:"Wystąpił błąd podczas wykonywania transakcji.", showSnackbar: true });
+   }
+  finally{
+    resetData();
+    loadData();
+    setSnackbarProps({ snackStatus: "danger", message: "Zlecenie zostało wykonane.", showSnackbar: true });
+  }
+}
+
+const withDrawMoneyFromAccount = async () => {
+      const currencyStorageID = userOwnedCurrencies.filter((currency) => currency.currency_id === transferToSend.currencyToSend)
+      const currencyMoneyLeft = currencyStorageID[0].amount - transferToSend.amountToChange;
+      if(currencyMoneyLeft < 0){
+        setSnackbarProps({ snackStatus: "danger", message: "Nie posiadasz takiej ilości wybranej waluty.", showSnackbar: true });
+        setTransferToSend((prevData)=>({
+          ...prevData,
+          amountToChange: 0.0
+        }))
+        return
+      }
+      const withDrawal = {id: currencyStorageID[0].id, amount: currencyMoneyLeft}
+      if (!window.confirm("Czy na pewno chcesz wykonać przelew?")) return
+      const res = await updateCurrencyStorage(withDrawal);
+}
+
+const transferMoneyToSelectedUser = async () =>{
+  const dataToSend = {
+    wallet_id: userClikedWallet,
+    amount: transferToSend.amountToChange,
+    currency_id: transferToSend.currencyToSend
+  }
+   await updateSelectedCurrencyStorage(dataToSend);
+}
+
+const informUsersTransactions = async () =>{
+  const currDate = new Date();
+
+  const userToUserTransaction = {
+    wallet_sender_id: userWalletData.wallet_id,
+    wallet_recipient_id: userClikedWallet,
+    currency_id: transferToSend.currencyToSend,
+    amount: transferToSend.amountToChange,
+    transaction_date: currDate
+  }
+  await handleCreateUsersTransactions(userToUserTransaction);
+}
+
+
+const resetData = () =>{
+  setSearchedUsers([]);
+  setSearchPhrase("");
+  setUserCliked(false);
+  setTransferToSend(
+    {amountToChange: 0.0, currencyToSend:0}
+  )
+}
 
     return(
     <Layout>
          {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
         <div className="w-full flex items-center justify-center">
         {isLoading ? <h1>Is loading...</h1> : 
-        <div className='w-3/4 my-4 mz-2 flex items-center flex-col'>
+        <div className='w-4/5 my-4 mz-2 flex items-center flex-col'>
             <h1 className='text-2xl textUnderline'>Hello {userWalletData.first_name} {userWalletData.last_name}</h1>
             <h4 className='text-wrap textUnderline mx-2'>Do you want to send a transfer to another user in our application? It has never been easier than now. With the Bankera app, all you need to do is search for the other user by personal information or email address, choose the amount and the currency you want to send. It's that simple!</h4>
-            <div className='flex flex-col items-center w-full'>
-                <div className='flex flex-row gap-6 mt-4'>
-                {valueToSendBalance.currency !== '' ? 
-                    <div className='hover:cursor-pointer' onClick={() => setMaximumAmountToSend()}>
-                      <span className="font-bold">Currency Balance: {valueToSendBalance.balance}</span>
-                    </div> : null}
-                    <div>
+            <div className='flex flex-col w-full items-center justify-center'>
+                <div className='flex flex-col gap-6 mt-8 w-full flex-wrap items-center justify-center'>
+                  <div className='flex gap-8 flex-wrap flex-col items-center justify-center'>
+                    <div className='flex flex-row w-full items-center justify-center'>
                         <label htmlFor="currencyToSend" className="font-bold mr-1 flex items-center justify-center">Currency to send: </label>
                         {displayUserCurrencies()}
                     </div>
-                    <div>
-                        <label htmlFor="amount" className="font-bold mr-1 flex items-center justify-center mr-2">Amount:</label>
-                        <input
-                        placeholder="0"
-                        id="amount"
-                        type="number"
-                        min="0"
-                        max={valueToSendBalance.balance}
-                        className="w-24 font-bold border border-white rounded-lg px-1 bgdark focus:border-black overflow-y-auto resize-none ml-2"
-                        onChange={handleAmountChange}
-                        value={amountToChange}
-                        />
+                    <div className='hover:cursor-pointer textUnderline' onClick={() => setMaximumAmountToSend()}>
+                        <span className="font-bold">Currency Balance: {valueToSendBalance.currency !== '' ? valueToSendBalance.balance : '-'}</span>
                     </div>
-                    <div className="relative w-64 mb-16">
-                      <div>
-                          <label htmlFor="user" className="font-bold mr-1 flex items-center justify-center mr-2">Select User:</label>
+                  </div>
+                  <div className='flex gap-12 flex-wrap items-center justify-center'>
+                      <div className="relative flex flex-wrap">
+                        <div className='flex gap-2 items-center justify-center'>
+                            <label htmlFor="user" className="font-bold mr-2">User:</label>
+                            <input
+                            placeholder="Type..."
+                            id="user"
+                            type="text"
+                            className="font-bold border border-white rounded-lg px-1 bgdark focus:border-black overflow-y-auto resize-none"
+                            onChange={handleSearchPhrase}
+                            value={searchPhrase}
+                            disabled={userCliked}
+                            />
+                            <div className='w-3'>
+                              {userCliked ? 
+                              <FaWindowClose onClick={() => unselectUser()} className="ml-1 text-white w-3 inline cursor-pointer hover:text-slate-200 " />
+                            : null}
+                          </div>
+                        </div>
+                        <div className='absolute text-xs flex flex-col gap-2 max-h-12 overflow-y-auto overflow-x-hidden w-full left-6 top-8'>
+                          {!displayComment ? (
+                            searchedUsers.map((user) => (
+                              <span className='hover:cursor-pointer opacity-90' onClick={() => selectedUser(user)} key={user.id}>
+                                {user.first_name} {user.last_name} - {user.email}
+                              </span>
+                            ))
+                          ) : (
+                            <span>Brak wyników - zmień frazę wyszukiwania.</span>
+                          )}
+                        </div>
+                    </div>
+                    <div className='flex gap-2 items-center'>
+                          <label htmlFor="amount" className="font-bold flex">Amount:</label>
                           <input
-                          placeholder="Type..."
-                          id="user"
-                          type="text"
-                          className="font-bold border border-white rounded-lg px-1 bgdark focus:border-black overflow-y-auto resize-none ml-2"
-                          onChange={handleSearchPhrase}
-                          value={searchPhrase}
+                          placeholder="0"
+                          id="amount"
+                          type="number"
+                          min="0"
+                          max={valueToSendBalance.balance}
+                          className="h-6 w-24 font-bold border border-white rounded-lg px-1 bgdark focus:border-black overflow-y-auto resize-none"
+                          onChange={handleAmountChange}
+                          value={transferToSend.amountToChange}
                           />
                       </div>
-                    {searchedUsers.length != 0 ? 
-                      <div className='absolute text-xs flex flex-col gap-2 max-h-12 overflow-y-auto overflow-x-hidden w-full'>
-                        {searchedUsers.map((user)=>(
-                          <span key={user.id}>{user.first_name} {user.last_name} - {user.email}</span>
-                        ))}
-                      </div> 
-                      : null}
                   </div>
               </div>
-                <button className="py-4 button2 text-white rounded-xl hover:cursor-pointer text-xs w-48 mt-8">Send a transfer</button>
+              <button
+                disabled={isButtonDisabled}
+                onClick={sendMoneyTransfer}
+                className={`py-4 text-black rounded-xl w-48 mt-8 ${isButtonDisabled ? 'opacity-30 hover:cursor-not-allowed' : 'opacity-100 hover:opacity-80'}`}
+                style={{ backgroundColor: '#BB86FC' }}
+                >
+                  Send a transfer
+                </button>
             </div>
         </div>
         }
