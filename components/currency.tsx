@@ -6,6 +6,7 @@ import { ICurrencyHistory } from '@/lib/interfaces/currencyHistory';
 import { getCurrencyNameById, inZeroRange, significantDigits } from '@/lib/currency';
 import { FaExchangeAlt } from 'react-icons/fa';
 import api_url from '@/lib/api_url';
+import { ICurrency } from '@/lib/interfaces/currency';
 
 export default function Currency() {
   const [currencies, setCurrencies] = useState<ICurrency[]>([]);
