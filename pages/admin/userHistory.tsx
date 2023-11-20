@@ -8,27 +8,27 @@ import { FaCalendarAlt, FaCoins, FaExchangeAlt, FaFolderOpen, FaHandsHelping, Fa
 import Link from 'next/link';
 import axios from 'axios';
 import api_url from '@/lib/api_url';
-
 import { getCurrencies } from '../api/services/currencyService';
 import { getCurrenciesPairs } from '../api/services/currencyPairs';
-import { ICurrency } from '../api/interfaces/currency';
-import { CurrencyPair } from '../api/interfaces/currencyPair';
-import { IUser, RegisteringUser } from '../api/interfaces/user';
+import ICurrency from '@/lib/interfaces/currency';
+import ICurrencyPair from '@/lib/interfaces/currencyPair';
+import { IRegisteringUser } from '@/lib/interfaces/user';
+import { ITransactionData } from '@/lib/interfaces/adminPanel';
 
 export default function History() {
     
     const [currenciesNames, setCurrenciesNames] = useState<ICurrency[]>([]);
-    const [currenciesPairId, setcurrenciesPairId] = useState<CurrencyPair[]>([]);
+    const [currenciesPairId, setcurrenciesPairId] = useState<ICurrencyPair[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isLoadingCurr, setisLoadingCurr] = useState<boolean>(true);
-    const [userData, setUserData] = useState<RegisteringUser>({
+    const [userData, setUserData] = useState<IRegisteringUser>({
       first_name: "",
       last_name: "",
       email: "",
       password: "",
       phone_number: "",
     });
-    const [transactions, setTransactions] = useState<Data>({
+    const [transactions, setTransactions] = useState<ITransactionData>({
         innerTransactions: [],
         userToUserTransactions: []
       });

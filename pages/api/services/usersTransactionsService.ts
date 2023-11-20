@@ -1,7 +1,6 @@
 import api_url from '@/lib/api_url';
+import IUserTransaction from '@/lib/interfaces/userTransaction';
 import axios from 'axios'
-import { IUserTransaction } from '../interfaces/usersTransactions';
-
 
 const url = api_url('auth/usersTransactions')
 

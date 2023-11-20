@@ -1,4 +1,5 @@
 import api_url from '@/lib/api_url';
+import IInnerTransaction from '@/lib/interfaces/innerTransaction';
 import axios from 'axios'
 
 const url = api_url('auth/innerTransaction')
@@ -21,7 +22,7 @@ export const getUserInnerTransactions = async () => {
     }
 }
 
-export const handleCreateInnerTransaction = async (data : IinnerTransaction) => {
+export const handleCreateInnerTransaction = async (data : IInnerTransaction) => {
         try{
             const res  = await axios.post(url, data, {headers: {Accept: 'application/json'}})
             return {message: res.data.message, status: res.status};

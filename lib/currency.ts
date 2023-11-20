@@ -1,3 +1,5 @@
+import ICurrency from "./interfaces/currency"
+
 export function getCurrencyNameById (currencies: ICurrency[], id: number): string {
     for (let i = 0; i < currencies.length; i++) {
         if (currencies[i].id === id) return currencies[i].name

@@ -6,25 +6,25 @@ import { getWalletData } from '../api/services/walletService';
 import Layout from "@/app/layoutPattern";
 import {FaExclamation}  from "react-icons/fa";
 import SnackBar from '@/components/snackbar'
-import { ICurrency } from '../api/interfaces/currency';
-import { IWallet } from '../api/interfaces/wallet';
 import '@/components/css/home.css';
-import { IcurrencyStorage, CurrencyMapItem } from '../api/interfaces/currencyStorage';
-import { ICurrencyNameBalance, IUserTransactionValueTypes, IUserTransaction } from '../api/interfaces/usersTransactions';
-import { IUserSearch } from '../api/interfaces/user';
 import { updateCurrencyStorage, updateSelectedCurrencyStorage } from '@/pages/api/services/currencyStorageService';
 import { handleCreateUsersTransactions } from '@/pages/api/services/usersTransactionsService';
 import { FaWindowClose }  from "react-icons/fa";
+import { ICurrencyNameBalance, IUserTransactionValueTypes } from '@/lib/interfaces/userTransaction';
+import { IUserSearch } from '@/lib/interfaces/user';
+import ICurrencyStorage from '@/lib/interfaces/currencyStorage';
+import ICurrency from '@/lib/interfaces/currency';
+import IWallet from '@/lib/interfaces/wallet';
 
-export default function usersTransactions(){
-    const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<IcurrencyStorage[]>([])
+export default function UsersTransactions() {
+    const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<ICurrencyStorage[]>([])
     const [currenciesNames, setCurrenciesNames] = useState<ICurrency[]>([]);
     const [userWalletData, setUserWalletData] =  useState<IWallet>({wallet_id:0, first_name:"", last_name: ""})
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
     const [snackMess, setsnackMess] = useState<string>("")
     const [snackStatus, setsnackStatus] = useState<string>("danger")
-    const [currencyMap, setCurrencyMap] = useState(new Map<number, CurrencyMapItem>());
+    const [currencyMap, setCurrencyMap] = useState(new Map<number, ICurrency>());
     const [valueToSendBalance, setValueToSendBalance] = useState<ICurrencyNameBalance>({balance: 0, currency:''});
     const [searchPhrase, setSearchPhrase] = useState<string>('');
     const [searchedUsers, setSearchedUsers] = useState<IUserSearch[]>([]);
@@ -69,7 +69,7 @@ export default function usersTransactions(){
     }
 }
 
-const setLoadedCurrentBalance = async (userCurrencies : IcurrencyStorage[]) =>{
+const setLoadedCurrentBalance = async (userCurrencies : ICurrencyStorage[]) =>{
   const mapArray = Array.from(currencyMap.entries())
   const firstMapElement = mapArray[0];
   const findCurrencyBalance = userCurrencies.filter((currency) => currency.currency_id == firstMapElement[1].id)
@@ -122,7 +122,7 @@ const setLoadedCurrentBalance = async (userCurrencies : IcurrencyStorage[]) =>{
     console.log("Currency Map in useEffect:", currencyMap);
   }, [currencyMap]);
 
-  const setCurrencyMapData = (userCurrencies: IcurrencyStorage[], currenciesNames: ICurrency[]) =>{
+  const setCurrencyMapData = (userCurrencies: ICurrencyStorage[], currenciesNames: ICurrency[]) =>{
     for (let i = 0; i < userCurrencies.length; i++) {
         for (let j = 0; j < currenciesNames.length; j++) {
           if (userCurrencies[i].currency_id === currenciesNames[j].id && userCurrencies[i].id != undefined) {
@@ -285,7 +285,7 @@ const resetData = () =>{
         {isLoading ? <h1>Is loading...</h1> : 
         <div className='w-4/5 my-4 mz-2 flex items-center flex-col'>
             <h1 className='text-2xl textUnderline'>Hello {userWalletData.first_name} {userWalletData.last_name}</h1>
-            <h4 className='text-wrap textUnderline mx-2'>Do you want to send a transfer to another user in our application? It has never been easier than now. With the Bankera app, all you need to do is search for the other user by personal information or email address, choose the amount and the currency you want to send. It's that simple!</h4>
+            <h4 className='text-wrap textUnderline mx-2'>Do you want to send a transfer to another user in our application? It has never been easier than now. With the Bankera app, all you need to do is search for the other user by personal information or email address, choose the amount and the currency you want to send. It&apos;s that simple!</h4>
             <div className='flex flex-col w-full items-center justify-center'>
                 <div className='flex flex-col gap-6 mt-8 w-full flex-wrap items-center justify-center'>
                   <div className='flex gap-8 flex-wrap flex-col items-center justify-center'>
