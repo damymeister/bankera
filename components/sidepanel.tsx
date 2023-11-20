@@ -1,6 +1,6 @@
-import '../components/css/home.css';
-import '../components/css/dashboard.css';
-import '../components/css/post.css';
+import '@/components/css/home.css';
+import '@/components/css/dashboard.css';
+import '@/components/css/post.css';
 
 import { useState } from 'react';
 import  Link  from 'next/link';
@@ -34,7 +34,7 @@ export default function SidePanel() {
       }`}
     >
       <div className="flex items-center h-16 fixed left-0">
-        <span className={`text-lg font-bold text-white p-3 ${isSidebarHidden ? 'hidden' : ''}`}>Kokipt</span>
+        <span className={`text-lg font-bold text-white p-3 ${isSidebarHidden ? 'hidden' : ''}`}>Kokpit</span>
         <div className="p-0 w-16">
           <button
             className={`h-16 w-16 flex items-center justify-center text-white  ${
@@ -69,7 +69,7 @@ export default function SidePanel() {
       {!isSidebarHidden && (
         <nav className="flex flex-col flex-grow p-4 borderLightY pt-16">
           <div className='textOverline'></div>
-          <Link href="/dashboard" className={`flex items-center space-x-2 py-2  ${isActive('/dashboard')}`}>
+          <Link href="/user/dashboard" className={`flex items-center space-x-2 py-2  ${isActive('/user/dashboard')}`}>
             <FaHome />
             <span>Kokpit</span>
           </Link>
@@ -81,11 +81,11 @@ export default function SidePanel() {
             <FaDeezer />
             <span>Kursy walut</span>
           </Link>
-          <Link href="/currencyExchange" className={`flex items-center space-x-2 py-2 ${isActive('/currencyExchange')}`}>
+          <Link href="/user/currencyExchange" className={`flex items-center space-x-2 py-2 ${isActive('/user/currencyExchange')}`}>
             <FaExchangeAlt />
             <span>Wymiana walut</span>
           </Link>
-          <Link href="/wallet" className={`flex items-center space-x-2 py-2 ${isActive('/wallet')}`}>
+          <Link href="/user/wallet" className={`flex items-center space-x-2 py-2 ${isActive('/user/wallet')}`}>
             <FaWallet />
             <span>Portfel</span>
           </Link>

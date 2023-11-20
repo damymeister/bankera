@@ -37,14 +37,14 @@ const Post_t = (props: { post: any }) => {
     }, [])    
 
     return (
-        <div className="Post mx1">
+        <div className="Post mx-4">
             <div className="PostBorder">
-                <div className="PostInfo py1">
-                    <div className="title px1">{props.post.title}</div>
-                    <div className="date px1">{new Date(props.post.posted_on).toLocaleString()}</div>
+                <div className="PostInfo py-5">
+                    <div className="title px-4">{props.post.title}</div>
+                    <div className="date px-4">{new Date(props.post.posted_on).toLocaleString()}</div>
                 </div>
                 <div className="PostContent">
-                    <p className="px1 ">{props.post.content}</p>
+                    <p className="px-4 ">{props.post.content}</p>
                 
                 </div>
                 <div className="author ">

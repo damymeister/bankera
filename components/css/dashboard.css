@@ -1,4 +1,15 @@
 .dashboardBody{
-    display: flex;
-    flex-direction: row;
+    width: 100vw;
+}
+
+.side-panel{
+    position: fixed;
+    top: 20%;
+        
+}
+.dashboard{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-items: center;
+    align-items: center;
 }

@@ -92,7 +92,7 @@ model Forex_Currency_Storage {
 }
 
 model Currency_Pair {
-  id  Int @id @default(autoincrement())
+  id                Int      @id @default(autoincrement())
   sell_currency_id  Int
   buy_currency_id   Int
   conversion_value  Float
@@ -116,7 +116,7 @@ model Currency_History {
 }
 
 model User_to_User_Transaction {
-  id                     Int   @id @default(autoincrement())
+  id                     Int             @id @default(autoincrement())
   wallet_sender_id       Int      
   wallet_recipient_id    Int      
   currency_id            Int            
