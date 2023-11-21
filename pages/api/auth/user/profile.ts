@@ -70,9 +70,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           let user_id = parseInt(token_json._id);
           const user = await prisma.user.findUnique({where: {id: user_id}})
           if (user === null) return res.status(401).json({ error: 'No user found.' })
-          const wallet_id = user.wallet_id
+          const wallet_id = user.wallet_id, fwallet_id = user.forex_wallet_id
           await prisma.user.delete({where: {id: user_id}})
           if (wallet_id !== null) await prisma.wallet.delete({where: {id: wallet_id}})
+          if (fwallet_id !== null) await prisma.forex_Wallet.delete({where: {id: fwallet_id}})
           return res.status(200).json({ message: 'Your user profile was deleted successfully.' });
         }
       } catch (error) {
