@@ -19,15 +19,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         first_name: true,
                         last_name: true,
                         email: true,
-                        password: true,
                         phone_number: true,
                       },
                 });
                 if (!userProfile) {
                 return res.status(404).json({ error: 'User not found.' });
                 }
-                const { first_name, last_name, email, password, phone_number } = userProfile;
-                return res.status(200).json({ first_name, last_name, email, password, phone_number  });
+                const { first_name, last_name, email, phone_number } = userProfile;
+                return res.status(200).json({ first_name, last_name, email, phone_number });
             }
         }
         catch (error) {
@@ -51,7 +50,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 first_name: req.body.first_name,
                 last_name: req.body.last_name,
                 email: req.body.email,
-                password: req.body.password,
                 phone_number: req.body.phone_number,
               },
             });
@@ -70,14 +68,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (token !== undefined) {
           let token_json = parseJwt(token);
           let user_id = parseInt(token_json._id);
-          
-          const deletedUserProfile = await prisma.user.delete({
-            where: {
-              id: user_id,
-            },
-          });
-          
-          return res.status(200).json({ message: 'Your user profile deleted successfully.' });
+          const user = await prisma.user.findUnique({where: {id: user_id}})
+          if (user === null) return res.status(401).json({ error: 'No user found.' })
+          await prisma.user.delete({where: {id: user_id}})
+          return res.status(200).json({ message: 'Your user profile was deleted successfully.' });
         }
       } catch (error) {
         console.error('Error while managing request', error);
