@@ -107,9 +107,10 @@ const setLoadedCurrentBalance = async (userCurrencies : ICurrencyStorage[]) =>{
         setSearchedUsers([]);
         return;
       }
-      const deleteCurrUserWallet = searchedUsersTemp.userProfiles.filter((user: IUserSearch) => user.wallet_id !== userWalletData.wallet_id )
+      const deleteCurrUserWallet = searchedUsersTemp.userProfiles.filter((user: IUserSearch) => user.wallet_id !== userWalletData.wallet_id)
+      const usersWithWalletOnly = deleteCurrUserWallet.filter((user: IUserSearch) => user.wallet_id !== 0 && user.wallet_id !== undefined && user.wallet_id !== null )
         setDisplayComment(false);
-      setSearchedUsers(deleteCurrUserWallet);
+        setSearchedUsers(usersWithWalletOnly);
     }, 500);
 
     return () => clearTimeout(delaySearch);
