@@ -18,9 +18,9 @@ model User {
   forex_wallet_id      Int?          @unique
   account_created_on   DateTime
   role_id              Int     
-  wallet               Wallet?       @relation(fields: [wallet_id], references: [id]) // 1->1
-  forex_wallet         Forex_Wallet? @relation(fields: [forex_wallet_id], references: [id])
-  role                 Role          @relation(fields: [role_id], references: [id])
+  wallet               Wallet?       @relation(fields: [wallet_id], references: [id], onUpdate: Cascade, onDelete: Cascade) // 1->1
+  forex_wallet         Forex_Wallet? @relation(fields: [forex_wallet_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  role                 Role          @relation(fields: [role_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   posts                Post[] // 1->*
 }
 
@@ -31,7 +31,7 @@ model Post {
   posted_on   DateTime @default(now())
   user_id     Int
   image_href  String?  @db.Text
-  user        User     @relation(fields: [user_id], references: [id]) // *->1
+  user        User     @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade) // *->1
 }
 
 model Role {
@@ -78,8 +78,8 @@ model Currency_Storage {
   amount              Float
   currency_id         Int
   wallet_id           Int
-  currency            Currency  @relation(fields: [currency_id], references: [id])
-  wallet              Wallet    @relation(fields: [wallet_id], references: [id])
+  currency            Currency  @relation(fields: [currency_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  wallet              Wallet    @relation(fields: [wallet_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Forex_Currency_Storage {
@@ -87,8 +87,8 @@ model Forex_Currency_Storage {
   forex_currency_id         Int 
   forex_currency_amount     Float
   forex_wallet_id           Int
-  currency                  Currency     @relation(fields: [forex_currency_id], references: [id])
-  forex_wallet              Forex_Wallet @relation(fields: [forex_wallet_id], references: [id])
+  currency                  Currency     @relation(fields: [forex_currency_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  forex_wallet              Forex_Wallet @relation(fields: [forex_wallet_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Currency_Pair {
@@ -96,8 +96,8 @@ model Currency_Pair {
   sell_currency_id  Int
   buy_currency_id   Int
   conversion_value  Float
-  selling_currency  Currency @relation("currency_sell", fields: [sell_currency_id], references: [id])
-  buying_currency   Currency @relation("currency_buy", fields: [buy_currency_id], references: [id])
+  selling_currency  Currency @relation("currency_sell", fields: [sell_currency_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  buying_currency   Currency @relation("currency_buy", fields: [buy_currency_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   inner_trns        Inner_Transaction[]
   spec_trns         Speculative_Transaction[]
   @@unique([sell_currency_id, buy_currency_id], name: "unique_pair")
@@ -110,8 +110,8 @@ model Currency_History {
   buy_currency_id   Int
   conversion_value  Float
   date              DateTime
-  selling_currency  Currency  @relation("currency_history_sell", fields: [sell_currency_id], references: [id])
-  buying_currency   Currency  @relation("currency_history_buy", fields: [buy_currency_id], references: [id])
+  selling_currency  Currency  @relation("currency_history_sell", fields: [sell_currency_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  buying_currency   Currency  @relation("currency_history_buy", fields: [buy_currency_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   @@index([sell_currency_id, buy_currency_id])
 }
 
@@ -120,9 +120,9 @@ model User_to_User_Transaction {
   wallet_sender_id       Int      
   wallet_recipient_id    Int      
   currency_id            Int            
-  sender_wallet          Wallet     @relation("uu_trns_sender_wallet", fields: [wallet_sender_id], references: [id])
-  recipient_wallet       Wallet     @relation("uu_trns_recipient_wallet", fields: [wallet_recipient_id], references: [id]) 
-  currency               Currency   @relation(fields: [currency_id], references: [id])
+  sender_wallet          Wallet     @relation("uu_trns_sender_wallet", fields: [wallet_sender_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  recipient_wallet       Wallet     @relation("uu_trns_recipient_wallet", fields: [wallet_recipient_id], references: [id], onUpdate: Cascade, onDelete: Cascade) 
+  currency               Currency   @relation(fields: [currency_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   amount                 Float
   transaction_date       DateTime
 }
@@ -135,8 +135,8 @@ model Inner_Transaction {
   inital_amount        Float
   converted_amount     Float
   transaction_date     DateTime
-  wallet               Wallet         @relation(fields: [wallet_id], references: [id])
-  currency_pair        Currency_Pair  @relation(fields: [currency_pair_id], references: [id])
+  wallet               Wallet         @relation(fields: [wallet_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  currency_pair        Currency_Pair  @relation(fields: [currency_pair_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Wallet_Forex_Wallet_Transaction {
@@ -146,9 +146,9 @@ model Wallet_Forex_Wallet_Transaction {
   currency_id                        Int
   amount                             Float
   transaction_date                   DateTime
-  wallet                             Wallet       @relation(fields: [wallet_id], references: [id])
-  forex_wallet                       Forex_Wallet @relation(fields: [forex_wallet_id], references: [id])
-  currency                           Currency     @relation(fields: [currency_id], references: [id])
+  wallet                             Wallet       @relation(fields: [wallet_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  forex_wallet                       Forex_Wallet @relation(fields: [forex_wallet_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  currency                           Currency     @relation(fields: [currency_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Speculative_Transaction {
@@ -163,6 +163,6 @@ model Speculative_Transaction {
   transaction_balance        Float
   entry_date                 DateTime
   exit_date                  DateTime?
-  currency_pair              Currency_Pair @relation(fields: [currency_pair_id], references: [id])
-  forex_wallet               Forex_Wallet  @relation(fields: [forex_wallet_id], references: [id])
+  currency_pair              Currency_Pair @relation(fields: [currency_pair_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  forex_wallet               Forex_Wallet  @relation(fields: [forex_wallet_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }

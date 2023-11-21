@@ -8,75 +8,107 @@ import { useSearchParams } from 'next/navigation';
 import api_url from '@/lib/api_url';
 import axios from 'axios';
 
-
-
 const UserProfile = () => {
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [oldPassword, setOldPassword] = useState('')
+    const [newPassword, setNewPassword] = useState('')
+    const [passwordConfirm, setPasswordConfirm] = useState('')
     const params = useSearchParams()
-    
-    const url = api_url('auth/user/profile')
-
 
     useEffect(() => {
-        console.log(url);
-      
-        const GetProfile = async () => {
-          try {
-            const { data } = await axios.get(url, { headers: { Accept: 'application/json' } });
-            return data;
-          } catch (error) {
-            console.log('unexpected error: ', error);
-            throw error;
-          }
-          
-        };
-
-        const fetchProfileData = async () => {
-          const profileData = await GetProfile();
-        //   console.log(profileData);
-
-          setName(profileData.first_name)
-          setSurname(profileData.last_name)
-          setEmail(profileData.email)
-          setPhoneNumber(profileData.phone_number)
-          setPassword(profileData.password)
-        };
-      
-        fetchProfileData();
-      }, []);
-      
-      const handleSubmit = async (e: React.SyntheticEvent) => {
-        e.preventDefault();
-      
+      const url = api_url('auth/user/profile')
+      const GetProfile = async () => {
         try {
-          const updatedProfileData = {
-            first_name: name,
-            last_name: surname,
-            email,
-            password,
-            phone_number: phoneNumber,
-          };
-      
-          const response = await axios.put(url, updatedProfileData, { headers: { Accept: 'application/json' } });
-      
-          if (response.status === 200) {
-            setSuccessMessage('User profile updated successfully.');
-          } else {
-            setErrorMessage('Failed to update user profile.');
-          }
+          const { data } = await axios.get(url, { headers: { Accept: 'application/json' } });
+          return data;
         } catch (error) {
-          console.error('Error while updating user profile:', error);
-          setErrorMessage('An error occurred while updating user profile.');
+          console.log('unexpected error: ', error);
+          throw error;
         }
       };
 
+      const fetchProfileData = async () => {
+        const profileData = await GetProfile();
+      //   console.log(profileData);
+
+        setName(profileData.first_name)
+        setSurname(profileData.last_name)
+        setEmail(profileData.email)
+        setPhoneNumber(profileData.phone_number)
+      };
+    
+      fetchProfileData();
+    }, []);
+
+    useEffect(() => {
+      if (newPassword !== passwordConfirm) setErrorMessage('Please confirm Your new password!')
+      else setErrorMessage('')
+    }, [newPassword, passwordConfirm])
       
+    const handleSubmit = async (e: React.SyntheticEvent) => {
+      e.preventDefault();
+      const url = api_url('auth/user/profile')
+      try {
+        const updatedProfileData = {
+          first_name: name,
+          last_name: surname,
+          email,
+          phone_number: phoneNumber,
+        };
+    
+        const response = await axios.put(url, updatedProfileData, { headers: { Accept: 'application/json' } });
+    
+        if (response.status === 200) {
+          setErrorMessage('')
+          setSuccessMessage('User profile updated successfully.');
+        } else {
+          setSuccessMessage('')
+          setErrorMessage('Failed to update user profile.');
+        }
+      } catch (error) {
+        console.error('Error while updating user profile:', error);
+        setSuccessMessage('')
+        setErrorMessage('An error occurred while updating user profile.');
+      }
+    };
+
+    const handleChangePass = async (e: React.SyntheticEvent) => {
+      e.preventDefault();
+      const url = api_url('auth/user/password')
+      try {
+        const response = await axios.put(url, {
+          old_password: oldPassword, 
+          new_password: newPassword},
+          { headers: { Accept: 'application/json' } })
+        if (response.status === 200) {
+          setErrorMessage('')
+          setSuccessMessage(response.data.message ?? 'Success');
+        } else {
+          setSuccessMessage('')
+          setErrorMessage(response.data.error ?? 'Error');
+        }
+      } catch (error) {
+        console.error('Error while updating user profile:', error);
+        setSuccessMessage('')
+        setErrorMessage('An error occurred while updating user profile.');
+      }
+    }
+
+    const handleUserDelete = async () => {
+      const url = api_url('auth/user/profile')
+      try {
+        await axios.delete(url, { headers: { Accept: 'application/json' } });
+      } catch (error) {
+        console.log('unexpected error: ', error);
+        throw error;
+      }
+      window.location.reload()
+    }
 
     return (
       <Layout>
@@ -109,13 +141,6 @@ const UserProfile = () => {
                 className="w-1/4 px-4 py-2 border bgdark rounded-md focus:outline-none focus:border-blue-500"
               />
               <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-1/4 px-4 py-2 border bgdark rounded-md focus:outline-none focus:border-blue-500"
-              />
-              <input
                 type="text"
                 placeholder="Phone Number"
                 value={phoneNumber}
@@ -128,13 +153,44 @@ const UserProfile = () => {
               >
                 Save Profile
               </button>
-              <button
-                type="submit"
-                className="w-1/5 px-4 py-2 bg-[#ff0000] hover:bg-[#996dce] text-[white] rounded-md"
-              >
-                Delete Profile
-              </button>
             </form>
+            <form onSubmit={handleChangePass} className="space-y-4 my-4 flex flex-col items-center justify-center">
+              <input
+                type="password"
+                placeholder="Old Password"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+                className="w-1/4 px-4 py-2 border bgdark rounded-md focus:outline-none focus:border-blue-500"
+              />
+              <input
+                type="password"
+                placeholder="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-1/4 px-4 py-2 border bgdark rounded-md focus:outline-none focus:border-blue-500"
+              />
+              <input
+                type="password"
+                placeholder="Confirm new password"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+                className="w-1/4 px-4 py-2 border bgdark rounded-md focus:outline-none focus:border-blue-500"
+              />
+              <button type="submit"
+                disabled={newPassword !== passwordConfirm}
+                className="w-1/5 px-4 py-2 bg-[#BB86FC] hover:bg-[#996dce] text-[white] rounded-md">
+                Update Password
+                </button>
+            </form>
+            <button className="w-1/5 px-4 py-2 bg-[#ff0000] hover:bg-[#996dce] text-[white] rounded-md"
+            onClick={() => {
+              if (window.confirm('Are You sure, You want to delete Your profile? This action is irreversible!')) {
+                handleUserDelete()
+              }
+            }}
+            >
+              Delete Profile
+            </button>
           </div>
         </div>
       </Layout>
