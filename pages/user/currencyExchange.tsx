@@ -204,6 +204,7 @@ const saveExchange = async (index: number) => {
   if (!window.confirm("Czy na pewno chcesz wymienić tą walutę?")) return
 
   const userCurr = userOwnedCurrencies[index];
+  console.log(userCurr);
   const newCurrentValueBalance = userCurr.amount - userCurr.value;
   const dataToSubtract = { id: userCurr.id, amount: parseFloat(newCurrentValueBalance.toFixed(2)) };
 
@@ -212,7 +213,9 @@ const saveExchange = async (index: number) => {
     const operation = decideAddOrUpdateCurrencyStorage(index);
     if (operation) {
       const findIndex = userOwnedCurrencies.find((data) => data.id == operation);
-      let newCurrBalanceToAdd = findIndex?.amount ?? 0 + userCurr.converted_amount;
+      let newCurrBalanceToAdd = (findIndex?.amount ?? 0) + userCurr.converted_amount;
+      console.log(newCurrBalanceToAdd);
+      console.log(userCurr.converted_amount);
       const dataToAdd = { id: operation, amount: parseFloat(newCurrBalanceToAdd.toFixed(2)) };
       await updateCurrencyStorage(dataToAdd);
     } else {
