@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const user = await prisma.user.findUnique({where: {id: user_id}})
         if (user === null) return res.status(401).json({ error: 'No user found.' })
         // Check old password
-        const validPassword = await bcrypt.compare(req.body.password, user.password)
+        const validPassword = await bcrypt.compare(req.body.old_password, user.password)
         if (!validPassword) return res.status(401).json({ error: 'Incorrect Password' })
         const salt = await bcrypt.genSalt()
         const hashPassword = await bcrypt.hash(req.body.new_password, salt)

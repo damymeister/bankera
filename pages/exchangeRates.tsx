@@ -22,7 +22,7 @@ export default function ExchangeRates() {
 
   useEffect(() => {
     const handleGetCurrencies = async () => {
-      const { data } = await axios.get(api_url('auth/currency'), {headers: {Accept: 'application/json'}})
+      const { data } = await axios.get(api_url('currency'), {headers: {Accept: 'application/json'}})
       setCurrencies([allSelector, ...data] as ICurrency[])
     }
     handleGetCurrencies()
