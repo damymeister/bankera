@@ -13,10 +13,12 @@ export default async function handler(
         const user = await prisma.user.findFirst({where: {id: parseInt(user_id as string)}})
         const wallet_id = (user === null ? 0 : user.wallet_id === null ? 0 : user.wallet_id)
         const innerTransactions = await prisma.inner_Transaction.findMany({
-          where: { wallet_id : wallet_id } 
+          where: { wallet_id : wallet_id },
+          orderBy: {transaction_date: 'desc'}
         });
         const userToUserTransactions = await prisma.user_to_User_Transaction.findMany({
-          where: { wallet_sender_id  : wallet_id } 
+          where: { wallet_sender_id  : wallet_id },
+          orderBy: {transaction_date: 'desc'}
         });
   
         const Transactions = {
