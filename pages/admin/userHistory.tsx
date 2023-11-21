@@ -14,9 +14,11 @@ import ICurrency from '@/lib/interfaces/currency';
 import ICurrencyPair from '@/lib/interfaces/currencyPair';
 import { IRegisteringUser, IUserSearch } from '@/lib/interfaces/user';
 import { ITransactionData } from '@/lib/interfaces/adminPanel';
+import { pageEndIndex, pageStartIndex } from '@/lib/pages';
+import Paginator from '@/components/paginator';
+import { significantDigits } from '@/lib/currency';
 
 export default function History() {
-    
     const [currenciesNames, setCurrenciesNames] = useState<ICurrency[]>([]);
     const [currenciesPairId, setcurrenciesPairId] = useState<ICurrencyPair[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -28,88 +30,97 @@ export default function History() {
       password: "",
       phone_number: "",
     });
-    const [recipientData, setRecipientData] = useState<IUserSearch[]>([]);
-    
-    
+    const [recipientData, setRecipientData] = useState<IUserSearch[]>([]);    
     const [transactions, setTransactions] = useState<ITransactionData>({
         innerTransactions: [],
         userToUserTransactions: []
       });
-    
-    
-      useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get('id');
-            
-            const urlWithQuery = api_url(`auth/admin/transactionHistory?id=${id}`);
-            const res = await axios.get(urlWithQuery, { headers: { Accept: 'application/json' } });
-            
 
+    // PAGINATION states
+    const [iTrnsPage, setITrnsPage] = useState(0)
+    const [iTrnsTotalPages, setITrnsTotalPages] = useState(0)
+    const [uuTrnsPage, setUUTrnsPage] = useState(0)
+    const [uuTrnsTotalPages, setUUTrnsTotalPages] = useState(0)
+    const recordsPerPage = 10
 
-            const userDataUrl = api_url(`auth/admin/manageUser?id=${id}`);
-            const userRes = await axios.get(userDataUrl, { headers: { Accept: 'application/json' } });
-            const recipientDataUrl = api_url(`auth/admin/user`);
-            const recipientRes = await axios.get(recipientDataUrl, { headers: { Accept: 'application/json' } });
-            
+    useEffect(() => {
+      if (transactions.innerTransactions.length > 0) {
+        setITrnsPage(1)
+        setITrnsTotalPages(Math.ceil(transactions.innerTransactions.length / recordsPerPage))
+      }
+      if (transactions.userToUserTransactions.length > 0) {
+        setUUTrnsPage(1)
+        setUUTrnsTotalPages(Math.ceil(transactions.userToUserTransactions.length / recordsPerPage))
+      }
+    }, [transactions])
 
-            setUserData(userRes.data);
-            setTransactions(res.data);
-            setRecipientData(recipientRes.data);
-            // console.log(res.data); // Log the fetched data
-            // console.log(userRes.data); // Log the fetched data
-            
-          } catch (error) {
-            console.error('Error fetching data:', error);
-          } finally {
-            setIsLoading(false); 
-          }
-        };
-
-        const getCurrencyData = async () => {
-          try {
-            const currenciesPairs = await getCurrenciesPairs();
-            if (currenciesPairs && Array.isArray(currenciesPairs)) {
-              setcurrenciesPairId(currenciesPairs);
-            } else {
-              console.error('Invalid currencies pairs data');
-            }
-            const currencies = await getCurrencies();
-            if (currencies && Array.isArray(currencies)) {
-              setCurrenciesNames(currencies);
-            } else {
-              console.error('Invalid currencies data');
-            }
-          } catch (error) {
-            console.error('Error fetching currency data:', error);
-  
-          } finally {
-            setisLoadingCurr(false);
-          }
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const id = urlParams.get('id');
+          const urlWithQuery = api_url(`auth/admin/transactionHistory?id=${id}`);
+          const res = await axios.get(urlWithQuery, { headers: { Accept: 'application/json' } });
+          const userDataUrl = api_url(`auth/admin/manageUser?id=${id}`);
+          const userRes = await axios.get(userDataUrl, { headers: { Accept: 'application/json' } });
+          const recipientDataUrl = api_url(`auth/admin/user`);
+          const recipientRes = await axios.get(recipientDataUrl, { headers: { Accept: 'application/json' } });
+          setUserData(userRes.data);
+          setTransactions(res.data);
+          setRecipientData(recipientRes.data);
+          // console.log(res.data); // Log the fetched data
+          // console.log(userRes.data); // Log the fetched data
+          
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        } finally {
+          setIsLoading(false); 
         }
-            fetchData();
-            getCurrencyData();
-
-      }, []);
-
-      function getCurrencyPairNames(currencyPairId: number): { sellCurrencyName: string, buyCurrencyName: string } {
-        const sellCurrencyId = Array.isArray(currenciesPairId) && currenciesPairId.find(pair => pair.id === currencyPairId)?.sell_currency_id;
-        const buyCurrencyId = Array.isArray(currenciesPairId) && currenciesPairId.find(pair => pair.id === currencyPairId)?.buy_currency_id;
-        const sellCurrencyName = currenciesNames.find(currency => currency.id === sellCurrencyId)?.name;
-        const buyCurrencyName = currenciesNames.find(currency => currency.id === buyCurrencyId)?.name;
-      
-        return { sellCurrencyName: sellCurrencyName || '', buyCurrencyName: buyCurrencyName || '' };
       };
 
-      const findCurrencyName = (currencyId : number) =>{
-        var currencyname = null;
-        currenciesNames.forEach(currency => {
-            if(currencyId == currency.id){
-                currencyname = currency.name;
-            }
-        });
-        return currencyname;
+      const getCurrencyData = async () => {
+        try {
+          const currenciesPairs = await getCurrenciesPairs();
+          if (currenciesPairs && Array.isArray(currenciesPairs)) {
+            setcurrenciesPairId(currenciesPairs);
+          } else {
+            console.error('Invalid currencies pairs data');
+          }
+          const currencies = await getCurrencies();
+          if (currencies && Array.isArray(currencies)) {
+            setCurrenciesNames(currencies);
+          } else {
+            console.error('Invalid currencies data');
+          }
+        } catch (error) {
+          console.error('Error fetching currency data:', error);
+
+        } finally {
+          setisLoadingCurr(false);
+        }
+      }
+          fetchData();
+          getCurrencyData();
+
+    }, []);
+
+    function getCurrencyPairNames(currencyPairId: number): { sellCurrencyName: string, buyCurrencyName: string } {
+      const sellCurrencyId = Array.isArray(currenciesPairId) && currenciesPairId.find(pair => pair.id === currencyPairId)?.sell_currency_id;
+      const buyCurrencyId = Array.isArray(currenciesPairId) && currenciesPairId.find(pair => pair.id === currencyPairId)?.buy_currency_id;
+      const sellCurrencyName = currenciesNames.find(currency => currency.id === sellCurrencyId)?.name;
+      const buyCurrencyName = currenciesNames.find(currency => currency.id === buyCurrencyId)?.name;
+    
+      return { sellCurrencyName: sellCurrencyName || '', buyCurrencyName: buyCurrencyName || '' };
+    };
+
+    const findCurrencyName = (currencyId : number) =>{
+      var currencyname = null;
+      currenciesNames.forEach(currency => {
+          if(currencyId == currency.id){
+              currencyname = currency.name;
+          }
+      });
+      return currencyname;
     }
 
     const findUser = (wallet_id: number): string | null => {
@@ -121,7 +132,47 @@ export default function History() {
       }
       return null;
     };
-      
+
+    const generateInnerTransactions = () => {
+      let rows: JSX.Element[] = []
+      if (iTrnsPage === 0) return rows
+      for (let i = pageStartIndex(recordsPerPage, iTrnsPage);
+        i < pageEndIndex(recordsPerPage, iTrnsPage, iTrnsTotalPages, transactions.innerTransactions.length); i++) {
+        const transaction = transactions.innerTransactions[i]
+        const sellCurrencyName = getCurrencyPairNames(transaction.currency_pair_id).sellCurrencyName;
+        const buyCurrencyName = getCurrencyPairNames(transaction.currency_pair_id).buyCurrencyName;
+        rows.push(
+          <tr className='border-b border-gray-700 hover:bg-gray-700 text-center items-center' key={transaction.id}>
+            <td className="py-1">{transaction.id}</td>
+            <td className="py-1">{new Date(transaction.transaction_date).toLocaleString()}</td>
+            <td className="py-1">{transaction.inital_amount.toFixed(significantDigits(transaction.inital_amount))} {sellCurrencyName}</td>
+            <td className="py-1">{transaction.converted_amount.toFixed(significantDigits(transaction.converted_amount))} {buyCurrencyName}</td>
+          </tr>
+        )
+      }
+      return rows
+    }
+
+    const generateUserTransactions = () => {
+      let rows: JSX.Element[] = []
+      if (uuTrnsPage === 0) return rows
+      for (let i = pageStartIndex(recordsPerPage, uuTrnsPage);
+        i < pageEndIndex(recordsPerPage, uuTrnsPage, uuTrnsTotalPages, transactions.userToUserTransactions.length); i++) {
+        const transaction = transactions.userToUserTransactions[i]
+        const CurrencyName = findCurrencyName(transaction.currency_id);
+        const recipient = findUser(transaction.wallet_recipient_id);
+        rows.push(
+          <tr className='border-b border-gray-700 hover:bg-gray-700 text-center items-center' key={transaction.id}>
+            <td className="py-1">{transaction.id}</td>
+            <td className="py-1">{recipient}</td>
+            <td className="py-1">{new Date(transaction.transaction_date).toLocaleString()}</td>
+            <td className="py-1">{transaction.amount.toFixed(significantDigits(transaction.amount))} {CurrencyName} </td>
+          </tr>
+        )
+      }
+      return rows
+    }
+
     return (
     <Layout>
       <div className="containerCustom borderLightY">
@@ -141,6 +192,7 @@ export default function History() {
                 Array.isArray(transactions.innerTransactions) && transactions.innerTransactions.length > 0 ? (
                   <div className='flex flex-col'>
                   <h1 className='m-5 text-3xl'>Wymiany walut</h1>
+                  <Paginator currentPage={iTrnsPage} totalPages={iTrnsTotalPages} onPageChange={setITrnsPage} />
                   <table className="w-10/12 mx-auto border-collapse border-b-1 border-gray-300">
                     <thead>
                       <tr className='border-b border-gray-300 '>
@@ -151,23 +203,12 @@ export default function History() {
                       </tr>
                     </thead>
                     <tbody>
-                      {transactions.innerTransactions.map((transaction) => {
-                        const sellCurrencyName = getCurrencyPairNames(transaction.currency_pair_id).sellCurrencyName;
-                        const buyCurrencyName = getCurrencyPairNames(transaction.currency_pair_id).buyCurrencyName;
-
-                        return (
-                          <tr className='border-b border-gray-700 hover:bg-gray-700 text-center items-center' key={transaction.id}>
-                            <td className="py-1">{transaction.id}</td>
-                            <td className="py-1">{new Date(transaction.transaction_date).toLocaleString()}</td>
-                            <td className="py-1">{transaction.inital_amount} {sellCurrencyName}</td>
-                            <td className="py-1">{transaction.converted_amount} {buyCurrencyName}</td>
-                          </tr>
-                        );
-                      })}
+                      {generateInnerTransactions()}
                     </tbody>
                   </table>
 
                   <h1 className='m-5 text-3xl'>Wymiany z użytkownikami</h1>
+                  <Paginator currentPage={uuTrnsPage} totalPages={uuTrnsTotalPages} onPageChange={setUUTrnsPage} />
                   <table className="w-10/12 mx-auto border-collapse border-b-1 border-gray-300">
                     <thead>
                       <tr className='border-b border-gray-300'>
@@ -178,19 +219,7 @@ export default function History() {
                       </tr>
                     </thead>
                     <tbody>
-                      {transactions.userToUserTransactions.map((transactionWithUser) => {
-                    
-                        const CurrencyName = findCurrencyName(transactionWithUser.currency_id);
-                        const recipient = findUser(transactionWithUser.wallet_recipient_id);
-                        return (
-                          <tr className='border-b border-gray-700 hover:bg-gray-700 text-center items-center' key={transactionWithUser.id}>
-                            <td className="py-1">{transactionWithUser.id}</td>
-                            <td className="py-1">{recipient}</td>
-                            <td className="py-1">{new Date(transactionWithUser.transaction_date).toLocaleString()}</td>
-                            <td className="py-1">{transactionWithUser.amount} {CurrencyName} </td>
-                          </tr>
-                        );
-                      })}
+                      {generateUserTransactions()}
                     </tbody>
                   </table>
                   </div>
