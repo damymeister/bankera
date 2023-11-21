@@ -13,6 +13,12 @@ import api_url from '@/lib/api_url';
 import axios from 'axios';
 import SnackBar from '@/components/snackbar'
 
+type Role = {
+  id: number;
+  name: string;
+  user: User[];
+};
+
 const UsersTable = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [showSnackbar, setShowSnackbar] = useState(false)
@@ -23,11 +29,18 @@ const UsersTable = () => {
     icon: <FaExclamation />,
     description: snackMess
 };
+  const [roles, setRoles] = useState<Role[]>([]);
+  
   useEffect(() => {
     const fetchUsers = async () => {
       const response = await fetch('/api/auth/admin/user');
       const data = await response.json();
+
+      const rolesurl = api_url(`auth/admin/roles`);
+      const roleRes = await axios.get(rolesurl, { headers: { Accept: 'application/json' } });
+
       setUsers(data);
+      setRoles(roleRes.data);
     };
 
     fetchUsers();
@@ -42,7 +55,15 @@ const UsersTable = () => {
         console.log('unexpected error: ', error)
     }
 }
-
+  const findRole = (role_id: number): string | null => {
+    if (roles) {
+      const role = roles.find((role: { id: number; }) => role.id === role_id);
+      if (role) {
+        return role.name;
+      }
+    }
+    return null;
+  };
 
   return (
     <Layout>
@@ -83,26 +104,36 @@ const UsersTable = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+            {users.map((user) => {
+              const roleName = findRole(user.role_id);
+
+              return (
                 <tr key={user.id} className="border-b border-gray-700 hover:bg-gray-700 text-center items-center">
                   <td className="px-1 ">{user.id}.</td>
                   <td className="px-1 ">{user.first_name}</td>
                   <td className="px-1 ">{user.last_name}</td>
                   <td className="px-1 ">{user.email}</td>
-                  {/* <td className="px-1 ">{'*'.repeat(8)}</td> */}
                   <td className="px-1 ">{user.phone_number}</td>
-                  <td className="text-red-600 border-rounded1">{user.role_id}</td>
+                  <td className="text-red-600 border-rounded1">{roleName}</td>
                   <td className="py-3 m-1 px-2 flex flex-row  justify-center">
                     <FaEdit className="text-blue-400 hover:text-blue-800 mx-1">Edit</FaEdit>
-                    <FaTrash className="text-red-400 hover:text-red-800 mx-1" onClick={() => {
-                       if (!window.confirm("Czy na pewno chcesz usunąć tego użytkownika?")) return
-                            handleDeleteUser(user.id)
-                            setShowSnackbar(true);
-                        }}>Delete</FaTrash>
-                    <Link href={`/admin/userHistory?id=${user.id}`} className="text-green-400 hover:text-green-800 mx-1"><FaHistory /></Link>
+                    <FaTrash
+                      className="text-red-400 hover:text-red-800 mx-1"
+                      onClick={() => {
+                        if (!window.confirm("Czy na pewno chcesz usunąć tego użytkownika?")) return;
+                        handleDeleteUser(user.id);
+                        setShowSnackbar(true);
+                      }}
+                    >
+                      Delete
+                    </FaTrash>
+                    <Link href={`/admin/userHistory?id=${user.id}`} className="text-green-400 hover:text-green-800 mx-1">
+                      <FaHistory />
+                    </Link>
                   </td>
                 </tr>
-              ))}
+              );
+            })}
             </tbody>
           </table>
             </div>

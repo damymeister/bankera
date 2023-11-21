@@ -12,7 +12,7 @@ import { getCurrencies } from '../api/services/currencyService';
 import { getCurrenciesPairs } from '../api/services/currencyPairs';
 import ICurrency from '@/lib/interfaces/currency';
 import ICurrencyPair from '@/lib/interfaces/currencyPair';
-import { IRegisteringUser } from '@/lib/interfaces/user';
+import { IRegisteringUser, IUserSearch } from '@/lib/interfaces/user';
 import { ITransactionData } from '@/lib/interfaces/adminPanel';
 
 export default function History() {
@@ -28,6 +28,9 @@ export default function History() {
       password: "",
       phone_number: "",
     });
+    const [recipientData, setRecipientData] = useState<IUserSearch[]>([]);
+    
+    
     const [transactions, setTransactions] = useState<ITransactionData>({
         innerTransactions: [],
         userToUserTransactions: []
@@ -43,11 +46,17 @@ export default function History() {
             const urlWithQuery = api_url(`auth/admin/transactionHistory?id=${id}`);
             const res = await axios.get(urlWithQuery, { headers: { Accept: 'application/json' } });
             
+
+
             const userDataUrl = api_url(`auth/admin/manageUser?id=${id}`);
             const userRes = await axios.get(userDataUrl, { headers: { Accept: 'application/json' } });
+            const recipientDataUrl = api_url(`auth/admin/user`);
+            const recipientRes = await axios.get(recipientDataUrl, { headers: { Accept: 'application/json' } });
             
+
             setUserData(userRes.data);
             setTransactions(res.data);
+            setRecipientData(recipientRes.data);
             // console.log(res.data); // Log the fetched data
             // console.log(userRes.data); // Log the fetched data
             
@@ -92,6 +101,26 @@ export default function History() {
       
         return { sellCurrencyName: sellCurrencyName || '', buyCurrencyName: buyCurrencyName || '' };
       };
+
+      const findCurrencyName = (currencyId : number) =>{
+        var currencyname = null;
+        currenciesNames.forEach(currency => {
+            if(currencyId == currency.id){
+                currencyname = currency.name;
+            }
+        });
+        return currencyname;
+    }
+
+    const findUser = (wallet_id: number): string | null => {
+      if (recipientData) {
+        const user = recipientData.find((user) => user.wallet_id === wallet_id);
+        if (user) {
+          return user.first_name + " " + user.last_name;
+        }
+      }
+      return null;
+    };
       
     return (
     <Layout>
@@ -143,22 +172,22 @@ export default function History() {
                     <thead>
                       <tr className='border-b border-gray-300'>
                         <th className="">Numer transakcji</th>
-                        <th className=""> Z użytkownikiem</th>
+                        <th className=""> Wysłano do</th>
                         <th className=""> Data wykonania</th>
-                        <th className=""> Wymieniono</th>
+                        <th className=""> Kwota</th>
                       </tr>
                     </thead>
                     <tbody>
                       {transactions.userToUserTransactions.map((transactionWithUser) => {
-                        const sellCurrencyName = getCurrencyPairNames(transactionWithUser.currency_pair_id).sellCurrencyName;
-                        const buyCurrencyName = getCurrencyPairNames(transactionWithUser.currency_pair_id).buyCurrencyName;
-
+                    
+                        const CurrencyName = findCurrencyName(transactionWithUser.currency_id);
+                        const recipient = findUser(transactionWithUser.wallet_recipient_id);
                         return (
                           <tr className='border-b border-gray-700 hover:bg-gray-700 text-center items-center' key={transactionWithUser.id}>
                             <td className="py-1">{transactionWithUser.id}</td>
-                            <td className="py-1">{transactionWithUser.wallet_recipient_id}</td>
+                            <td className="py-1">{recipient}</td>
                             <td className="py-1">{new Date(transactionWithUser.transaction_date).toLocaleString()}</td>
-                            <td className="py-1">{transactionWithUser.inital_amount} {sellCurrencyName} na {transactionWithUser.converted_amount} {buyCurrencyName}</td>
+                            <td className="py-1">{transactionWithUser.amount} {CurrencyName} </td>
                           </tr>
                         );
                       })}
