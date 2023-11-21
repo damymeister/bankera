@@ -83,18 +83,20 @@ export default function Home() {
                 </div>
             </div>
         </div>
-        { privilege > 1 &&
         <>
             <div className="currencies">
                 <h1 className='py-4 lg:text-3xl md:text-2xl textUnderline'>Kursy walut</h1>
                 <div className="Topcurrencies">
                     <Currency/>
                 </div>
-                <Link href="/exchangeRates" className="button2">Zobacz wszystkie kursy</Link>
+                {
+                    privilege > 0 ?
+                    <Link href="/exchangeRates" className="button2">Zobacz wszystkie kursy</Link>
+                    : <span>Zaloguj się aby wyświetlić więcej kursów</span>
+                }
             </div>
             <div className="site-element mx-1"></div>
         </>
-         }
         <div className='postSection  anim3 borderLight'>
             <h1 className='py-4 lg:text-3xl md:text-2xl textUnderline'>Recent Posts</h1>
             <div className='pt-4 postContainer px-1'>

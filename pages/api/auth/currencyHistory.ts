@@ -1,4 +1,3 @@
-
 import ICurrencyHistory from "@/lib/interfaces/currencyHistory";
 import prisma from "@/lib/prisma";
 import { linearRegression } from "@/lib/regression";
@@ -107,7 +106,7 @@ function transform (data: {
  * predict: If set to true, will calculate linear model prediction for conversion value
  * @returns history response
  */
-export default async function handler(req: NextApiRequest, res: NextApiResponse)  {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'GET') {
         let sell_currency_id = 0, buy_currency_id = 0, timestamp = '1h'
         let reqType : requestType = requestType.All

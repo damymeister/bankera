@@ -2,7 +2,7 @@ import api_url from '@/lib/api_url';
 import axios from 'axios'
 
 
-const url = api_url('auth/currency')
+const url = api_url('currency')
 
 export const getCurrencies = async () => {
         try {

@@ -16,7 +16,7 @@ export default function Currency() {
   useEffect(() => {
     async function fetchCurrencies() {
       try {
-        let url = api_url('auth/currencyHistory') + '?timestamp=' + '2h' + '&includeDiff=true&invert=true&sell_currency_id=' + '118';
+        let url = api_url('topCurrencies')
         const { data } = await axios.get(url, { headers: { Accept: 'application/json' } });
         // console.log(data);
         setCurrencyHistory(data);
@@ -30,7 +30,7 @@ export default function Currency() {
 
   useEffect(() => {
     const handleGetCurrencies = async () => {
-      const { data } = await axios.get(api_url('auth/currency'), { headers: { Accept: 'application/json' } });
+      const { data } = await axios.get(api_url('currency'), { headers: { Accept: 'application/json' } });
       setCurrencies([allSelector, ...data] as ICurrency[]);
     };
     handleGetCurrencies();
