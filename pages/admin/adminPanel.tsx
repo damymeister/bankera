@@ -114,9 +114,9 @@ const UsersTable = () => {
                   <td className="px-1 ">{user.last_name}</td>
                   <td className="px-1 ">{user.email}</td>
                   <td className="px-1 ">{user.phone_number}</td>
-                  <td className="text-red-600 border-rounded1">{roleName}</td>
+                  <td className="text-[#BB86FC]">{roleName}</td>
                   <td className="py-3 m-1 px-2 flex flex-row  justify-center">
-                    <FaEdit className="text-blue-400 hover:text-blue-800 mx-1">Edit</FaEdit>
+                    {/* <FaEdit className="text-blue-400 hover:text-blue-800 mx-1">Edit</FaEdit> */}
                     <FaTrash
                       className="text-red-400 hover:text-red-800 mx-1"
                       onClick={() => {
