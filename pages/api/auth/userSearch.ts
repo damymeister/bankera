@@ -19,13 +19,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           
           const userProfiles = await prisma.user.findMany({
             where: {
-              OR: searchWords.map((word: string) => ({
-                OR: [
-                  { first_name: { contains: word } },
-                  { last_name: { contains: word } },
-                  { email: { contains: word } }
-                ]
-              }))
+              AND: [
+                {
+                  OR: searchWords.map((word: string) => ({
+                    OR: [
+                      { first_name: { contains: word } },
+                      { last_name: { contains: word } },
+                      { email: { contains: word } }
+                    ]
+                  }))
+                },
+                {
+                  NOT: [
+                    { wallet_id: 0 }, 
+                    { wallet_id: null } ,
+                    { wallet_id: undefined}
+                  ]
+                }
+              ]
             },
             select: {
               first_name: true,
@@ -35,6 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               wallet_id: true,
             }
           });
+          
           
             if (!userProfiles) return res.status(404).json({ error: 'Change searching phrase.' });
         
