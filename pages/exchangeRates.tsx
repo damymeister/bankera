@@ -99,10 +99,10 @@ export default function ExchangeRates() {
           onChange={(e) => {
             setPastTimestamp(e.target.value)
           }}>
-            <option key={'1h'} value={'2h'}>1 godziny</option>
-            <option key={'3h'} value={'4h'}>3 godzin</option>
-            <option key={'6h'} value={'7h'}>6 godzin</option>
-            <option key={'12h'} value={'13h'}>12 godzin</option>
+            <option key={'1h'} value={'1h'}>1 godziny</option>
+            <option key={'3h'} value={'3h'}>3 godzin</option>
+            <option key={'6h'} value={'6h'}>6 godzin</option>
+            <option key={'12h'} value={'12h'}>12 godzin</option>
             <option key={'1d'} value={'1d'}>1 dnia</option>
           </select>
         </div>
