@@ -6,7 +6,9 @@ export enum CHeaders {
     Cron = '^0&5[&dCron&5]&r',
     Mid = '^0&1[&bMid&1]&r',
     ACK = '^0&2[&aACK&2]&r',
-    CALL = '^0&8[&7CALL&8]&r'
+    CALL = '^0&8[&7CALL&8]&r',
+    TASKCALL = '^0&5[&3TASK&5->&7CALL&5]&r',
+    TASKACK = '^0&5[&3TASK&5->&aACK&5]&r',
 }
 export enum Colors {
     Black = "0",
