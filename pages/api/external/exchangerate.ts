@@ -1,8 +1,10 @@
+import { EXTERNAL_API_KEY } from "@/lib/secrets"
 import { NextApiRequest, NextApiResponse } from "next"
 
 const API_KEY = 'cdffc4bb82c480856ac4b8cb2fd53dc6'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.headers['x-api-key'] !== EXTERNAL_API_KEY) return res.status(403).json({error: "Not authorized"})
     // Get currency data
     if (req.method === 'GET') {
         const url = 'http://api.exchangerate.host/live?access_key=' + API_KEY
