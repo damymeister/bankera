@@ -1,8 +1,10 @@
+import { EXTERNAL_API_KEY } from "@/lib/secrets"
 import { NextApiRequest, NextApiResponse } from "next"
 
 const API_KEY = 'fca_live_TLndB9LAMAKa41PCrVy6NWnsHrXxLyYUyLhIX51Z'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.headers['x-api-key'] !== EXTERNAL_API_KEY) return res.status(403).json({error: "Not authorized"})
     // Get currency data
     if (req.method === 'GET') {
         const url = 'https://api.freecurrencyapi.com/v1/latest?apikey=' + API_KEY

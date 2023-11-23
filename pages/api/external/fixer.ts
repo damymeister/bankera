@@ -1,7 +1,9 @@
+import { EXTERNAL_API_KEY } from "@/lib/secrets"
 import { NextApiRequest, NextApiResponse } from "next"
 
 const API_KEY = 'd823f5050d98829fa546dcde11ab8a05'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.headers['x-api-key'] !== EXTERNAL_API_KEY) return res.status(403).json({error: "Not authorized"})
     // Get currency data
     if (req.method === 'GET') {
         const url = 'http://data.fixer.io/api/latest?access_key=' + API_KEY

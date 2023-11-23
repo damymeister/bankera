@@ -2,6 +2,7 @@ import prisma from "./prisma"
 import api_url from "./api_url";
 import ICurrencyPair from "./interfaces/currencyPair";
 import { CHeaders, Color } from "./console";
+import { EXTERNAL_API_KEY } from "./secrets";
 
 const currencies = async () => {
     const data = await prisma.currency.findMany();
@@ -33,6 +34,7 @@ async function getFromFixer () {
         method: 'GET',
         headers: {
             'content-type': 'application/json;charset=UTF-8',
+            'x-api-key': EXTERNAL_API_KEY
         },
     }).then(response => response.json())
     .then((data) => {
@@ -50,6 +52,7 @@ async function getFromFreecurrency () {
         method: 'GET',
         headers: {
             'content-type': 'application/json;charset=UTF-8',
+            'x-api-key': EXTERNAL_API_KEY
         },
     }).then(response => response.json())
     .then((data) => {
@@ -67,6 +70,7 @@ async function getFromExchangeRate () {
         method: 'GET',
         headers: {
             'content-type': 'application/json;charset=UTF-8',
+            'x-api-key': EXTERNAL_API_KEY
         },
     }).then(response => response.json())
     .then((data) => {

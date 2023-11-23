@@ -1,3 +1,17 @@
+# TODO List
+
+- **REFAKTORYZACJA** CSSa już ostatnia
+- Paginacja do currencyExchange i wallet
+- Ostatnia strona ma być wielkości tak jak poprzednich
+- Dodać zdjęcia do postów
+- Flex wrap do postów, posty wyższe niż szersze
+- **FOREX**!!! Prosty wykres z currencyHistory
+- Edycja użytkowników w adminPanelu
+- Implementacja wallet -> forexWallet
+- Implementacja forexCurrencyStorage, forexWallet i speculativeTransaction
+- CRON do transakcji spekulacyjnych
+- Testy
+
 # Engineering thesis
 
 ## GitHub Commands

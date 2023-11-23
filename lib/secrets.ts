@@ -1,0 +1,1 @@
+export const EXTERNAL_API_KEY = 'a7310cbd482469d7c50fecfc35944d55'

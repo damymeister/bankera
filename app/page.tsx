@@ -62,7 +62,7 @@ export default function Home() {
             }
             
             <div className="servicesContainer py-4 mt-4  ">
-            <a className='lg:text-3xl md:text-2xl textUnderline'>Strona zapewnia</a>
+            <a className='lg:text-3xl md:text-2xl textUnderline'>Aplikacja zapewnia</a>
                 <div className="services mt-4 lg:text-2xl">
                     <a className='flex flex-row items-center'>
                         <div className="mr-2"><FaChartLine/></div>
