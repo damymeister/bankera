@@ -40,6 +40,7 @@ const loadData = async () =>{
       }
     
       var walletData = await getWalletData();
+      console.log(walletData.wallet_id);
       const userCurrencies = await getCurrencyStorage(walletData.wallet_id);
       const newupdatedUserCurrencies = userCurrencies.data.map((data: any) => ({
         id: data.id, 
@@ -58,8 +59,8 @@ const loadData = async () =>{
       setUserWalletData((data) =>({
           ...data,
           wallet_id : walletData.wallet_id,
-          firstName : walletData.first_name,
-          lastName : walletData.last_name,
+          first_name : walletData.first_name,
+          last_name : walletData.last_name,
       }));
     }catch(error){
       setSnackbarProps({snackStatus: "danger", message: "Nie udało się pobrać danych portfela.", showSnackbar: true});
@@ -320,7 +321,7 @@ const mapUserCurrencies = () => {
         <Layout>
           <SidePanel></SidePanel>
             {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
-            {isLoading ? (<h1>Please wait...</h1>) : userWalletData ? (
+            {isLoading ? (<h1>Please wait...</h1>) : userWalletData.wallet_id !== 0 ? (
                 <div className='m-8'>   <h1 className='text-2xl'>Hello {userWalletData.first_name} {userWalletData.last_name}</h1>
                     <p>You can exchange currencies in your wallet below
                 .</p>
