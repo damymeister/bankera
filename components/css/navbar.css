@@ -104,6 +104,11 @@
 .foldButton {
   display: none;
 }
+.foldButton:hover {
+  color: var(--primary-purple-color) !important;
+  -webkit-animation: drop-shadow-center 1s both;
+  animation: drop-shadow-center 1s both;
+}
 
 @media (max-width: 768px) {
   
@@ -172,5 +177,14 @@
   }
   100% {
     text-shadow: 0 0 18px var(--primary-purple-color);
+  }
+}
+
+@keyframes drop-shadow-center {
+  0% {
+    filter: drop-shadow(0 0 0 var(--primary-purple-color));
+  }
+  100% {
+    filter: drop-shadow(0 0 18px var(--primary-purple-color));
   }
 }
