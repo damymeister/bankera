@@ -51,14 +51,14 @@ export default function Currency() {
       <div className=' text-[#BB86FC]'>{currencyHistory.length > 0 ? new Date(currencyHistory[0].history[0].date).toLocaleString() : '-'}</div>
       </div>
       
-    <div className='flex flex-row py-4 my-2'>
+      <div className='lg:grid lg:grid-cols-3 lg:gap-4 lg:text-base md:grid-cols-2 md:gap-4 sm:grid-cols-1 py-4 my-4 justify-center items-center sm:text-sm'>
       {currencyHistory.length > 0 ? (
         <>
         
         {currencyHistory.slice(0, 3).map((currency: any) => (
           
-          <div key={currency.buy_currency_id.toString()} className=''>
-            <div className="currency p-8">
+          <div key={currency.buy_currency_id.toString()} className='flex justify-center items-center'>
+            <div className="currency p-6">
               <div className="flex flex-row items-center justify-center gap-x-2">
                 <span>{getCurrencyNameById(currencies, currency.sell_currency_id)}</span>
                 <FaExchangeAlt />

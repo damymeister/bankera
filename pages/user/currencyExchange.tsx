@@ -111,7 +111,7 @@ const displaySelectOfAvailableCurrencies = (currencyID: number, currencyNumber: 
   const newCurrenciesAvailable = currenciesNames.filter((currency) => currency.id !== currencyID)
   newCurrenciesAvailable.unshift({ id: 0, name: "Select" });
         return (
-            <select className=" text-white rounded-md border border-[#BB86FC] bg-transparent py-1 pl-2 pr-7 focus:ring-2 focus:bg-[#1f1b24b2] focus:ring-inset focus:ring-indigo-600 sm:text-sm" onChange={(e) => handleCurrencyChange(e, currencyNumber)} >
+            <select className=" text-white rounded-md border border-[#bb86fcad] bg-transparent py-1 pl-2 pr-7 focus:ring-2 focus:bg-[#1f1b24b2] focus:ring-inset focus:ring-indigo-600 sm:text-sm" onChange={(e) => handleCurrencyChange(e, currencyNumber)} >
               {currenciesNames.length !== 0
                 ? newCurrenciesAvailable.map((currency) => (
                     <option key={currency.id} value={currency.id}>
@@ -289,7 +289,7 @@ const mapUserCurrencies = () => {
               <td className='p-2'>{displaySelectOfAvailableCurrencies(currency.currency_id, currency.id)}</td>
               <td className="flex items-center justify-center p-2  inset-y-0 right-0">
                 <input
-                  className='w-1/2 rounded-md border border-[#BB86FC] py-1 pl-2 pr-15 ring-1 ring-inset focus:ring-2 focus:text-white focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-[#1f1b24b2]'
+                  className='w-1/2 rounded-md border border-[#bb86fcad] py-1 pl-2 pr-15 ring-1 ring-inset focus:ring-2 focus:text-white focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-[#1f1b24b2]'
                   placeholder='0'
                   type="number"
                   value={userOwnedCurrencies[index].value}
@@ -305,7 +305,7 @@ const mapUserCurrencies = () => {
                   <span> {userOwnedCurrencies[index].converted_amount.toFixed(significantDigits(userOwnedCurrencies[index].converted_amount))} {findCurrencyName(userOwnedCurrencies[index].quoteCurrency)} </span>
                   : "0.00"
               }</td>
-              <td onClick={() => saveExchange(index)} className='flex items-center justify-center p-2'><LiaExchangeAltSolid className="text-white cursor-pointer text-2xl" /></td>
+              <td onClick={() => saveExchange(index)} className='flex items-center justify-center p-2'><div className="text-[#bb86fcad] p-2 border border-[#bb86fcad] hover:border-[#BB86FC] rounded-lg hover:text-[#BB86FC] cursor-pointer text-sm" >Wymień</div></td>
             </tr>
           );
         })}
