@@ -18,9 +18,9 @@ model User {
   forex_wallet_id      Int?          @unique
   account_created_on   DateTime
   role_id              Int     
-  wallet               Wallet?       @relation(fields: [wallet_id], references: [id], onUpdate: Cascade, onDelete: Cascade) // 1->1
-  forex_wallet         Forex_Wallet? @relation(fields: [forex_wallet_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  role                 Role          @relation(fields: [role_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  wallet               Wallet?       @relation(fields: [wallet_id], references: [id], onUpdate: Cascade, onDelete: NoAction) // 1->1
+  forex_wallet         Forex_Wallet? @relation(fields: [forex_wallet_id], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  role                 Role          @relation(fields: [role_id], references: [id], onUpdate: Cascade, onDelete: NoAction)
   posts                Post[] // 1->*
 }
 
