@@ -1,6 +1,7 @@
 // Define console colored headers here
 export enum CHeaders {
     Server = '^0&2[&aServer&2]&r',
+    API = '^0&a[&fAPI&a]&r',
     Info = '^0&3[&bInfo&3]&r',
     Error = '^0&4[&cError&4]&r',
     Cron = '^0&5[&dCron&5]&r',

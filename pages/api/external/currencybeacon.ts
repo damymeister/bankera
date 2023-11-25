@@ -2,14 +2,13 @@ import { CHeaders, Color } from "@/lib/console"
 import { EXTERNAL_API_KEY } from "@/lib/secrets"
 import { NextApiRequest, NextApiResponse } from "next"
 
-const API_KEY = 'cdffc4bb82c480856ac4b8cb2fd53dc6'
-
+const API_KEY = 'GdeCxtCWgMqO1bnLhJn7PqSlW1djUXvd'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.headers['x-api-key'] !== EXTERNAL_API_KEY) return res.status(403).json({error: "Not authorized"})
-    console.log(Color.formatted(`${CHeaders.API}${CHeaders.CALL} &6Getting data from ExchangeRate...`))
+    console.log(Color.formatted(`${CHeaders.API}${CHeaders.CALL} &6Getting data from CurrencyBeacon...`))
     // Get currency data
     if (req.method === 'GET') {
-        const url = 'http://api.exchangerate.host/live?access_key=' + API_KEY
+        const url = 'https://api.currencybeacon.com/v1/latest?api_key=' + API_KEY
         let data = await fetch(url, {
             method: 'GET',
             headers: {
@@ -17,12 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             },
         }).then(response => response.json())
         .then((data) => {
-            let rates: {[key: string]: number} = {}
-            for (const [key, val] of Object.entries(data.quotes as {[key: string]: number})) {
-                rates[key.slice(3)] = val
-            }
-            rates["USD"] = 1
-            return {base: "USD", rates: rates}
+            return {base: data.base, rates: data.rates}
         })
         .catch(error => {
             console.log(error)
