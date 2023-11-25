@@ -198,11 +198,13 @@ const displayButton = () =>{
             <div>Is loading...</div>
           ) : (
             <div className="text-white flex flex-col items-center">
-            <div className='flex flex-row font-bold mb-4 py-6'>
-              {/* <FaMoneyBillWaveAlt className="cursor-pointer text-white text-2xl mr-3" /> */}
-              <label htmlFor="currentAmount" className="text-lg">
-                Current Value: {data.amount} {currencyName ? currencyName : null}
-              </label>
+            <div className='flex flex-col font-bold mb-4 py-6'>
+              <h2 className="text-lg mb-4">Manage your currency wallet</h2>
+              { data.amount && currencyName ? (
+                <label htmlFor="currentAmount" className="font-bold">
+                  Current Value: {data.amount} {currencyName}
+                </label>
+               ) : (null)}
             </div>
               {data.currencyRow_id === -1 ? (
                 <div>

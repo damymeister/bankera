@@ -94,6 +94,10 @@ export default function SidePanel() {
             <FaMoneyBillTransfer />
             <span>Przelewy</span>
           </Link>
+          <Link href="/user/forexWallet" className={`flex items-center space-x-2 py-2 ${isActive('/user/forexWallet')}`}>
+            <FaWallet />
+            <span>Portfel Forex</span>
+          </Link>
           <div className="relative">
             <input type="checkbox" id="users-dropdown" className="hidden" />
             <label
