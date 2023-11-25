@@ -98,18 +98,18 @@ const mapUserCurrencies = () => {
           <table className='w-full py-6 m-4 borderLightY text-white border-spacing-y-3' >
             <thead>
               <tr>
-                <th>Currency</th>
-                <th>Amount</th>
-                <th>Action</th>
+                <th>Ilość</th>
+                <th>Waluta</th>
+                <th>Akcja</th>
               </tr>
             </thead>
             <tbody className='py-2'>
               {walletData.map((currency) => {
                 return (
-                  <tr className='' key={currency.id}>
-                    <td>{findCurrencyName(currency.currency_id)}</td>
-                    <td>{currency.amount}</td>
-                    <td className='flex items-center justify-center'>
+                  <tr className='border-b border-gray-700' key={currency.id}>
+                    <td className='p-2'>{currency.amount}</td>
+                    <td className='p-2'>{findCurrencyName(currency.currency_id)}</td>
+                    <td className='flex items-center justify-center p-2'>
                       <BsCurrencyExchange
                         className="cursor-pointer text-2xl hover:text-slate-200"
                         onClick={() => {setShowWalletModal(true); setChoosenCurrency(currency.id , currency.wallet_id, currency.currency_id, currency.amount)}}/></td>
@@ -139,7 +139,7 @@ const mapUserCurrencies = () => {
           <div className=" p-8 borderLight rounded-xl m-8  min-h-400">
             {!walletData || walletData.length === 0 ? (
            <button onClick={() => {handleDeleteWallet(walletID).then(() => window.location.reload()) }} className="w-3/5 px-4 py-2 bg-[#ff0000c0] hover:bg-[#5c2121] text-[white] rounded-md">Delete Wallet</button>) : null }
-           <h1 className='text-2xl   border-[#BB86FC] border-b-2 py-2 my-4'>Hello { userData.firstName } { userData.surname }!</h1>
+           <h1 className='text-2xl border-[#BB86FC] border-b-2 py-2 my-4'>Hello { userData.firstName } { userData.surname }!</h1>
            <p>Current balance of you account is shown below</p>
            { mapUserCurrencies() }
           { currenciesToSend.length !== 0 ? (
