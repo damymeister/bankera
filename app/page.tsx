@@ -109,43 +109,44 @@ export default function Home() {
         </div>
 
         <div className='flex flex-col items-center mb-8'>
-            <div className="mx-4 py-4 my-4 flex flex-row content-center items-center">
-                <div className='textleft'>
-                    <div className='lg:text-3xl md:text-2xl textUnderline my-2'>Dostęp do 169 walut</div>
-                    <div className='flex flex-row '>
-                        <div className='pr-2'>Nasza aplikacja obsługuje aż </div>
-                        <div className=' text-[#BB86FC]'> 169 walut!</div>
-                    </div>       
-                </div>
-                <div className='pl-8 text-6xl'>
-                <FaCoins />
+        <div className="mx-4 py-4 my-4 flex flex-col lg:flex-row sm:flex-col content-center items-center">
+        <div className="pl-8 text-6xl sm:order-first lg:order-last">
+            <FaCoins />
+        </div>
+        <div className="textleft">
+            <div className="lg:text-3xl md:text-2xl textUnderline my-2">Dostęp do 169 walut</div>
+            <div className="flex flex-row">
+            <div className="pr-2">Nasza aplikacja obsługuje aż</div>
+            <div className="text-[#BB86FC]">169 walut!</div>
+            </div>
+        </div>
+
+        </div>
+        <div className="mx-4 py-4 my-4 flex flex-col lg:flex-row sm:flex-col content-center items-center">
+        <div className="pl-8 text-6xl sm:order-first lg:order-last">
+            <FaHistory />
+        </div>
+            <div className="textleft">
+                <div className="lg:text-3xl md:text-2xl textUnderline my-2">Historia wszystkich walut</div>
+                <div className="flex flex-row">
+                <div className="pr-2">Historie wszystkich walut do</div>
+                <div className="text-[#BB86FC]">30 dni</div>
+                <div className="pl-2">wstecz</div>
                 </div>
             </div>
-            <div className="mx-4 py-4 my-4 flex flex-row content-center items-center">
-                <div className='textleft'>
-                    <div className='lg:text-3xl md:text-2xl textUnderline my-2'>Historia wszystkich walut</div>
-                    <div className='flex flex-row '>
-                        <div className='pr-2'>Historie wszystkich walut do  </div>
-                        <div className=' text-[#BB86FC]'> 30 dni</div>
-                        <div className='pl-2'> wstecz </div>
-                    </div>       
-                </div>
-                <div className='pl-8 text-6xl'>
-                <FaHistory />
-                </div>
             </div>
-            <div className="mx-4 py-4 my-4 flex flex-row content-center items-center">
-                <div className='textleft'>
-                    <div className='lg:text-3xl md:text-2xl textUnderline my-2'>Przejrzysty interfejs</div>
-                    <div className='flex flex-row '>
-                        <div className='pr-2'>Prosty i</div>
-                        <div className=' text-[#BB86FC]'> przejrzysty</div>
-                        <div className='pl-2'> interfejs dla użytkownika </div>
-                    </div>       
-                </div>
-                <div className='pl-8 text-6xl'>
+            <div className="mx-4 py-4 my-4 flex flex-col lg:flex-row sm:flex-col content-center items-center">
+            <div className="pl-8 text-6xl sm:order-first lg:order-last">
                 <FaUser />
+            </div>
+            <div className="textleft">
+                <div className="lg:text-3xl md:text-2xl textUnderline my-2">Przejrzysty interfejs</div>
+                <div className="flex flex-row">
+                <div className="pr-2">Prosty i</div>
+                <div className="text-[#BB86FC]">przejrzysty</div>
+                <div className="pl-2">interfejs dla użytkownika</div>
                 </div>
+            </div>
             </div>
         </div>
         { privilege === 0 &&

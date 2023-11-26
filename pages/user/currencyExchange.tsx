@@ -16,6 +16,8 @@ import {IInnerTransaction} from '@/lib/interfaces/innerTransaction';
 import ICurrencyExchange from '@/lib/interfaces/currencyExchange';
 import ICurrency from '@/lib/interfaces/currency';
 import {IWallet} from '@/lib/interfaces/wallet';
+import IWallet from '@/lib/interfaces/wallet';
+import Paginator from '@/components/paginator';
 
 export default function CurrencyExchange(){
     const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<ICurrencyExchange[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0.0, currency_pair_id: 0} ])
@@ -111,7 +113,7 @@ const displaySelectOfAvailableCurrencies = (currencyID: number, currencyNumber: 
   const newCurrenciesAvailable = currenciesNames.filter((currency) => currency.id !== currencyID)
   newCurrenciesAvailable.unshift({ id: 0, name: "Select" });
         return (
-            <select className="w-1/2 text-black" onChange={(e) => handleCurrencyChange(e, currencyNumber)} >
+            <select className=" text-white rounded-md border border-[#bb86fcad] bg-transparent py-1 pl-2 pr-7 focus:ring-2 focus:bg-[#1f1b24b2] focus:ring-inset focus:ring-indigo-600 sm:text-sm" onChange={(e) => handleCurrencyChange(e, currencyNumber)} >
               {currenciesNames.length !== 0
                 ? newCurrenciesAvailable.map((currency) => (
                     <option key={currency.id} value={currency.id}>
@@ -266,53 +268,54 @@ const mapUserCurrencies = () => {
     if (!isLoading && userOwnedCurrencies.length > 0 && currenciesNames.length > 0 )  {
       return (
         
-        <div className='containerCustom borderLight'>
-          
-            <table className='w-full py-4 m-4 borderLightY text-white'>
-              <thead>
-                <tr>
-                  <th>Base Currency</th>
-                  <th>Wallet Amount</th>
-                  <th>Quote Currency</th>
-                  <th>Value</th>
-                  <th>Exchange Rate</th>
-                  <th>Converted Amount</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {userOwnedCurrencies.map((currency, index) => {
-                  return (
-                    <tr key={currency.id}>
-                    <td>{findCurrencyName(currency.currency_id)}</td>
-                    <td className='hover:cursor-pointer' onClick={() => setMaxAmountToExchange(index)}>{currency.amount}</td>
-                    <td>{displaySelectOfAvailableCurrencies(currency.currency_id, currency.id)}</td>
-                    <td className="flex items-center justify-center">
-                        <input 
-                            className='w-1/2 text-white bg-transparent border-white'
-                            placeholder='0'
-                            type="number"
-                            value={userOwnedCurrencies[index].value}
-                            onChange={(e) => handleValueToExchange(e, currency.id)}
-                            min="0"
-                            max={userOwnedCurrencies[index].amount}
-                            disabled={userOwnedCurrencies[index].quoteCurrency === 0} 
-                        ></input>
-                    </td>
-                    <td>{userOwnedCurrencies[index].rate ? userOwnedCurrencies[index].rate.toFixed(significantDigits(userOwnedCurrencies[index].rate)) : "-"}</td>
-                    <td>{
-                      userOwnedCurrencies[index].converted_amount && !isNaN(userOwnedCurrencies[index].converted_amount) ? 
-                        <span> {userOwnedCurrencies[index].converted_amount.toFixed(significantDigits(userOwnedCurrencies[index].converted_amount))} {findCurrencyName(userOwnedCurrencies[index].quoteCurrency)} </span>
-                        : "0.00"
-                        }
-                    </td>
-                    <td onClick={() => saveExchange(index)} className='flex items-center justify-center'><LiaExchangeAltSolid className="text-white cursor-pointer text-2xl" /></td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-        </div>
+        <div className='containerCustom borderLight p-4'>
+  <div className='overflow-x-auto'>
+    <table className='w-full text-white'>
+      <thead className='textUnderline'>
+        <tr>
+          <th className='md:sticky md:left-0'>Base Currency</th>
+          <th>Wallet Amount</th>
+          <th>Quote Currency</th>
+          <th>Value</th>
+          <th>Exchange Rate</th>
+          <th>Converted Amount</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody className=''>
+        {userOwnedCurrencies.map((currency, index) => {
+          return (
+            <tr key={currency.id} className='border-b border-gray-700'>
+              <td className='p-2'>{findCurrencyName(currency.currency_id)}</td>
+              <td className='hover:cursor-pointer pt-2' onClick={() => setMaxAmountToExchange(index)}>{currency.amount}</td>
+              <td className='p-2'>{displaySelectOfAvailableCurrencies(currency.currency_id, currency.id)}</td>
+              <td className="flex items-center justify-center p-2  inset-y-0 right-0">
+                <input
+                  className='w-1/2 rounded-md border border-[#bb86fcad] py-1 pl-2 pr-15 ring-1 ring-inset focus:ring-2 focus:text-white focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-[#1f1b24b2]'
+                  placeholder='0'
+                  type="number"
+                  value={userOwnedCurrencies[index].value}
+                  onChange={(e) => handleValueToExchange(e, currency.id)}
+                  min="0"
+                  max={userOwnedCurrencies[index].amount}
+                  disabled={userOwnedCurrencies[index].quoteCurrency === 0}
+                ></input>
+              </td>
+              <td className='p-2'>{userOwnedCurrencies[index].rate ? userOwnedCurrencies[index].rate.toFixed(significantDigits(userOwnedCurrencies[index].rate)) : "-"}</td>
+              <td className='p-2'>{
+                userOwnedCurrencies[index].converted_amount && !isNaN(userOwnedCurrencies[index].converted_amount) ?
+                  <span> {userOwnedCurrencies[index].converted_amount.toFixed(significantDigits(userOwnedCurrencies[index].converted_amount))} {findCurrencyName(userOwnedCurrencies[index].quoteCurrency)} </span>
+                  : "0.00"
+              }</td>
+              <td onClick={() => saveExchange(index)} className='flex items-center justify-center p-2'><div className="text-[#bb86fcad] p-2 border border-[#bb86fcad] hover:border-[#BB86FC] rounded-lg hover:text-[#BB86FC] cursor-pointer text-sm" >Wymień</div></td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
+  {/* <Paginator currentPage={} totalPages={} onPageChange={} /> */}
+</div>
       );
     }
   };

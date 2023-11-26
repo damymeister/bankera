@@ -100,15 +100,10 @@ tr:hover{
       content: "Waluta: ";
     }
     td:nth-of-type(2):before{
-      content: "Nazwa: ";
+      content: "Kupno: ";
     }
     td:nth-of-type(3):before{
-      content: "Kod waluty: ";
+      content: "Sprzedaż: ";
     }
-    td:nth-of-type(4):before{
-        content: "Kupno: ";
-      }
-    td:nth-of-type(5):before{
-        content: "Sprzedaż: ";
-      }
+
 }

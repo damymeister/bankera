@@ -77,7 +77,7 @@ export default function SidePanel() {
           </Link>
           <Link href="/news" className={`flex items-center space-x-2 py-2 ${isActive('/news')}`}>
             <FaEdit />
-            <span>Posts</span>
+            <span>Posty</span>
           </Link>
           <Link href="/exchangeRates" className={`flex items-center space-x-2 py-2 ${isActive('/exchangeRates')}`}>
             <FaDeezer />
@@ -128,14 +128,14 @@ export default function SidePanel() {
                 </Link>
               </div>
             )}
-          </div>
-          <Link href="/exchangeRates" className={`flex items-center space-x-2 py-2 ${isActive('/exchangeRates')}`}>
+          </div> */}
+          <Link href="/forexWallet" className={`flex items-center space-x-2 py-2 ${isActive('/exchangeRates')}`}>
             <FaEdit />
-            <span>Kursy walut</span>
+            <span>Portfel Forex</span>
           </Link>
-          <Link href="/exchangeRates" className={`flex items-center space-x-2 py-2 ${isActive('/exchangeRates')}`}>
+          <Link href="/Forex" className={`flex items-center space-x-2 py-2 ${isActive('/exchangeRates')}`}>
             <FaEdit />
-            <span>Kursy walut</span>
+            <span>Forex</span>
           </Link>
         </nav>
       )}

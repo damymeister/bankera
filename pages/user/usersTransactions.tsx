@@ -7,6 +7,7 @@ import Layout from "@/app/layoutPattern";
 import {FaExclamation}  from "react-icons/fa";
 import SnackBar from '@/components/snackbar'
 import '@/components/css/home.css';
+import '@/components/css/forms.css';
 import { updateCurrencyStorage, updateSelectedCurrencyStorage } from '@/pages/api/services/currencyStorageService';
 import { handleCreateUsersTransactions } from '@/pages/api/services/usersTransactionsService';
 import { FaWindowClose }  from "react-icons/fa";
@@ -189,7 +190,7 @@ const displayUserCurrencies = () =>{
     const currencyMapArray = Array.from(currencyMap);
 
     return(
-        <select className="min-w-16 text-white h-6 font-bold border border-white rounded-lg px-1 bgdark focus:border-black overflow-y-auto resize-none ml-2" onChange={handleCurrencyChange}>
+        <select className="min-w-16 text-white py-1 pl-2 border focus:bg-[#1f1b24b2] rounded-lg px-1 bgGlass hover:border-[#BB86FC] overflow-y-auto resize-none ml-2" onChange={handleCurrencyChange}>
             {currencyMapArray.map(([key, value])=>(
             <option key = {key} value={value.id}>
                 {value.name}
@@ -226,7 +227,7 @@ const sendMoneyTransfer = async () => {
   finally{
     resetData();
     loadData();
-    setSnackbarProps({ snackStatus: "danger", message: "Zlecenie zostało wykonane.", showSnackbar: true });
+    setSnackbarProps({ snackStatus: "success", message: "Zlecenie zostało wykonane.", showSnackbar: true });
   }
 }
 
@@ -283,73 +284,76 @@ const resetData = () =>{
          {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
         <div className="w-full flex items-center justify-center">
         {isLoading ? <h1>Is loading...</h1> : 
-        <div className='w-4/5 my-4 mz-2 flex items-center flex-col'>
+        <div className='w-4/5 my-4 mz-2 flex items-center flex-col containerCustom borderLight bg-[#1f1b249c] p-4'>
             <h1 className='text-2xl textUnderline'>Hello {userWalletData.first_name} {userWalletData.last_name}</h1>
-            <h4 className='text-wrap textUnderline mx-2'>Do you want to send a transfer to another user in our application? It has never been easier than now. With the Bankera app, all you need to do is search for the other user by personal information or email address, choose the amount and the currency you want to send. It&apos;s that simple!</h4>
-            <div className='flex flex-col w-full items-center justify-center'>
-                <div className='flex flex-col gap-6 mt-8 w-full flex-wrap items-center justify-center'>
-                  <div className='flex gap-8 flex-wrap flex-col items-center justify-center'>
-                    <div className='flex flex-row w-full items-center justify-center'>
-                        <label htmlFor="currencyToSend" className="font-bold mr-1 flex items-center justify-center">Currency to send: </label>
-                        {displayUserCurrencies()}
-                    </div>
-                    <div className='hover:cursor-pointer textUnderline' onClick={() => setMaximumAmountToSend()}>
-                        <span className="font-bold">Currency Balance: {valueToSendBalance.currency !== '' ? valueToSendBalance.balance : '-'}</span>
-                    </div>
-                  </div>
-                  <div className='flex gap-12 flex-wrap items-center justify-center'>
-                      <div className="relative flex flex-wrap">
-                        <div className='flex gap-2 items-center justify-center'>
-                            <label htmlFor="user" className="font-bold mr-2">User:</label>
-                            <input
-                            placeholder="Type..."
-                            id="user"
-                            type="text"
-                            className="font-bold border border-white rounded-lg px-1 bgdark focus:border-black overflow-y-auto resize-none"
-                            onChange={handleSearchPhrase}
-                            value={searchPhrase}
-                            disabled={userCliked}
-                            />
-                            <div className='w-3'>
-                              {userCliked ? 
-                              <FaWindowClose onClick={() => unselectUser()} className="ml-1 text-white w-3 inline cursor-pointer hover:text-slate-200 " />
-                            : null}
-                          </div>
-                        </div>
-                        <div className='absolute text-xs flex flex-col gap-2 max-h-12 overflow-y-auto overflow-x-hidden w-full left-6 top-8'>
-                          {!displayComment ? (
-                            searchedUsers.map((user) => (
-                              <span className='hover:cursor-pointer opacity-90' onClick={() => selectedUser(user)} key={user.id}>
-                                {user.first_name} {user.last_name} - {user.email}
-                              </span>
-                            ))
-                          ) : (
-                            <span>Brak wyników - zmień frazę wyszukiwania.</span>
-                          )}
-                        </div>
-                    </div>
-                    <div className='flex gap-2 items-center'>
-                          <label htmlFor="amount" className="font-bold flex">Amount:</label>
-                          <input
-                          placeholder="0"
-                          id="amount"
-                          type="number"
-                          min="0"
-                          max={valueToSendBalance.balance}
-                          className="h-6 w-24 font-bold border border-white rounded-lg px-1 bgdark focus:border-black overflow-y-auto resize-none"
-                          onChange={handleAmountChange}
-                          value={transferToSend.amountToChange}
-                          />
-                      </div>
-                  </div>
+            <h4 className='text-wrap textUnderline mx-2 py-2'>Czy chcesz wysłać przelew do innego użytkownika w naszej aplikacji? Teraz jest to łatwiejsze niż kiedykolwiek wcześniej. Dzięki aplikacji Bankera, wszystko, co musisz zrobić, to wyszukać innego użytkownika za pomocą danych osobowych lub adresu e-mail, wybrać kwotę i walutę. Następnie klikasz przycisk przelej kwotę i to tyle!</h4>
+            <div className='flex flex-col w-full items-center justify-center pt-2'>
+            <div className='flex flex-col gap-6 4 w-full flex-wrap items-center justify-center inline-flex'>
+              <h2 className='text-wrap text-xl textUnderline mx-2'>Stan konta</h2>
+              <div className='flex flex-row items-center justify-center textUnderline py-2'>
+                <div className='hover:cursor-pointer ' onClick={() => setMaximumAmountToSend()}>
+                  <span className="font-bold pr-4">{valueToSendBalance.currency !== '' ? valueToSendBalance.balance : '-'}</span>
+                </div>
+                <div className='flex flex-row w-full items-center justify-center'>
+                  <label htmlFor="currencyToSend" className="font-bold mr-1 flex items-center justify-center"></label>
+                  {displayUserCurrencies()}
+                </div>
               </div>
+              <div className='flex flex-col items-center justify-center gap-12 bgGlass p-4 rounded-lg'>
+              <div className="relative flex flex-wrap mb-6">
+                <div className=''>
+                  <label htmlFor="user" className="font-bold mr-2 text-left">Użytkownik:</label>
+                  <div className='flex flex-row items-center justify-center'>
+                    <input
+                      placeholder="Type..."
+                      id="user"
+                      type="text"
+                      className="border w-full rounded-md border py-1 pl-2 pr-15 focus:text-white sm:text-sm sm:leading-6 bg-[#1f1b24b2]"
+                      onChange={handleSearchPhrase}
+                      value={searchPhrase}
+                      disabled={userCliked}
+                    />
+                    <div className='w-3'>
+                      {userCliked ? 
+                        <FaWindowClose onClick={() => unselectUser()} className="ml-1 text-white w-3 inline cursor-pointer hover:text-slate-200" />
+                        : null}
+                    </div>
+                  </div>
+                </div>
+                <div className='bgdark ml-4 mb-12 absolute rounded-lg text-xs flex flex-col gap-1 max-h-12 overflow-y-auto overflow-x-hidden'>
+                  {!displayComment ? (
+                    searchedUsers.map((user) => (
+                      <span className='hover:cursor-pointer opacity-90 py-1 hover:bg-[#121212] rounded-sm' onClick={() => selectedUser(user)} key={user.id}>
+                        {user.first_name} {user.last_name} - {user.email}
+                      </span>
+                    ))
+                  ) : (
+                    <span>Brak wyników - zmień frazę wyszukiwania.</span>
+                  )}
+                </div>
+              </div>
+              <div className=''>
+                <label htmlFor="amount" className="font-bold mr-2 text-left">Kwota:</label>
+                <input
+                  placeholder="Type..."
+                  id="amount"
+                  type="number"
+                  min="0"
+                  max={valueToSendBalance.balance}
+                  className="border w-full rounded-md border py-1 pl-2 pr-15 focus:text-white sm:text-sm sm:leading-6 bg-[#1f1b24b2]"
+                  onChange={handleAmountChange}
+                  value={transferToSend.amountToChange}
+                />
+              </div>
+            </div>
+          </div>
               <button
                 disabled={isButtonDisabled}
                 onClick={sendMoneyTransfer}
                 className={`py-4 text-black rounded-xl w-48 mt-8 ${isButtonDisabled ? 'opacity-30 hover:cursor-not-allowed' : 'opacity-100 hover:opacity-80'}`}
                 style={{ backgroundColor: '#BB86FC' }}
                 >
-                  Send a transfer
+                  Przelej kwotę
                 </button>
             </div>
         </div>
