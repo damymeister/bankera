@@ -55,4 +55,4 @@ export const handleDeleteForexWallet = async (id: number) => {
             console.log('unexpected error: ', error);
           }
         }
-      };
+    };

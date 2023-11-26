@@ -79,20 +79,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           });
         }
 
-        const amountLeft = await prisma.forex_Currency_Storage.update({
-          where: {
-            id: req.body.id, 
-          },
-          data: {
-            forex_currency_amount: req.body.forex_currency_amount,
-          }
-        });
-        if(amountLeft.forex_currency_amount == 0){
-          await prisma.forex_Currency_Storage.delete({
-            where: {id: amountLeft.id}, 
-          });
-        }
-
         return res.status(200).json({ message: 'Currency storage updated.' });
       } catch (error) {
         console.error('Error while updating Forex currency storage', error);

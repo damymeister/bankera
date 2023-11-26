@@ -12,10 +12,10 @@ import {FaExclamation}  from "react-icons/fa";
 import SidePanel from '@/components/sidepanel';
 import { significantDigits } from '@/lib/currency';
 import { ICreateCurrencyStorage } from '@/lib/interfaces/currencyStorage';
-import IInnerTransaction from '@/lib/interfaces/innerTransaction';
+import {IInnerTransaction} from '@/lib/interfaces/innerTransaction';
 import ICurrencyExchange from '@/lib/interfaces/currencyExchange';
 import ICurrency from '@/lib/interfaces/currency';
-import IWallet from '@/lib/interfaces/wallet';
+import {IWallet} from '@/lib/interfaces/wallet';
 
 export default function CurrencyExchange(){
     const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<ICurrencyExchange[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0.0, currency_pair_id: 0} ])

@@ -1,4 +1,4 @@
-export default interface IWallet {
+export interface IWallet {
     wallet_id: number,
     first_name: string,
     last_name: string,

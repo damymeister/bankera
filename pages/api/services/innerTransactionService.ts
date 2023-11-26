@@ -1,5 +1,5 @@
 import api_url from '@/lib/api_url';
-import IInnerTransaction from '@/lib/interfaces/innerTransaction';
+import {IInnerTransaction} from '@/lib/interfaces/innerTransaction';
 import axios from 'axios'
 
 const url = api_url('auth/innerTransaction')

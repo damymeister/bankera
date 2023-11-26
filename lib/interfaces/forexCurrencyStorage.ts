@@ -5,6 +5,8 @@ export interface IForexCurrencyStorage{
     forex_wallet_id: number,
 }
 export interface IEditForexCurrencyStorage {
-    id: number,
-    amount: number,
+    id?:number,
+    forex_wallet_id:number,
+    amount?: number,
+    forex_currency_id:number,
 }

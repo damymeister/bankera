@@ -19,7 +19,7 @@ export interface IEditCurrencyStorage {
 export interface IUpdateSelectedStorage{
     id?: number,
     wallet_id: number,
-    amount: number,
+    amount?: number,
     currency_id: number,
 }
 export interface ClickedCurrency {

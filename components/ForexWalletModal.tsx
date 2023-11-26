@@ -1,20 +1,25 @@
 import '@/components/css/home.css';
-import { GrClose } from "react-icons/gr";
-import React, { ChangeEventHandler, useEffect, useState } from 'react';
-import { postCurrencyStorage, updateCurrencyStorage } from '@/pages/api/services/currencyStorageService';
+import React, { useEffect, useState } from 'react';
+import {  updateCurrencyStorage } from '@/pages/api/services/currencyStorageService';
+import { updateForexCurrencyStorage } from '@/pages/api/services/forexCurrencyStorageService';
 import { GiMoneyStack } from "react-icons/gi";
 import { FaWindowClose }  from "react-icons/fa";
 import SnackBar from '@/components/snackbar';
 import {FaExclamation}  from "react-icons/fa";
-import {ICurrencyStorage, IUpdateSelectedStorage, ClickedCurrency} from '@/lib/interfaces/currencyStorage';
+import { IUpdateSelectedStorage, ClickedCurrency} from '@/lib/interfaces/currencyStorage';
 import { checkExistenceOfForexWallet } from '@/pages/api/services/forexWalletService';
 import { checkExistenceOfWallet } from '@/pages/api/services/walletService';
+import { handleCreateWalletForexWalletTransactions } from '@/pages/api/services/walletForexWalletTransactions';
+import { userWalletForexWallet } from '@/lib/interfaces/walletForexWalletTransactions';
+import { IForexCurrencyStorage, IEditForexCurrencyStorage } from '@/lib/interfaces/forexCurrencyStorage';
+
 export default function ForexWalletModal(props:any){
     const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
     const [snackMess, setsnackMess] = useState<string>("")
     const [snackStatus, setsnackStatus] = useState<string>("danger")
     const [amountToChange, setAmountToChange] = useState<number>(0.0);
     const [currencyToSend, setCurrencyToSend] = useState<number>(0);
+    const [userWallets, setUserWallets] = useState<userWalletForexWallet>({forex_wallet_id:0, wallet_id:0});
     const [clickedCurrencyData, setClickedCurrencyData] = useState<ClickedCurrency>({
       clickedCurrencyAmount: -1.0,
       clickedCurrencyName: '',
@@ -35,13 +40,25 @@ export default function ForexWalletModal(props:any){
     },[showSnackbar])
 
     useEffect(()=>{
-      setClickedCurrencyData((data) => ({
-        ...data,
-        clickedCurrencyAmount: props.walletData[0].amount,
-        clickedCurrencyName: props.findCurrencyName(props.walletData[0].currency_id),
+      setClickedCurrencyData(() => ({
+        clickedCurrencyAmount: props.isForexWallet ? props.walletData[0].forex_currency_amount : props.walletData[0].amount,
+        clickedCurrencyName: props.isForexWallet ? props.findCurrencyName(props.walletData[0].forex_currency_id) : props.findCurrencyName(props.walletData[0].currency_id) ,
+        clickedCurrencyStorageID: props.walletData[0].id,
+        clickedCurrencyCurrencyID: props.isForexWallet ? props.walletData[0].forex_currency_id : props.walletData[0].currency_id
       }));
+      loadWalletsID();
     },[])
 
+    const loadWalletsID = async () =>{
+      const returnedForexWalletID = await checkExistenceOfForexWallet();
+      const returnedWalletID = await checkExistenceOfWallet();
+
+      setUserWallets(()=>({
+        forex_wallet_id: returnedForexWalletID.forex_wallet_id,
+        wallet_id: returnedWalletID.wallet_id,
+      }))
+
+    }
   
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const insertedValue = e.target.value;
@@ -51,19 +68,16 @@ export default function ForexWalletModal(props:any){
     const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const insertedValue = e.target.value;
       setCurrencyToSend(parseInt(insertedValue));
-      const currentCurrency = props.walletData.filter((data: ICurrencyStorage) => data.id == parseInt(insertedValue));
-      console.log(currentCurrency);
-      setClickedCurrencyData((data) => ({
-        ...data,
-        clickedCurrencyAmount: currentCurrency[0].amount,
-        clickedCurrencyName: props.findCurrencyName(currentCurrency[0].currency_id),
+      const currentCurrency = props.walletData.filter((data: any) => data.id == parseInt(insertedValue));
+      setClickedCurrencyData(() => ({
+        clickedCurrencyAmount: props.isForexWallet ? currentCurrency[0].forex_currency_amount : currentCurrency[0].amount,
+        clickedCurrencyName: props.isForexWallet ? props.findCurrencyName(currentCurrency[0].forex_currency_id) : props.findCurrencyName(currentCurrency[0].currency_id),
         clickedCurrencyStorageID: currentCurrency[0].id,
-        clickedCurrencyCurrencyID: currentCurrency[0].currency_id
+        clickedCurrencyCurrencyID: props.isForexWallet ? currentCurrency[0].forex_currency_id : currentCurrency[0].currency_id
       }));
     }
 
     const mapUserOwnedCurrencies = () =>{
-      console.log(props.walletData);
       if(!props.walletData || props.walletData.length == 0){
         return "Nie posiadasz żadnych walut w portfelu."
       }
@@ -71,10 +85,10 @@ export default function ForexWalletModal(props:any){
       const userCurrencies = props.walletData;
         return(
           <select className='bgdark' value={currencyToSend} onChange={handleCurrencyChange}>
-            {userCurrencies.map((data : ICurrencyStorage) =>{
+            {userCurrencies.map((data : any) =>{
               return(
                 <option key={data.id} value={data.id}>
-                  {props.findCurrencyName(data.currency_id)}
+                  {props.isForexWallet ? props.findCurrencyName(data.forex_currency_id) : props.findCurrencyName(data.currency_id)}
                 </option>
               )
             })}
@@ -94,13 +108,15 @@ export default function ForexWalletModal(props:any){
         return
       }
       try{
-        const returnedWalletID = await checkExistenceOfForexWallet();
-        if(returnedWalletID <=0 || returnedWalletID == undefined || returnedWalletID == null){
+        if (!window.confirm("Czy na pewno chcesz przelać pieniądze do portfela Forex?")) return
+        if(userWallets.forex_wallet_id <=0 || userWallets.forex_wallet_id == undefined || userWallets.forex_wallet_id == null){
           setSnackbarProps({ snackStatus: "danger", message: "Portfel Forex użytkownika nie istnieje!.", showSnackbar: true });
           return
         }
-        await updateCasualWallet("walletToForexWallet")
-        await updateForexWallet("walletToForexWallet")
+        await updateCasualWallet("walletToForexWallet", userWallets.wallet_id)
+        await updateForexWallet("walletToForexWallet", userWallets.forex_wallet_id)
+        await informWalletForexWalletTransactions(userWallets.forex_wallet_id, userWallets.wallet_id)
+        setSnackbarProps({ snackStatus: "danger", message: "Dodano wartości do portfela Forex.", showSnackbar: true });
       }catch(error){
         console.log(error);
         setSnackbarProps({ snackStatus: "danger", message: "Wystąpił błąd podczas wykonywania transferu.", showSnackbar: true });
@@ -113,44 +129,58 @@ export default function ForexWalletModal(props:any){
         return
       }
       try{
-        const returnedWalletID = await checkExistenceOfWallet();
-        if(returnedWalletID <=0 || returnedWalletID == undefined || returnedWalletID == null){
+        if (!window.confirm("Czy na pewno chcesz przelać pieniądze do portfela Forex?")) return
+        if(userWallets.wallet_id <=0 || userWallets.wallet_id == undefined || userWallets.wallet_id == null){
           setSnackbarProps({ snackStatus: "danger", message: "Portfel użytkownika nie istnieje!.", showSnackbar: true });
           return
         }
-        await updateForexWallet("forexWalletToCasualWallet")
-        await updateCasualWallet("forexWalletToCasualWallet")
+        await updateForexWallet("forexWalletToCasualWallet", userWallets.forex_wallet_id)
+        await updateCasualWallet("forexWalletToCasualWallet", userWallets.wallet_id)
+        await informWalletForexWalletTransactions(userWallets.forex_wallet_id, userWallets.wallet_id)
+        setSnackbarProps({ snackStatus: "danger", message: "Dodano wartości do portfela.", showSnackbar: true });
       }catch(error){
         console.log(error);
         setSnackbarProps({ snackStatus: "danger", message: "Wystąpił błąd podczas wykonywania transferu.", showSnackbar: true });
       }
     }
 
-    const updateCasualWallet = async (operationType : string) =>{
-
+    const updateCasualWallet = async (operationType : string, walletID: number) =>{
+      let dataToSend : IUpdateSelectedStorage = {wallet_id: walletID, currency_id: clickedCurrencyData.clickedCurrencyCurrencyID};
       if(operationType == "walletToForexWallet"){
-        const newBalance = clickedCurrencyData.clickedCurrencyAmount - amountToChange
-        const dataToSend = {id: clickedCurrencyData.clickedCurrencyStorageID, amount: newBalance};
-        if (!window.confirm("Czy na pewno chcesz przelać pieniądze do portfela Forex?")) return
-        const res = await updateCurrencyStorage(dataToSend);
-        setClickedCurrencyData((data: ClickedCurrency) => ({
-          ...data,
-          clickedCurrencyAmount: newBalance,
-        }));
-        setSnackbarProps({snackStatus: "danger", message: res.message, showSnackbar: true});
-        setAmountToChange(0);
-        return;
+        const newBalance = clickedCurrencyData.clickedCurrencyAmount - amountToChange;
+        dataToSend["amount"] = newBalance;
+      }else{
+        dataToSend["amount"] = amountToChange;
       }
-
+      await updateCurrencyStorage(dataToSend);
+      setAmountToChange(0.0);
     }
 
-    const updateForexWallet = async (operationType : string) =>{
+    const updateForexWallet = async (operationType : string, forexID:number) =>{
+      let dataToSend : IEditForexCurrencyStorage = {forex_wallet_id: forexID, forex_currency_id: clickedCurrencyData.clickedCurrencyCurrencyID};
       if(operationType == "walletToForexWallet"){
-        
-        return;
+        dataToSend["amount"] = amountToChange;
+      }else{
+        const newBalance = clickedCurrencyData.clickedCurrencyAmount - amountToChange
+        dataToSend["amount"] = newBalance;
       }
+      await updateForexCurrencyStorage(dataToSend);
+      setAmountToChange(0.0);
     }
     
+    const informWalletForexWalletTransactions = async (forexID: number, walletID:number) =>{
+      const currDate = new Date();
+
+      const WalletForexWalletTransaction = {
+        amount: amountToChange,
+        forex_wallet_id: forexID,
+        wallet_id: walletID,
+        currency_id: clickedCurrencyData.clickedCurrencyCurrencyID,
+        transaction_date: currDate
+      }
+      await handleCreateWalletForexWalletTransactions(WalletForexWalletTransaction);
+    }
+
     const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus: string, message: string, showSnackbar?: boolean }) => {
       if (snackStatus && message) {
         setsnackStatus(snackStatus);
@@ -184,13 +214,13 @@ export default function ForexWalletModal(props:any){
                     type="number"
                     min="0"
                     max={clickedCurrencyData.clickedCurrencyAmount}
-                    disabled={clickedCurrencyData.clickedCurrencyAmount === 1.0}
+                    disabled={clickedCurrencyData.clickedCurrencyAmount === -1.0}
                     className="w-24 font-bold border border-white rounded-lg px-1 bgdark focus:border-black overflow-y-auto resize-none"
                     onChange={handleAmountChange}
                     value={amountToChange}
                   />
                 </div>
-              <button onClick={() => transferMoneyToForex()} className='className="py-4 button2 text-white rounded-xl'>Transfer</button>
+              <button onClick={() => {!props.isForexWallet ? transferMoneyToForex() : transferMoneyToCasualWallet()}} className='className="py-4 button2 text-white rounded-xl'>Transfer</button>
               </div>
             <button onClick={() => props.closeForexWalletModal()} className="absolute right-2 top-2 ">
               <FaWindowClose className="text-white w-6 inline mr-3 cursor-pointer hover:text-slate-200 " />

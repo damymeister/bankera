@@ -73,11 +73,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       try {
         let token_json = parseJwt(token);
         let user_id = parseInt(token_json._id);
-
-        await prisma.forex_Wallet.delete({
-          where: {id: parseInt(req.query.id as string)}, 
-        });
-
+        
         await prisma.user.update({
           where: {
             id: user_id
@@ -87,10 +83,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         });
 
+        await prisma.forex_Wallet.delete({
+          where: {id: parseInt(req.query.id as string)}, 
+        });
+
+
         return res.status(200).json({ message: "Forex wallet has been deleted" });
       } catch (error) {
         console.error('Error while deleting Forex Wallet', error);
-        return res.status(500).json({ error: 'Server error occurred.' });
+        return res.status(500).json({error});
       }
     } else {
       return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });

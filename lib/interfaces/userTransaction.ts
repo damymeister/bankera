@@ -1,4 +1,4 @@
-export default interface IUserTransaction{
+export interface IUserTransaction{
     id?: number,
     wallet_sender_id: number,
     wallet_recipient_id: number,

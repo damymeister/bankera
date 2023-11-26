@@ -7,6 +7,7 @@ import  Link  from 'next/link';
 import { usePathname } from 'next/navigation';
 import {FaHome, FaEdit, FaUser , FaExchangeAlt, FaWallet, FaDeezer}  from "react-icons/fa";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
+import { HiMiniWallet } from "react-icons/hi2";
 export default function SidePanel() {
     const [isUsersExpanded, setIsUsersExpanded] = useState(false);
 
@@ -95,7 +96,7 @@ export default function SidePanel() {
             <span>Przelewy</span>
           </Link>
           <Link href="/user/forexWallet" className={`flex items-center space-x-2 py-2 ${isActive('/user/forexWallet')}`}>
-            <FaWallet />
+            <HiMiniWallet />
             <span>Portfel Forex</span>
           </Link>
           <div className="relative">
