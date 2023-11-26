@@ -1,6 +1,7 @@
 # TODO List
 
-- **REFAKTORYZACJA** CSSa już ostatnia
+- Poprawić błędy z snackbarami
+- ujednolicić język
 - Paginacja do currencyExchange i wallet
 - Ostatnia strona ma być wielkości tak jak poprzednich
 - Dodać zdjęcia do postów
