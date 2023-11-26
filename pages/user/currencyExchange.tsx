@@ -16,7 +16,6 @@ import {IInnerTransaction} from '@/lib/interfaces/innerTransaction';
 import ICurrencyExchange from '@/lib/interfaces/currencyExchange';
 import ICurrency from '@/lib/interfaces/currency';
 import {IWallet} from '@/lib/interfaces/wallet';
-import IWallet from '@/lib/interfaces/wallet';
 import Paginator from '@/components/paginator';
 
 export default function CurrencyExchange(){
