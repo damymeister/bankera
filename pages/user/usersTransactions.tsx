@@ -13,9 +13,9 @@ import { handleCreateUsersTransactions } from '@/pages/api/services/usersTransac
 import { FaWindowClose }  from "react-icons/fa";
 import { ICurrencyNameBalance, IUserTransactionValueTypes } from '@/lib/interfaces/userTransaction';
 import { IUserSearch } from '@/lib/interfaces/user';
-import ICurrencyStorage from '@/lib/interfaces/currencyStorage';
+import {ICurrencyStorage} from '@/lib/interfaces/currencyStorage';
 import ICurrency from '@/lib/interfaces/currency';
-import IWallet from '@/lib/interfaces/wallet';
+import {IWallet} from '@/lib/interfaces/wallet';
 
 export default function UsersTransactions() {
     const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<ICurrencyStorage[]>([])

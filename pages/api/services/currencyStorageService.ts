@@ -57,5 +57,18 @@ export const updateSelectedCurrencyStorage = async (data: IUpdateSelectedStorage
         throw error;
     }
 };
-updateSelectedCurrencyStorage
+export const updateCurrencyStorageForexOperations  = async (data: IUpdateSelectedStorage) => {
+    try {
+        const specified_URL = api_url('auth/currencyStorageForex');
+        const res = await axios.put(specified_URL, data, {
+            headers: { Accept: 'application/json' },    
+        });
+        return { message: res.data.message, status: res.status };
+    } catch (error) {
+        console.log('unexpected error: ', error);
+        throw error;
+    }
+};
+
+
 

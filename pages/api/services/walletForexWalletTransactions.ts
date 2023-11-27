@@ -1,10 +1,10 @@
 import api_url from '@/lib/api_url';
-import {IUserTransaction} from '@/lib/interfaces/userTransaction';
+import {walletForexWalletTransactions} from '@/lib/interfaces/walletForexWalletTransactions';
 import axios from 'axios'
 
-const url = api_url('auth/usersTransactions')
+const url = api_url('auth/walletForexWalletTransactions')
 
-export const handleCreateUsersTransactions = async (data : IUserTransaction) => {
+export const handleCreateWalletForexWalletTransactions = async (data : walletForexWalletTransactions) => {
     try{
         const res  = await axios.post(url, data, {headers: {Accept: 'application/json'}})
         return {message: res.data.message, status: res.status};

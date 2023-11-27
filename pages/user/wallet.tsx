@@ -4,16 +4,19 @@ import { getWalletData, handleCreateWallet, handleDeleteWallet} from '@/pages/ap
 import { getCurrencies } from '@/pages/api/services/currencyService';
 import { getCurrencyStorage } from '@/pages/api/services/currencyStorageService';
 import WalletModal from '@/components/WalletModal';
+import ForexWalletModal from '@/components/ForexWalletModal';
 import { BsCurrencyExchange } from "react-icons/bs";
 import '@/components/css/home.css';
 import SidePanel from '@/components/sidepanel';
+import { ICurrencyStorage } from '@/lib/interfaces/currencyStorage';
 // import Loader from '@/components/loader';
 
 export default function Wallet() {
-  const [walletData, setWalletData] = useState<any[]>([]);
+  const [walletData, setWalletData] = useState<ICurrencyStorage[]>([]);
   const [walletID, setWalletID] = useState(null);
   const [error, setError] = useState("");
   const [showWalletModal, setShowWalletModal] = useState(false);
+  const [showForexWalletModal, setShowForexWalletModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currencies, setCurrencies] = useState<any[]>([]);
   const [pickedCurrency, setPickedCurrency] = useState({ currencyRow_id: 0, wallet_id:0, currency_id: 0, amount: 0.00 })
@@ -67,6 +70,12 @@ export default function Wallet() {
       currency_id: 0,
       amount: 0.00,
     });
+    setCurrenciesToSend([]);
+    fetchWalletData();
+  }
+
+  const closeForexWalletModal =  () =>{
+    setShowForexWalletModal(false);
     setCurrenciesToSend([]);
     fetchWalletData();
   }
@@ -142,17 +151,25 @@ const mapUserCurrencies = () => {
            <h1 className='text-2xl border-[#BB86FC] border-b-2 py-2 my-4'>Hello { userData.firstName } { userData.surname }!</h1>
            <p>Current balance of you account is shown below</p>
            { mapUserCurrencies() }
+           <div className='flex flex-row gap-4 flex-wrap items-center justify-center'>
           { currenciesToSend.length !== 0 ? (
-          <button className='button3' onClick={() => {setShowWalletModal(true)}}>Deposit new currency</button>
-          ):(<div>
-              <p>You have all of the possibile currencies in your wallet.</p>
-            </div>)}
+            <button className='button3' onClick={() => {setShowWalletModal(true)}}>Deposit new currency</button>
+            ):(<div>
+                <p>You have all of the possibile currencies in your wallet.</p>
+              </div>)}
+            { walletData !== null && walletData.length > 0  ? (
+            <button className='button3' onClick={() => {setShowForexWalletModal(true)}}>Transfer to Forex Wallet</button>)
+            : (null)}
+          </div>
           </div>
         }
       </div>
     </div>
       {showWalletModal ? 
             <WalletModal findCurrencyName = {findCurrencyName} walletID = {walletID} closeWalletModal={closeWalletModal} currencies={currencies} walletData = {pickedCurrency} currenciesToSend = {currenciesToSend}/>: null
+        }
+          {showForexWalletModal ? 
+            <ForexWalletModal closeForexWalletModal={closeForexWalletModal} walletData={walletData} findCurrencyName={findCurrencyName}/>: null
         }
     </Layout>
   );

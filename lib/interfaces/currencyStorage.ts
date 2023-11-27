@@ -1,4 +1,4 @@
-export default interface ICurrencyStorage {
+export  interface ICurrencyStorage {
     id: number,
     currency_id : number,
     wallet_id : number,
@@ -19,6 +19,13 @@ export interface IEditCurrencyStorage {
 export interface IUpdateSelectedStorage{
     id?: number,
     wallet_id: number,
-    amount: number,
+    amount?: number,
     currency_id: number,
+    accountOperation?: string,
 }
+export interface ClickedCurrency {
+    clickedCurrencyAmount: number;
+    clickedCurrencyName: string;
+    clickedCurrencyStorageID: number;
+    clickedCurrencyCurrencyID: number;
+  }

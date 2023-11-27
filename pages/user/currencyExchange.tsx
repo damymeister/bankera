@@ -12,10 +12,10 @@ import {FaExclamation}  from "react-icons/fa";
 import SidePanel from '@/components/sidepanel';
 import { significantDigits } from '@/lib/currency';
 import { ICreateCurrencyStorage } from '@/lib/interfaces/currencyStorage';
-import IInnerTransaction from '@/lib/interfaces/innerTransaction';
+import {IInnerTransaction} from '@/lib/interfaces/innerTransaction';
 import ICurrencyExchange from '@/lib/interfaces/currencyExchange';
 import ICurrency from '@/lib/interfaces/currency';
-import IWallet from '@/lib/interfaces/wallet';
+import {IWallet} from '@/lib/interfaces/wallet';
 import Paginator from '@/components/paginator';
 
 export default function CurrencyExchange(){
@@ -41,6 +41,7 @@ const loadData = async () =>{
       }
     
       var walletData = await getWalletData();
+      console.log(walletData.wallet_id);
       const userCurrencies = await getCurrencyStorage(walletData.wallet_id);
       const newupdatedUserCurrencies = userCurrencies.data.map((data: any) => ({
         id: data.id, 
