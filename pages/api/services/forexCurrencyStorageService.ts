@@ -1,5 +1,5 @@
 import api_url from '@/lib/api_url';
-import { IForexCurrencyStorage, IEditForexCurrencyStorage } from '@/lib/interfaces/forexCurrencyStorage';
+import { IForexCurrencyStorage  } from '@/lib/interfaces/forexCurrencyStorage';
 import axios from 'axios'
 
 const url = api_url('auth/forexCurrencyStorage')
@@ -14,17 +14,7 @@ export const getForexCurrencyStorage = async (forex_wallet_id: number) => {
         throw error;
     }
 };
-
-export const postForexCurrencyStorage = async (data : IForexCurrencyStorage ) => {
-        try {
-            const res  = await axios.post(url, data, {headers: {Accept: 'application/json'}})
-            return {message: res.data.message, status: res.status};
-        } catch (error) {
-            console.log('unexpected error: ', error);
-            throw error;
-        }
-    };
-export const updateForexCurrencyStorage = async (data : IEditForexCurrencyStorage) => {
+export const updateForexCurrencyStorageForexOperations = async (data : IForexCurrencyStorage) => {
         try {
             const res  = await axios.put(url, data, {headers: {Accept: 'application/json'}})
             return {message: res.data.message, status: res.status};
@@ -33,18 +23,3 @@ export const updateForexCurrencyStorage = async (data : IEditForexCurrencyStorag
             throw error;
         }
     };
-export const deleteForexCurrencyStorage = async (id: number) => {
-    try {
-        const combined_url = api_url('auth/forexCurrencyStorage?id=' + id.toString())
-        const res = await axios.delete(combined_url, {
-            headers: { Accept: 'application/json' },    
-        });
-        return { message: res.data.message, status: res.status };
-    } catch (error) {
-        console.log('unexpected error: ', error);
-        throw error;
-    }
-};
-
-
-//

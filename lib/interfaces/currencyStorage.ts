@@ -21,6 +21,7 @@ export interface IUpdateSelectedStorage{
     wallet_id: number,
     amount?: number,
     currency_id: number,
+    accountOperation?: string,
 }
 export interface ClickedCurrency {
     clickedCurrencyAmount: number;

@@ -5,7 +5,6 @@ import '@/components/css/home.css';
 import SidePanel from '@/components/sidepanel';
 import { handleCreateForexWallet, handleDeleteForexWallet, getForexWalletData} from '@/pages/api/services/forexWalletService';
 import { getCurrencies } from '@/pages/api/services/currencyService';
-import { BsCurrencyExchange } from "react-icons/bs";
 import { IForexCurrencyStorage } from '@/lib/interfaces/forexCurrencyStorage';
 import { getForexCurrencyStorage } from '../api/services/forexCurrencyStorageService';
 
