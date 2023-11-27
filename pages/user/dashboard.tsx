@@ -10,6 +10,7 @@ import api_url from '@/lib/api_url';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import Link from 'next/link';
+import ChartExample from '@/components/newchart';
 export default function Dashboard() {
     const [isUsersExpanded, setIsUsersExpanded] = useState(false);
 
@@ -77,6 +78,10 @@ export default function Dashboard() {
                </div>
             </div>
             </div>
+            <div className='bg-white'>
+              <ChartExample />
+            </div>
+            
         </div>
         </Layout>
     )
