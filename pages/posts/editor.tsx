@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import { PrismaClient } from '@prisma/client';
 import '@/components/css/home.css';
 import '@/components/css/forms.css';
@@ -15,6 +15,7 @@ export default function CreatePost() {
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [postId, setPostId] = useState(-1)
+  const [postImage, setpostImage] = useState('/images/empty-photo.jpg')
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -27,6 +28,7 @@ export default function CreatePost() {
             setPostTitle(data.title)
             setPostContent(data.content)
             setPostId(data.id)
+            setpostImage(data.image)
         } catch (error) {
             console.log('unexpected error: ', error)
         }
@@ -50,7 +52,7 @@ export default function CreatePost() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id: postId, title: postTitle, content: postContent }),
+        body: JSON.stringify({ id: postId, title: postTitle, content: postContent, image: postImage }),
       });
 
       if (response.ok) {
@@ -89,8 +91,15 @@ export default function CreatePost() {
                 placeholder="Post content"
                 value={postContent}
                 onChange={(e) => setPostContent(e.target.value)}
-                className="w-1/2 px-4 py-2 border bgdark  border-[#996dce] rounded-md focus:outline-none focus:border-blue-500"
+                className="w-1/4 h-64 px-4 py-2 border bgdark  border-[#996dce] rounded-md focus:outline-none focus:border-blue-500"
             ></textarea>
+              <input
+              type="text"
+              placeholder="image url"
+              value={postImage}
+              onChange={(e) => setpostImage(e.target.value)}
+              className="w-1/4 px-4 py-2 border bgdark  rounded-md focus:outline-none focus:border-blue-500"
+            />
             <div className='flex flex-row w-1/2 items-center justify-center'>
             <Link href="/news" className="w-2/5 px-4 mx-4 py-2 bg-[#6da0f6] hover:bg-blue-500 text-[white] rounded-md2">wróć</Link>
             <button

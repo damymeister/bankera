@@ -66,6 +66,14 @@
 }
 
 
+@media screen and (max-width: 480px) {
+
+    .responsiveGrid {
+      grid-template-columns: unset;
+      gap: unset;
+    }
+  
+}
 
 @keyframes Anim {
     0% {
