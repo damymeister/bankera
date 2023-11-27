@@ -137,7 +137,7 @@ const combine = (pairs1: ICurrencyPair[] | never[], pairs2: ICurrencyPair[] | ne
     for (let i = 0; i < pairs2.length; i++) {
         let idx = searchByCurrency(combined, pairs2[i].buy_currency_id, pairs2[i].sell_currency_id)
         if (idx === -1) combined.push(pairs2[i])
-        else combined[i].conversion_value = (combined[i].conversion_value + pairs2[i].conversion_value) / 2.0
+        else combined[idx].conversion_value = (combined[idx].conversion_value + pairs2[i].conversion_value) / 2.0
     }
     return combined
 }
