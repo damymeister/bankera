@@ -30,7 +30,7 @@ export default function ChartExample() {
 
   useEffect(() => {
     const handleHistoryGet = async () => {
-      let url = api_url('auth/currencyHistory') + '?timestamp=' + pastTimestamp + '&includeDiff=false&invert=false&sell_currency_id=' + "118" + '&buy_currency_id=' + "150"
+      let url = api_url('auth/currencyHistory') + '?timestamp=' + pastTimestamp + '&sell_currency_id=' + "118" + '&buy_currency_id=' + "150"
       // if (buyingCurrency.id !== -1) {
       //   url += '&buy_currency_id=' + "150"
       // }
@@ -48,7 +48,7 @@ export default function ChartExample() {
   useEffect(() => {
   if (currencyHistory.length > 0 && chartRef.current) {
     const labels = currencyHistory.map((currency) =>
-      currency.history.map((historyItem) =>
+      currency.history.reverse().map((historyItem) =>
         new Date(historyItem.date).toLocaleString(undefined, {
           minute: "numeric",
           hour: "numeric",
@@ -59,7 +59,7 @@ export default function ChartExample() {
       )
     ).flat();
     const data = currencyHistory.map((currency) =>
-      currency.history.map((historyItem) => historyItem.conversion_value)
+      currency.history.reverse().map((historyItem) => historyItem.conversion_value)
     ).flat();
     new Chart(chartRef.current, {
       type: "line",

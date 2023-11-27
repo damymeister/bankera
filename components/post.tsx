@@ -4,9 +4,9 @@ import '@/components/css/home.css';
 import '@/components/css/tailwind.css';
 import axios from 'axios';
 import api_url from '@/lib/api_url';
-import { Post } from '@prisma/client';
 import Link from 'next/link';
 import { FaTrash, FaEdit } from 'react-icons/fa';
+import Image from 'next/image';
 const handleDeletePost = async (id:number) => {
     try {
         const url = api_url('auth/redaktor/post')
@@ -41,7 +41,7 @@ const Post_t = (props: { post: any }) => {
 
 <div className="m-auto overflow-hidden rounded-lg shadow-lg cursor-pointer h-90 w-60 md:w-80 text-left pt-4">
     <a href="#" className="block w-full h-full">
-        <img alt="blog photo" src={props.post.image_href} className="object-cover w-full max-h-40"/>
+        <Image alt="blog photo" src={props.post.image_href} className="object-cover w-full max-h-40"/>
         <div className="w-full p-4 bg-[#151521]">
             <p className="font-medium text-[#BB86FC] text-md">
                 Artykuł
