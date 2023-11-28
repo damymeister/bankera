@@ -12,25 +12,39 @@ export default function ChartExample() {
   const [currencyHistory, setCurrencyHistory] = useState<ICurrencyHistory[]>([]);
   const [sellingCurrency, setSellingCurrency] = useState<ICurrency>(allSelector)
   const [buyingCurrency, setBuyingCurrency] = useState<ICurrency>(allSelector)
-  const [pastTimestamp, setPastTimestamp] = useState('6h')
+  const [pastTimestamp, setPastTimestamp] = useState('1d')
 
   useEffect(() => {
     const handleGetCurrencies = async () => {
       const { data } = await axios.get(api_url('currency'), {headers: {Accept: 'application/json'}})
       setCurrencies([allSelector, ...data] as ICurrency[])
     }
+    
     handleGetCurrencies()
   }, [])
+
+
+  const findCurrencyName = (currencyId : number) =>{
+    var currencyname = null;
+    currencies.forEach(currency => {
+        if(currencyId == currency.id){
+            currencyname = currency.name;
+        }
+    });
+    return currencyname;
+  }
 
   useEffect(() => {
     if (currencies.length > 0) {
       setSellingCurrency({id: getCurrencyIdByName(currencies, 'PLN'), name: 'PLN'})
+      setBuyingCurrency({id: getCurrencyIdByName(currencies, 'USD'), name: 'USD'})
     }
   }, [currencies])
 
   useEffect(() => {
     const handleHistoryGet = async () => {
-      let url = api_url('auth/currencyHistory') + '?timestamp=' + pastTimestamp + '&sell_currency_id=' + "118" + '&buy_currency_id=' + "150"
+      let url = api_url('auth/currencyHistory') + '?timestamp=' + pastTimestamp + '&sell_currency_id=' + sellingCurrency.id + '&buy_currency_id=' + buyingCurrency.id
+
       // if (buyingCurrency.id !== -1) {
       //   url += '&buy_currency_id=' + "150"
       // }
@@ -41,68 +55,126 @@ export default function ChartExample() {
     if (sellingCurrency.id !== -1) {
       handleHistoryGet()
     }
+   
   }, [sellingCurrency, buyingCurrency, pastTimestamp])
 
   const chartRef = useRef<HTMLCanvasElement>(null);
-
   useEffect(() => {
-  if (currencyHistory.length > 0 && chartRef.current) {
-    const labels = currencyHistory.map((currency) =>
-      currency.history.reverse().map((historyItem) =>
-        new Date(historyItem.date).toLocaleString(undefined, {
-          minute: "numeric",
-          hour: "numeric",
-          day: "numeric",
-          month: "numeric",
-          year: "numeric",
-        })
-      )
-    ).flat();
-    const data = currencyHistory.map((currency) =>
-      currency.history.reverse().map((historyItem) => historyItem.conversion_value)
-    ).flat();
-    new Chart(chartRef.current, {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: "Currency Value",
-            data: data,
-            fill: false,
-            borderColor: "rgb(75, 192, 192)",
-          },
-        ],
-      },
-      options: {
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            display: true,
-            title: {
-              display: true,
-              text: "Date",
+    if (currencyHistory.length > 0 && chartRef.current) {
+      const labels = currencyHistory.map((currency) =>
+        currency.history.reverse().map((historyItem) =>
+          new Date(historyItem.date).toLocaleString(undefined, {
+            minute: "numeric",
+            hour: "numeric",
+            day: "numeric",
+            month: "numeric",
+            year: "numeric",
+          })
+        )
+      ).flat();
+      const data = currencyHistory.map((currency) =>
+        currency.history.reverse().map((historyItem) => historyItem.conversion_value)
+      ).flat();
+      new Chart(chartRef.current, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "Kurs",
+              data: data,
+              fill: false,
+              borderColor: "rgb(188, 136, 252)",
+              backgroundColor: "rgb(188, 136, 252)",
             },
-          },
-          y: {
-            display: true,
-            title: {
-              display: true,
-              text: "Currency Value",
-            },
-            ticks: {
-              precision: 8, // Set the number of decimal places for the Y-axis values
-            },
-          },
+          ],
         },
-      },
-    });
-  }
-}, [currencyHistory]);
+        options: {
+          maintainAspectRatio: true,
+          scales: {
+            x: {
+              display: true,
+              title: {
+                display: true,
+                text: "Data",
+                color:"rgb(188, 136, 252)",
+                font: {
+                  family: 'monospace',
+                  size: 20,
+                  weight: 'bold',
+                  lineHeight: 1.2,
+                },
+              },
+              grid: {
+                color: "#6d9ff646", // Change the color of the x-axis mesh here
+              },
+            },
+            y: {
+              display: true,
+              title: {
+                display: true,
+                text: "Kurs "+ sellingCurrency.name + '/' + buyingCurrency.name,
+                color:"rgb(188, 136, 252)",
+                font: {
+                  family: 'monospace',
+                  size: 20,
+                  weight: 'bold',
+                  lineHeight: 1.2,
+                },
+              },
+              ticks: {
+                precision: 8,
+              },
+              grid: {
+                color: "#6d9ff646",
+              },
+            },
+          },
+          animation: {
+            duration: 2000, 
+          },
+          interaction: {
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              title: {
+                display: true,
+                text: 'Wykres dla: ' + sellingCurrency.name + '/' + buyingCurrency.name,
+                color: '#fff',
+                font: {
+                  family: 'monospace',
+                  size: 20,
+                  weight: 'bold',
+                  lineHeight: 1.2,
+                },
+              },
+              labels: {
+                color: "rgb(188, 136, 252)",
+              },
+            },
+          },
+          elements: {
+            point: {
+              backgroundColor: "rgb(188, 136, 252)",
+              borderColor: "rgb(188, 136, 252)",
+            },
+          },
+          // backgroundColor: "#bb86fc8a", 
+        },
+      });
+    }
+  }, [currencyHistory]);
 
   return (
-    <div >
-      <canvas ref={chartRef} width="1820" height="800"></canvas>
-    </div>
+<div className="bg-[#121212] borderLight p-4 m-2 bgGlass overflow-hidden">
+  <div className="aspect-w-16 aspect-h-9">
+    <canvas
+      ref={chartRef}
+      className="w-full h-2/3 max-h-full #121212"
+    />
+  </div>
+
+</div>
   );
 }
