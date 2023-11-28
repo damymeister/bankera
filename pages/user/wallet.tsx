@@ -11,6 +11,9 @@ import SidePanel from '@/components/sidepanel';
 import { ICurrencyStorage } from '@/lib/interfaces/currencyStorage';
 import { checkExistenceOfForexWallet } from '@/pages/api/services/forexWalletService';
 // import Loader from '@/components/loader';
+//Paginator
+import { pageEndIndex, pageStartIndex } from '@/lib/pages';
+import Paginator from '@/components/paginator';
 
 export default function Wallet() {
   const [walletData, setWalletData] = useState<ICurrencyStorage[]>([]);
@@ -24,6 +27,10 @@ export default function Wallet() {
   const [currenciesToSend, setCurrenciesToSend] = useState<any[]>([]);
   const [userData, setuserData] = useState({firstName:"", surname: ""})
   const [returnedForexWalletID, setReturnedForexWalletID] = useState<number>(-1);
+      // PAGINATION states
+  const [walletDataPage, setWalletDataPage] = useState(0)
+  const [walletDataTotalPages, setWalletDataTotalPages] = useState(0)
+  const recordsPerPage = 5
 
   const fetchWalletData = async () => {
     try {
@@ -44,6 +51,10 @@ export default function Wallet() {
       setWalletData(currenciesSaved.data);
       setCurrencies(currencyData);
       checkRemainingCurrencies(currenciesSaved.data, currencyData);
+      if(currenciesSaved.data.length > 0){
+        setWalletDataPage(1)
+        setWalletDataTotalPages(Math.ceil(currenciesSaved.data.length / recordsPerPage))
+      }
       
     } catch (error) {
       console.error('Error while fetching wallet data:', error);
@@ -104,40 +115,22 @@ const setChoosenCurrency = (id: number, walletID: number, currencyID: number, am
   }
   return currencyName;
 }
-const mapUserCurrencies = () => {
-  if (!isLoading && walletData !== null && currencies !== null) {
-    return (
-      <div>
-          <table className='w-full py-6 m-4 borderLightY text-white border-spacing-y-3' >
-            <thead>
-              <tr>
-                <th>Ilość</th>
-                <th>Waluta</th>
-                <th>Akcja</th>
-              </tr>
-            </thead>
-            <tbody className='py-2'>
-              {walletData.map((currency) => {
-                return (
-                  <tr className='border-b border-gray-700' key={currency.id}>
-                    <td className='p-2'>{currency.amount}</td>
-                    <td className='p-2'>{findCurrencyName(currency.currency_id)}</td>
-                    <td className='flex items-center justify-center p-2'>
-                      <BsCurrencyExchange
-                        className="cursor-pointer text-2xl hover:text-slate-200"
-                        onClick={() => {setShowWalletModal(true); setChoosenCurrency(currency.id , currency.wallet_id, currency.currency_id, currency.amount)}}/></td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-      </div>
-    );
+
+const mapUserCurrencies = () =>{
+    let rows : JSX.Element[] = [];
+    for(let i = pageStartIndex(recordsPerPage, walletDataPage); i < pageEndIndex(recordsPerPage, walletDataPage, walletDataTotalPages, walletData.length); i++){
+      rows.push(    
+        <tr className='border-b border-gray-700' key={walletData[i].id}>
+        <td className='p-2'>{walletData[i].amount}</td>
+        <td className='p-2'>{findCurrencyName(walletData[i].currency_id)}</td>
+        <td className='flex items-center justify-center p-2'>
+          <BsCurrencyExchange
+            className="cursor-pointer text-2xl hover:text-slate-200"
+            onClick={() => {setShowWalletModal(true); setChoosenCurrency(walletData[i].id , walletData[i].wallet_id, walletData[i].currency_id, walletData[i].amount)}}/></td>
+       </tr>)
+    }
+    return rows;
   }
-  return "Your current wallet balance is 0.";
-};
-
-
   return (
     <Layout>
       <SidePanel></SidePanel>
@@ -152,20 +145,39 @@ const mapUserCurrencies = () => {
           <div className=" p-8 borderLight rounded-xl m-8  min-h-400">
             {!walletData || walletData.length === 0 ? (
            <button onClick={() => {handleDeleteWallet(walletID).then(() => window.location.reload()) }} className="w-3/5 px-4 py-2 bg-[#ff0000c0] hover:bg-[#5c2121] text-[white] rounded-md">Delete Wallet</button>) : null }
-           <h1 className='text-2xl border-[#BB86FC] border-b-2 py-2 my-4'>Hello { userData.firstName } { userData.surname }!</h1>
-           <p>Current balance of you account is shown below</p>
-           { mapUserCurrencies() }
+            <h1 className='text-2xl border-[#BB86FC] border-b-2 py-2 my-4'>Hello { userData.firstName } { userData.surname }!</h1>
+           <div className='mt-4 mb-4'>
+            {walletData.length > 0 && !isLoading ? (
+            <div className='flex flex-col'>
+            <p>Current balance of you account is shown below</p>
+            <table className='w-full py-6 m-4 borderLightY text-white border-spacing-y-3' >
+              <thead>
+                <tr>
+                  <th>Ilość</th>
+                  <th>Waluta</th>
+                  <th>Akcja</th>
+                </tr>
+              </thead>
+              <tbody className='py-2'>
+              { mapUserCurrencies() }
+              </tbody>
+            </table>
+          </div>) : <span className='mb-4 mt-4 font-bold'>You wallet is empty.</span>}
+          </div>
            <div className='flex flex-row gap-4 flex-wrap items-center justify-center'>
-          { currenciesToSend.length !== 0 ? (
+          { currenciesToSend.length !== 0 && !isLoading ? (
             <button className='button3' onClick={() => {setShowWalletModal(true)}}>Deposit new currency</button>
-            ):(<div>
-                <p>You have all of the possibile currencies in your wallet.</p>
-              </div>)}
+            ): null}
             { walletData !== null && walletData.length > 0 && returnedForexWalletID != -1 ? (
             <button className='button3' onClick={() => {setShowForexWalletModal(true)}}>Transfer to Forex Wallet</button>)
             : (null)}
           </div>
+          {walletDataTotalPages !== 0 ? (
+          <div className='mt-4'>
+            <Paginator currentPage={walletDataPage} totalPages={walletDataTotalPages} onPageChange={setWalletDataPage} />
           </div>
+          ): null}
+        </div>
         }
       </div>
     </div>

@@ -8,6 +8,10 @@ import { getCurrencies } from '@/pages/api/services/currencyService';
 import { IForexCurrencyStorage } from '@/lib/interfaces/forexCurrencyStorage';
 import { getForexCurrencyStorage } from '../api/services/forexCurrencyStorageService';
 import { checkExistenceOfWallet } from '@/pages/api/services/walletService';
+//Paginator
+import { pageEndIndex, pageStartIndex } from '@/lib/pages';
+import Paginator from '@/components/paginator';
+
 
 export default function ForexWallet() {
     const [showForexWalletModal, setShowForexWalletModal] = useState(false);
@@ -17,6 +21,11 @@ export default function ForexWallet() {
     const [forexWalletData, setForexWalletData] = useState<IForexCurrencyStorage[]>([]);
     const [userData, setuserData] = useState({firstName:"", surname: ""})
     const [returnedWalletID, setReturnedalletID] = useState<number>(-1);
+    // PAGINATION states
+    const [forexWalletDataPage, setForexWalletDataPage] = useState(0)
+    const [forexWalletDataTotalPages, setForexWalletDataTotalPages] = useState(0)
+    const recordsPerPage = 5
+
 
     const fetchWalletData = async () => {
         try {
@@ -34,7 +43,10 @@ export default function ForexWallet() {
           }));
           setForexWalletData(currenciesSaved.data);
           setCurrencies(currencyData);
-          
+          if(currenciesSaved.data.length > 0){
+            setForexWalletDataPage(1)
+            setForexWalletDataTotalPages(Math.ceil(currenciesSaved.data.length / recordsPerPage))
+          }
         } catch (error) {
           console.error('Error while fetching wallet data:', error);
         }
@@ -66,32 +78,19 @@ export default function ForexWallet() {
 
 const mapUserCurrencies = () => {
     if (!isLoading && forexWalletData !== null && currencies !== null) {
-      return (
-        <div>
-            <table className='w-full py-6 m-4 borderLightY text-white border-spacing-y-3' >
-              <thead>
-                <tr>
-                  <th>Currency</th>
-                  <th>Amount</th>
-                </tr>
-              </thead>
-              <tbody className='py-2'>
-                {forexWalletData.map((currency) => {
-                  return (
-                    <tr className='' key={currency.id}>
-                      <td>{findCurrencyName(currency.forex_currency_id)}</td>
-                      <td>{currency.forex_currency_amount}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-        </div>
-      );
+      let rows : JSX.Element [] = []
+      for(let i = pageStartIndex(recordsPerPage, forexWalletDataPage); i < pageEndIndex(recordsPerPage, forexWalletDataPage, forexWalletDataTotalPages, forexWalletData.length); i++){
+        rows.push(
+          <tr className='' key={forexWalletData[i].id}>
+            <td>{findCurrencyName(forexWalletData[i].forex_currency_id)}</td>
+            <td>{forexWalletData[i].forex_currency_amount}</td>
+          </tr>
+        )
+      }
+      return rows;
     }
     return "Your current wallet balance is 0.";
   };
-  
   return (
     <Layout>
       <SidePanel></SidePanel>
@@ -107,15 +106,34 @@ const mapUserCurrencies = () => {
             {!forexWalletData || forexWalletData.length === 0 ? (
            <button onClick={() => { handleDeleteForexWallet(ForexWalletID).then(() => window.location.reload()) }} className="w-3/5 px-4 py-2 bg-[#ff0000c0] hover:bg-[#5c2121] text-[white] rounded-md">Delete Forex Wallet</button>) : null }
            <h1 className='text-2xl border-[#BB86FC] border-b-2 py-2 my-4'>Hello { userData.firstName } { userData.surname }!</h1>
-           <p>Current balance of your Forex wallet is shown below</p>
-           { mapUserCurrencies() }
+           <div className='mt-4 mb-4'>
+            {forexWalletData.length > 0 && !isLoading ? (
+            <div className='flex flex-col'>
+            <p>Current balance of you account is shown below</p>
+            <table className='w-full py-6 m-4 borderLightY text-white border-spacing-y-3' >
+              <thead>
+                <tr>
+                  <th>Ilość</th>
+                  <th>Waluta</th>
+                </tr>
+              </thead>
+              <tbody className='py-2'>
+              { mapUserCurrencies() }
+              </tbody>
+            </table>
+          </div>) : <span className='mb-4 mt-4 font-bold'>Your Forex wallet is empty.</span>}
+          </div>
             <div className='flex flex-row gap-4 flex-wrap justify-center items-center'>
                {forexWalletData.length > 0 && returnedWalletID !== -1 ? (
                 <button className='button3' onClick={() => {setShowForexWalletModal(true)}}>Transfer to Wallet</button>
                 ) : 
                 null}
             </div>
-      
+            {forexWalletDataTotalPages !== 0 ? (
+            <div className='mt-4'>
+              <Paginator currentPage={forexWalletDataPage} totalPages={forexWalletDataTotalPages} onPageChange={setForexWalletDataPage}/>
+            </div>
+            ) : null}
         </div>
         }
       </div>
