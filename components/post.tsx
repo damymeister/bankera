@@ -41,7 +41,7 @@ const Post_t = (props: { post: any }) => {
 
 <div className="m-auto overflow-hidden rounded-lg shadow-lg cursor-pointer h-90 w-60 md:w-80 text-left pt-4">
     <a href="#" className="block w-full h-full">
-        <Image alt="blog photo" src={props.post.image_href} className="object-cover w-full max-h-40"/>
+        <img alt="blog photo" src={props.post.image_href} className="object-cover w-full max-h-40"/>
         <div className="w-full p-4 bg-[#151521]">
             <p className="font-medium text-[#BB86FC] text-md">
                 Artykuł
