@@ -23,17 +23,6 @@ export default function ChartExample() {
     handleGetCurrencies()
   }, [])
 
-
-  const findCurrencyName = (currencyId : number) =>{
-    var currencyname = null;
-    currencies.forEach(currency => {
-        if(currencyId == currency.id){
-            currencyname = currency.name;
-        }
-    });
-    return currencyname;
-  }
-
   useEffect(() => {
     if (currencies.length > 0) {
       setSellingCurrency({id: getCurrencyIdByName(currencies, 'PLN'), name: 'PLN'})
@@ -59,8 +48,13 @@ export default function ChartExample() {
   }, [sellingCurrency, buyingCurrency, pastTimestamp])
 
   const chartRef = useRef<HTMLCanvasElement>(null);
+  const chartInstanceRef = useRef<Chart | null>(null)
+
   useEffect(() => {
     if (currencyHistory.length > 0 && chartRef.current) {
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+      }
       const labels = currencyHistory.map((currency) =>
         currency.history.reverse().map((historyItem) =>
           new Date(historyItem.date).toLocaleString(undefined, {
@@ -75,7 +69,7 @@ export default function ChartExample() {
       const data = currencyHistory.map((currency) =>
         currency.history.reverse().map((historyItem) => historyItem.conversion_value)
       ).flat();
-      new Chart(chartRef.current, {
+      chartInstanceRef.current = new Chart(chartRef.current, {
         type: "line",
         data: {
           labels: labels,
@@ -167,14 +161,29 @@ export default function ChartExample() {
   }, [currencyHistory]);
 
   return (
-<div className="bg-[#121212] borderLight p-4 m-2 bgGlass overflow-hidden">
-  <div className="aspect-w-16 aspect-h-9">
-    <canvas
-      ref={chartRef}
-      className="w-full h-2/3 max-h-full #121212"
-    />
-  </div>
-
-</div>
+      <div className="bg-[#121212] borderLight p-4 m-2 bgGlass overflow-hidden">
+        <div className="aspect-w-16 aspect-h-9">
+          <canvas
+            ref={chartRef}
+            className="w-full h-96 max-h-full #121212"
+          />
+        </div>
+        <div className="flex flex-row items-center">
+          <div className="pr-4">Wybierz okres czasu:</div>
+          <select className="bgdark border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            name="timestamp"
+            id="timestamp"
+            value={pastTimestamp}
+            onChange={(e) => {
+              setPastTimestamp(e.target.value)
+            }}>
+              <option key={'3h'} value={'3h'}>3 godzin</option>
+              <option key={'6h'} value={'6h'}>6 godzin</option>
+              <option key={'12h'} value={'12h'}>12 godzin</option>
+              <option key={'1d'} value={'1d'}>1 dzień</option>
+              <option key={'6d'} value={'6d'}>7 dzień</option>
+          </select>
+        </div>
+      </div>
   );
 }
