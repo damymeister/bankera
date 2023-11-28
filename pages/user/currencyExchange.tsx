@@ -155,7 +155,7 @@ const findCurrencyRate = async (ownedCurrencyID: number, currencyToBuyID: number
 }
 
 
-const setConvertedAmount = async (inputValue: number, currencyRate: number) => {
+const setConvertedAmount = (inputValue: number, currencyRate: number) => {
   return (inputValue * currencyRate);
 }
 
@@ -256,7 +256,7 @@ const setMaxAmountToExchange = async (ind: number) =>{
     return {
       ...currency,
       value: currency.amount,
-      converted_amount: await setConvertedAmount(currency.amount, currency.rate)
+      converted_amount: setConvertedAmount(currency.amount, currency.rate)
     }};
     return currency;
   }));
