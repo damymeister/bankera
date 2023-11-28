@@ -4,9 +4,10 @@
 - ujednolicić język
 - Paginacja do currencyExchange i wallet
 - Ostatnia strona ma być wielkości tak jak poprzednich
-- Dodać zdjęcia do postów
-- Flex wrap do postów, posty wyższe niż szersze
-- **FOREX**!!! Prosty wykres z currencyHistory
+- ✓ Dodać zdjęcia do postów
+- ✓ Flex wrap do postów, posty wyższe niż szersze
+- **FOREX**!!!
+- ✓ Prosty wykres z currencyHistory
 - Edycja użytkowników w adminPanelu
 - Implementacja speculativeTransaction
 - CRON do transakcji spekulacyjnych
