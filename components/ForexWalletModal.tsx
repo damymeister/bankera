@@ -194,7 +194,7 @@ export default function ForexWalletModal(props:any){
               <div className='flex flex-col font-bold mb-4 py-6'>
               <h2 className="text-lg mb-4">Manage your Forex Wallet</h2>
                 <label htmlFor="currentAmount" className="font-bold">
-                  Current Value: {clickedCurrencyData.clickedCurrencyAmount === -1.0 && clickedCurrencyData.clickedCurrencyName === '' ? '-' : clickedCurrencyData.clickedCurrencyAmount + ' ' + clickedCurrencyData.clickedCurrencyName}
+                  Current Value: {clickedCurrencyData.clickedCurrencyAmount === -1.0 && clickedCurrencyData.clickedCurrencyName === '' ? '-' : <span className ="hover:cursor-pointer" onClick={()=>setAmountToChange(clickedCurrencyData.clickedCurrencyAmount)}>{clickedCurrencyData.clickedCurrencyAmount} {clickedCurrencyData.clickedCurrencyName}</span>}
                 </label>
               </div>
                   <div>

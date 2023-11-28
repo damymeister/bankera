@@ -18,7 +18,7 @@ enum Operation {
 export default function WalletModal(props: any) {
   const [currencies, setCurrencies] = useState([]);
   const [message, setMessage] = useState("");
-  const [data, setData] = useState({ currencyRow_id: -1, wallet_id:"", currency_id: "", amount: "" });
+  const [data, setData] = useState({ currencyRow_id: -1, wallet_id:"", currency_id: "", amount: -1});
   const [amountToChange, setAmountToChange] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [operationType, setOperationType] = useState(1);
@@ -119,7 +119,7 @@ const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus:
       return;
     }
 
-    const newCurrentValueBalance = parseFloat(data.amount) + amountToChange;
+    const newCurrentValueBalance = data.amount + amountToChange;
     if(newCurrentValueBalance <= 0){
       setSnackbarProps({snackStatus: "danger", message: "You don't have that amount of money.", showSnackbar: true}); 
       setAmountToChange(0);
@@ -143,7 +143,7 @@ const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus:
       setSnackbarProps({snackStatus: "danger", message: "Incorrect value.", showSnackbar: true});
       return;
     }
-    const newCurrentValueBalance = parseFloat(data.amount) - amountToChange;
+    const newCurrentValueBalance = data.amount - amountToChange;
     if(newCurrentValueBalance < 0){
       setSnackbarProps({snackStatus: "danger", message: "You dont have that amount of money.", showSnackbar: true});
       setAmountToChange(0);
@@ -159,7 +159,7 @@ const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus:
         }));
     
       setSnackbarProps({snackStatus: "danger", message: res.message, showSnackbar: true});
-
+      props.closeWalletModal();
       setAmountToChange(0);
   }
   
@@ -176,6 +176,7 @@ const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus:
     if (!window.confirm("Czy na pewno chcesz dodać wartości do swojego portfela?")) return
     const res = await postCurrencyStorage(dataCurr);
     setAmountToChange(0);
+    props.closeWalletModal();
     setSnackbarProps({snackStatus: "danger", message: res.message, showSnackbar: true});
   }
   
@@ -202,7 +203,7 @@ const displayButton = () =>{
               <h2 className="text-lg mb-4">Manage your currency wallet</h2>
               { data.amount && currencyName ? (
                 <label htmlFor="currentAmount" className="font-bold">
-                  Current Value: {data.amount} {currencyName}
+                 <span className="hover:cursor-pointer" onClick={()=>setAmountToChange(data.amount)}>Current Value: {data.amount} {currencyName}</span> 
                 </label>
                ) : (null)}
             </div>

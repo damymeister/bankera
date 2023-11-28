@@ -7,6 +7,7 @@ import { handleCreateForexWallet, handleDeleteForexWallet, getForexWalletData} f
 import { getCurrencies } from '@/pages/api/services/currencyService';
 import { IForexCurrencyStorage } from '@/lib/interfaces/forexCurrencyStorage';
 import { getForexCurrencyStorage } from '../api/services/forexCurrencyStorageService';
+import { checkExistenceOfWallet } from '@/pages/api/services/walletService';
 
 export default function ForexWallet() {
     const [showForexWalletModal, setShowForexWalletModal] = useState(false);
@@ -15,13 +16,15 @@ export default function ForexWallet() {
     const [ForexWalletID, setForexWalletID] = useState<number>(0);
     const [forexWalletData, setForexWalletData] = useState<IForexCurrencyStorage[]>([]);
     const [userData, setuserData] = useState({firstName:"", surname: ""})
+    const [returnedWalletID, setReturnedalletID] = useState<number>(-1);
 
     const fetchWalletData = async () => {
         try {
           const forexWalletId = await getForexWalletData();
           const currencyData = await getCurrencies();
           let currenciesSaved : {data: IForexCurrencyStorage []} = {data: []}
-      
+          const ifWalletExist = await checkExistenceOfWallet();
+          setReturnedalletID(ifWalletExist.wallet_id);
           currenciesSaved = await getForexCurrencyStorage(forexWalletId.forex_wallet_id);
           setForexWalletID(forexWalletId.forex_wallet_id);
           setuserData((data) => ({
@@ -107,8 +110,12 @@ const mapUserCurrencies = () => {
            <p>Current balance of your Forex wallet is shown below</p>
            { mapUserCurrencies() }
             <div className='flex flex-row gap-4 flex-wrap justify-center items-center'>
+               {forexWalletData.length > 0 && returnedWalletID !== -1 ? (
                 <button className='button3' onClick={() => {setShowForexWalletModal(true)}}>Transfer to Wallet</button>
+                ) : 
+                null}
             </div>
+      
         </div>
         }
       </div>

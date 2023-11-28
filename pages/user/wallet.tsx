@@ -9,6 +9,7 @@ import { BsCurrencyExchange } from "react-icons/bs";
 import '@/components/css/home.css';
 import SidePanel from '@/components/sidepanel';
 import { ICurrencyStorage } from '@/lib/interfaces/currencyStorage';
+import { checkExistenceOfForexWallet } from '@/pages/api/services/forexWalletService';
 // import Loader from '@/components/loader';
 
 export default function Wallet() {
@@ -22,9 +23,12 @@ export default function Wallet() {
   const [pickedCurrency, setPickedCurrency] = useState({ currencyRow_id: 0, wallet_id:0, currency_id: 0, amount: 0.00 })
   const [currenciesToSend, setCurrenciesToSend] = useState<any[]>([]);
   const [userData, setuserData] = useState({firstName:"", surname: ""})
+  const [returnedForexWalletID, setReturnedForexWalletID] = useState<number>(-1);
 
   const fetchWalletData = async () => {
     try {
+      const returnedForexWalletID = await checkExistenceOfForexWallet();
+      setReturnedForexWalletID(returnedForexWalletID.forex_wallet_id);
       const walletId = await getWalletData();
       const currencyData = await getCurrencies();
       let currenciesSaved : {data: any} = {data: []}
@@ -157,7 +161,7 @@ const mapUserCurrencies = () => {
             ):(<div>
                 <p>You have all of the possibile currencies in your wallet.</p>
               </div>)}
-            { walletData !== null && walletData.length > 0  ? (
+            { walletData !== null && walletData.length > 0 && returnedForexWalletID != -1 ? (
             <button className='button3' onClick={() => {setShowForexWalletModal(true)}}>Transfer to Forex Wallet</button>)
             : (null)}
           </div>
@@ -168,7 +172,7 @@ const mapUserCurrencies = () => {
       {showWalletModal ? 
             <WalletModal findCurrencyName = {findCurrencyName} walletID = {walletID} closeWalletModal={closeWalletModal} currencies={currencies} walletData = {pickedCurrency} currenciesToSend = {currenciesToSend}/>: null
         }
-          {showForexWalletModal ? 
+          {showForexWalletModal   ? 
             <ForexWalletModal closeForexWalletModal={closeForexWalletModal} walletData={walletData} findCurrencyName={findCurrencyName}/>: null
         }
     </Layout>
