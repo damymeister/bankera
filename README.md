@@ -11,7 +11,7 @@
 - Edycja użytkowników w adminPanelu
 - Implementacja speculativeTransaction
 - CRON do transakcji spekulacyjnych
-- Testy
+- ✓ Testy **SOŁ**
 
 # Engineering thesis
 

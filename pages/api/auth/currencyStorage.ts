@@ -28,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       let token_json = parseJwt(token);
       let user_id = parseInt(token_json._id);
 
-    const wallet_currency_duplicate = await prisma.currency_Storage.count({
+    const wallet_currency_duplicate = await prisma.currency_Storage.findFirst({
         where: {
             wallet_id: req.body.wallet_id,
             currency_id : req.body.currency_id,
@@ -42,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
     })
 
-    if (wallet_currency_duplicate && user_wallet) {
+    if (wallet_currency_duplicate !== null && user_wallet !== null) {
         return res.status(409).json({ message: "You can not add same currency twice!" })
     }
     await prisma.currency_Storage.create({data: {
