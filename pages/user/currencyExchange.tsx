@@ -16,7 +16,10 @@ import {IInnerTransaction} from '@/lib/interfaces/innerTransaction';
 import ICurrencyExchange from '@/lib/interfaces/currencyExchange';
 import ICurrency from '@/lib/interfaces/currency';
 import {IWallet} from '@/lib/interfaces/wallet';
+//Paginator
+import { pageEndIndex, pageStartIndex } from '@/lib/pages';
 import Paginator from '@/components/paginator';
+
 
 export default function CurrencyExchange(){
     const [userOwnedCurrencies, setUserOwnedCurrencies] = useState<ICurrencyExchange[]>([ {id:0, amount: 0, currency_id: 0, wallet_id : 0, quoteCurrency: 0, value: 0, rate: 0.0, converted_amount: 0.0, currency_pair_id: 0} ])
@@ -31,7 +34,10 @@ export default function CurrencyExchange(){
       icon: <FaExclamation />,
       description: snackMess
   };
-
+  // PAGINATION states
+  const [currencyExchangeDataPage, setCurrencyExchangeDataPage] = useState(0)
+  const [currencyExchangeTotalPages, setCurrencyExchangeTotalPages] = useState(0)
+  const recordsPerPage = 5
 
 const loadData = async () =>{
     try{
@@ -41,7 +47,6 @@ const loadData = async () =>{
       }
     
       var walletData = await getWalletData();
-      console.log(walletData.wallet_id);
       const userCurrencies = await getCurrencyStorage(walletData.wallet_id);
       const newupdatedUserCurrencies = userCurrencies.data.map((data: any) => ({
         id: data.id, 
@@ -56,7 +61,10 @@ const loadData = async () =>{
       }));
 
       setUserOwnedCurrencies(newupdatedUserCurrencies);
-
+      if(userCurrencies.data.length > 0){
+        setCurrencyExchangeDataPage(1);
+        setCurrencyExchangeTotalPages(Math.ceil(userCurrencies.data.length / recordsPerPage))
+      }
       setUserWalletData((data) =>({
           ...data,
           wallet_id : walletData.wallet_id,
@@ -206,7 +214,6 @@ const saveExchange = async (index: number) => {
   if (!window.confirm("Czy na pewno chcesz wymienić tą walutę?")) return
 
   const userCurr = userOwnedCurrencies[index];
-  console.log(userCurr);
   const newCurrentValueBalance = userCurr.amount - userCurr.value;
   const dataToSubtract = { id: userCurr.id, amount: parseFloat(newCurrentValueBalance.toFixed(2)) };
 
@@ -216,8 +223,6 @@ const saveExchange = async (index: number) => {
     if (operation) {
       const findIndex = userOwnedCurrencies.find((data) => data.id == operation);
       let newCurrBalanceToAdd = (findIndex?.amount ?? 0) + userCurr.converted_amount;
-      console.log(newCurrBalanceToAdd);
-      console.log(userCurr.converted_amount);
       const dataToAdd = { id: operation, amount: parseFloat(newCurrBalanceToAdd.toFixed(2)) };
       await updateCurrencyStorage(dataToAdd);
     } else {
@@ -265,70 +270,73 @@ const setMaxAmountToExchange = async (ind: number) =>{
 
 const mapUserCurrencies = () => {
     if (!isLoading && userOwnedCurrencies.length > 0 && currenciesNames.length > 0 )  {
-      return (
-        
-        <div className='containerCustom borderLight p-4'>
-  <div className='overflow-x-auto'>
-    <table className='w-full text-white'>
-      <thead className='textUnderline'>
-        <tr>
-          <th className='md:sticky md:left-0'>Base Currency</th>
-          <th>Wallet Amount</th>
-          <th>Quote Currency</th>
-          <th>Value</th>
-          <th>Exchange Rate</th>
-          <th>Converted Amount</th>
-          <th>Action</th>
+      let rows : JSX.Element [] = [];
+      for(let i = pageStartIndex(recordsPerPage, currencyExchangeDataPage); i < pageEndIndex(recordsPerPage, currencyExchangeDataPage, currencyExchangeTotalPages, userOwnedCurrencies.length); i++ ){
+        rows.push(
+          <tr key={userOwnedCurrencies[i].id} className='border-b border-gray-700'>
+            <td className='p-2'>{findCurrencyName(userOwnedCurrencies[i].currency_id)}</td>
+            <td className='hover:cursor-pointer pt-2' onClick={() => setMaxAmountToExchange(i)}>{userOwnedCurrencies[i].amount}</td>
+            <td className='p-2'>{displaySelectOfAvailableCurrencies(userOwnedCurrencies[i].currency_id, userOwnedCurrencies[i].id)}</td>
+            <td className="flex items-center justify-center p-2  inset-y-0 right-0">
+              <input
+                className='w-1/2 rounded-md border border-[#bb86fcad] py-1 pl-2 pr-15 ring-1 ring-inset focus:ring-2 focus:text-white focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-[#1f1b24b2]'
+                placeholder='0'
+                type="number"
+                value={userOwnedCurrencies[i].value}
+                onChange={(e) => handleValueToExchange(e, userOwnedCurrencies[i].id)}
+                min="0"
+                max={userOwnedCurrencies[i].amount}
+                disabled={userOwnedCurrencies[i].quoteCurrency === 0}
+              ></input>
+            </td>
+            <td className='p-2'>{userOwnedCurrencies[i].rate ? userOwnedCurrencies[i].rate.toFixed(significantDigits(userOwnedCurrencies[i].rate)) : "-"}</td>
+            <td className='p-2'>{
+              userOwnedCurrencies[i].converted_amount && !isNaN(userOwnedCurrencies[i].converted_amount) ?
+                <span> {userOwnedCurrencies[i].converted_amount.toFixed(significantDigits(userOwnedCurrencies[i].converted_amount))} {findCurrencyName(userOwnedCurrencies[i].quoteCurrency)} </span>
+                : "0.00"
+            }</td>
+            <td onClick={() => saveExchange(i)} className='flex items-center justify-center p-2'><div className="text-[#bb86fcad] p-2 border border-[#bb86fcad] hover:border-[#BB86FC] rounded-lg hover:text-[#BB86FC] cursor-pointer text-sm" >Wymień</div></td>
         </tr>
-      </thead>
-      <tbody className=''>
-        {userOwnedCurrencies.map((currency, index) => {
-          return (
-            <tr key={currency.id} className='border-b border-gray-700'>
-              <td className='p-2'>{findCurrencyName(currency.currency_id)}</td>
-              <td className='hover:cursor-pointer pt-2' onClick={() => setMaxAmountToExchange(index)}>{currency.amount}</td>
-              <td className='p-2'>{displaySelectOfAvailableCurrencies(currency.currency_id, currency.id)}</td>
-              <td className="flex items-center justify-center p-2  inset-y-0 right-0">
-                <input
-                  className='w-1/2 rounded-md border border-[#bb86fcad] py-1 pl-2 pr-15 ring-1 ring-inset focus:ring-2 focus:text-white focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-[#1f1b24b2]'
-                  placeholder='0'
-                  type="number"
-                  value={userOwnedCurrencies[index].value}
-                  onChange={(e) => handleValueToExchange(e, currency.id)}
-                  min="0"
-                  max={userOwnedCurrencies[index].amount}
-                  disabled={userOwnedCurrencies[index].quoteCurrency === 0}
-                ></input>
-              </td>
-              <td className='p-2'>{userOwnedCurrencies[index].rate ? userOwnedCurrencies[index].rate.toFixed(significantDigits(userOwnedCurrencies[index].rate)) : "-"}</td>
-              <td className='p-2'>{
-                userOwnedCurrencies[index].converted_amount && !isNaN(userOwnedCurrencies[index].converted_amount) ?
-                  <span> {userOwnedCurrencies[index].converted_amount.toFixed(significantDigits(userOwnedCurrencies[index].converted_amount))} {findCurrencyName(userOwnedCurrencies[index].quoteCurrency)} </span>
-                  : "0.00"
-              }</td>
-              <td onClick={() => saveExchange(index)} className='flex items-center justify-center p-2'><div className="text-[#bb86fcad] p-2 border border-[#bb86fcad] hover:border-[#BB86FC] rounded-lg hover:text-[#BB86FC] cursor-pointer text-sm" >Wymień</div></td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  </div>
-  {/* <Paginator currentPage={} totalPages={} onPageChange={} /> */}
-</div>
-      );
+        )
+      }
+      return rows;
     }
   };
-
     return(
         <Layout>
           <SidePanel></SidePanel>
             {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
             {isLoading ? (<h1>Please wait...</h1>) : userWalletData.wallet_id !== 0 ? (
                 <div className='m-8'>   <h1 className='text-2xl'>Hello {userWalletData.first_name} {userWalletData.last_name}</h1>
-                    <p>You can exchange currencies in your wallet below
-                .</p>
-                    {mapUserCurrencies()}
+                <div className='containerCustom borderLight p-4'>
+                  <div className='overflow-x-auto'>
+                  <p className='font-bold mb-2'>You can exchange currencies in your wallet below</p>
+                  {!isLoading && userOwnedCurrencies.length > 0 ? (
+                  <div className='flex flex-row'>
+                  <table className='w-full text-white'>
+                    <thead className='textUnderline'>
+                      <tr>
+                        <th className='md:sticky md:left-0'>Base Currency</th>
+                        <th>Wallet Amount</th>
+                        <th>Quote Currency</th>
+                        <th>Value</th>
+                        <th>Exchange Rate</th>
+                        <th>Converted Amount</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className=''>
+                      { mapUserCurrencies() }
+                    </tbody>
+                  </table>
+                  </div>) : <span className='font-bold mt-4 mb-4'>Your wallet is empty!</span>}
                 </div>
+            </div>
+            {currencyExchangeTotalPages !== 0 ? (
+                <div className='mt-4'>
+                  <Paginator currentPage={currencyExchangeDataPage} totalPages={currencyExchangeTotalPages} onPageChange={setCurrencyExchangeDataPage} />
+                </div>) : null}
+              </div>
                 ) 
                 : null}
         </Layout>

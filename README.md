@@ -2,7 +2,7 @@
 
 - Poprawić błędy z snackbarami
 - ujednolicić język
-- Paginacja do currencyExchange i wallet
+- ✓ Paginacja do currencyExchange, wallet, forexWallet
 - Ostatnia strona ma być wielkości tak jak poprzednich
 - ✓ Dodać zdjęcia do postów
 - ✓ Flex wrap do postów, posty wyższe niż szersze
@@ -12,6 +12,7 @@
 - Implementacja speculativeTransaction
 - CRON do transakcji spekulacyjnych
 - ✓ Testy **SOŁ**
+- ✓ Portfel Forex, transakcje Wallet -> ForexWallet i na odwrót + zapis historii do bazy danych
 
 # Engineering thesis
 
