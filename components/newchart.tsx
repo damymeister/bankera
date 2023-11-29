@@ -4,7 +4,8 @@ import api_url from "@/lib/api_url";
 import axios from "axios";
 import ICurrency from "@/lib/interfaces/currency";
 import ICurrencyHistory from "@/lib/interfaces/currencyHistory";
-import { getCurrencyIdByName } from "@/lib/currency";
+import { getCurrencyIdByName, getCurrencyNameById } from "@/lib/currency";
+import { FaExchangeAlt } from "react-icons/fa";
 
 export default function ChartExample() {
   const [currencies, setCurrencies] = useState<ICurrency[]>([]);
@@ -90,7 +91,7 @@ export default function ChartExample() {
               display: true,
               title: {
                 display: true,
-                text: "Data",
+                text: "",
                 color:"rgb(188, 136, 252)",
                 font: {
                   family: 'monospace',
@@ -168,8 +169,40 @@ export default function ChartExample() {
             className="w-full h-96 max-h-full #121212"
           />
         </div>
-        <div className="flex flex-row items-center">
-          <div className="pr-4">Wybierz okres czasu:</div>
+        <div className="flex flex-col items-center">
+          <div className="flex flex-row items-center justify-center gap-x-4 my-2">
+
+            <select className="bgdark border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              name="sell_currency"
+              id="sell_currency"
+              value={sellingCurrency.id} 
+              onChange={(e) => {
+                setSellingCurrency({id: parseInt(e.target.value), name: getCurrencyNameById(currencies, parseInt(e.target.value))})
+              }}>
+                {
+                  currencies.map((curr) => {
+                    if (curr.id !== -1) {
+                      return (<option key={curr.id} value={curr.id}>{curr.name}</option>)
+                    }
+                  })
+                }
+            </select>
+            <FaExchangeAlt />
+            <select className="bgdark border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                name="buy_currency"
+                id="buy_currency"
+                value={buyingCurrency.id}
+                onChange={(e) => {
+                  setBuyingCurrency({id: parseInt(e.target.value), name: getCurrencyNameById(currencies, parseInt(e.target.value))})
+              }}>
+                {
+                  currencies.map((curr) => {
+                    return (<option key={curr.id} value={curr.id}>{curr.name}</option>)
+                  })
+                }
+            </select>
+          </div>
+          <div className="p-2">Wybierz przedział czasu:</div>
           <select className="bgdark border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             name="timestamp"
             id="timestamp"
