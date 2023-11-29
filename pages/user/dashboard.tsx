@@ -78,10 +78,6 @@ export default function Dashboard() {
                </div>
             </div>
             </div>
-            <div className='bg-white'>
-              <ChartExample />
-            </div>
-            
         </div>
         </Layout>
     )

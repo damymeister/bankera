@@ -129,7 +129,7 @@ export default function SidePanel() {
             <HiMiniWallet />
             <span>Portfel Forex</span>
           </Link>
-          <Link href="/Forex" className={`flex items-center space-x-2 py-2 ${isActive('/exchangeRates')}`}>
+          <Link href="/user/forex" className={`flex items-center space-x-2 py-2 ${isActive('/exchangeRates')}`}>
             <FaEdit />
             <span>Forex</span>
           </Link>
