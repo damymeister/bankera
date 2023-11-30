@@ -11,9 +11,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const user = await prisma.user.findUnique({where: {id: user_id}})
   if (user === null) return res.status(404).json({ error: 'User not found!' })
   const forex_wallet_id = user.forex_wallet_id
-  if (forex_wallet_id === null) return res.status(200).json({ forex_wallet_id: -1 })
   if (req.method === 'GET') {
     try {
+      if (forex_wallet_id === null) return res.status(200).json({ forex_wallet_id: -1 })
       return res.status(200).json({ forex_wallet_id: forex_wallet_id });
     } catch (error) {
       console.error('Error while managing request', error);
