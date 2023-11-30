@@ -74,6 +74,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         let token_json = parseJwt(token);
         let user_id = parseInt(token_json._id);
         
+        const user = await prisma.user.findUnique({where: {id: user_id}})
+        const forex_wallet_id = user?.forex_wallet_id
+
         await prisma.user.update({
           where: {
             id: user_id
@@ -83,10 +86,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         });
 
-        await prisma.forex_Wallet.delete({
-          where: {id: parseInt(req.query.id as string)}, 
-        });
-
+        if (forex_wallet_id && forex_wallet_id !== null) {
+          await prisma.forex_Wallet.delete({
+            where: {id: forex_wallet_id}, 
+          });
+        }
 
         return res.status(200).json({ message: "Forex wallet has been deleted" });
       } catch (error) {

@@ -31,10 +31,9 @@ export const handleCreateWallet = async () => {
         }
     }
 
-export const handleDeleteWallet = async (id: number) => {
+export const handleDeleteWallet = async () => {
         try {
-          const urll = api_url('auth/wallet?id=' + id.toString())
-          const res = await axios.delete(urll, {
+          const res = await axios.delete(url, {
               headers: { Accept: 'application/json' },    
           });
           return { message: res.data.message, status: res.status };
