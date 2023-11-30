@@ -22,14 +22,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         if (!userWallet.wallet_id) {
-          return res.status(404).json({ error: 'User does not have specified ID.' });
+          return res.status(404).json({ error: 'User does not have specified wallet ID.' });
         }
         
          return res.status(200).json({wallet_id: userWallet.wallet_id, first_name: userWallet.first_name, last_name: userWallet.last_name });
       
-      } else {
-        return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
-      }
+      } 
+      return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
     } catch (error) {
       console.error('Error while managing request', error);
       return res.status(500).json({ error: 'Server error occured.' });
@@ -105,8 +104,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.error('Error while deleting wallet', error);
         return res.status(500).json({ error: 'Server error occurred.' });
       }
-    } else {
-      return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
-    }
+    } 
+    return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
   }
 }

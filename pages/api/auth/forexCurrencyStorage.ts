@@ -11,14 +11,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         let token_json = parseJwt(token);
         let user_id = parseInt(token_json._id);
         const user = await prisma.user.findUnique({where:{id: user_id}})
+
         if (user !== null && user.forex_wallet_id) {
+
           const response =  await prisma.forex_Currency_Storage.findMany({
             where: {forex_wallet_id: parseInt(req.query.id as string)}, 
           });
+
           return res.status(200).json(response);
         }
-        return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
       }
+      return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
+      
     } catch (error) {
       console.error('Error while managing request', error);
       return res.status(500).json({ error: 'Server error occured.' });
@@ -26,6 +30,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   if (req.method === "PUT") {
       try {
+        const doesCurrencyNameExist = await prisma.currency.findFirst({
+          where: {
+            id: req.body.forex_currency_id
+          }
+        });
+
+        const doesForexWalletExist = await prisma.forex_Wallet.findFirst({ 
+          where: {
+            id: req.body.forex_wallet_id
+          }
+        });
+
+        if (!doesCurrencyNameExist || !doesForexWalletExist) {
+          return res.status(404).json({ error: 'Currency or Wallet does not exist.' });
+        }
+
+
         const currencyStorageExist = await prisma.forex_Currency_Storage.findFirst({
           where: {
             forex_wallet_id: req.body.forex_wallet_id,

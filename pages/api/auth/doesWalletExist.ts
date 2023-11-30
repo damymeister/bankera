@@ -19,12 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
           if (userWallet && userWallet.wallet_id !== null) {
             return res.status(200).json({ wallet_id: userWallet.wallet_id });
-          } else {
+          } 
             return res.status(200).json({ wallet_id: -1});
-          }
-        } else {
+        
+        } 
           return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
-        }
       } catch (error) {
         console.error('Error while managing request', error);
         return res.status(500).json({ error: 'Server error occurred.' });

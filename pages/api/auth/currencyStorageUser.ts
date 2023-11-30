@@ -8,6 +8,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { wallet_id, currency_id } = req.body;
       const parsedWalletId = parseInt(wallet_id as string);
       const parsedCurrencyId = parseInt(currency_id as string);
+      const doesCurrencyNameExist = await prisma.currency.findFirst({ 
+        where: {
+          id: parsedCurrencyId
+        }
+      });
+
+      const doesWalletExist = await prisma.wallet.findFirst({ 
+        where: {
+          id: parsedWalletId
+        }
+      });
+
+      if(!doesCurrencyNameExist || !doesWalletExist){ 
+        return res.status(404).json({ error: 'Currency or Wallet does not exist.' });
+      }
 
       const currencyStorageExist = await prisma.currency_Storage.findFirst({
         where: {
@@ -25,7 +40,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             amount: parseFloat(req.body.amount + currencyStorageExist.amount)
           }
         });
-      } else {
+        return res.status(200).json({ message: 'Currency storage updated.' });
+      } 
         await prisma.currency_Storage.create({
           data: {
             wallet_id: parsedWalletId,
@@ -33,8 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             amount: parseFloat(req.body.amount) 
           }
         });
-      }
-
+      
       return res.status(200).json({ message: 'Currency storage updated.' });
     } catch (error) {
       console.error('Error while updating currency storage', error);

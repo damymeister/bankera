@@ -12,7 +12,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: 'Server error occured.' });
     }
 }
-  else {
     return res.status(500).json({ message: "This HTTP method is not supported." });
-  }
 }

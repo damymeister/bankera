@@ -19,9 +19,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
          return res.status(200).json({forex_wallet_id: userForexWallet?.forex_wallet_id, first_name: userForexWallet?.first_name, last_name: userForexWallet?.last_name });
       
-      } else {
-        return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
-      }
+      } 
+      return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
     } catch (error) {
       console.error('Error while managing request', error);
       return res.status(500).json({ error: 'Server error occured.' });
@@ -97,8 +96,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.error('Error while deleting Forex Wallet', error);
         return res.status(500).json({error});
       }
-    } else {
-      return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
-    }
+    } 
+    return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
   }
 }
