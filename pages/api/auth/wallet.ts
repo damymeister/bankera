@@ -81,6 +81,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       try {
         let token_json = parseJwt(token);
         let user_id = parseInt(token_json._id);
+        const user = await prisma.user.findUnique({where: {id: user_id}})
+        const wallet_id = user?.wallet_id
 
         await prisma.user.update({
           where: {
@@ -91,9 +93,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         });
         
-        await prisma.wallet.delete({
-          where: {id: parseInt(req.query.id as string)}, 
-        });
+        if (wallet_id && wallet_id !== null) {
+          await prisma.wallet.delete({
+            where: {id: wallet_id}, 
+          });
+        }
+
 
         return res.status(200).json({ message: "Wallet has been deleted" });
       } catch (error) {

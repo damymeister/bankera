@@ -34,7 +34,7 @@ export default function ForexWallet() {
           let currenciesSaved : {data: IForexCurrencyStorage []} = {data: []}
           const ifWalletExist = await checkExistenceOfWallet();
           setReturnedalletID(ifWalletExist.wallet_id);
-          currenciesSaved = await getForexCurrencyStorage(forexWalletId.forex_wallet_id);
+          currenciesSaved = await getForexCurrencyStorage();
           setForexWalletID(forexWalletId.forex_wallet_id);
           setuserData((data) => ({
             ...data,
@@ -104,7 +104,7 @@ const mapUserCurrencies = () => {
           </div> :
           <div className=" p-8 borderLight rounded-xl m-8  min-h-400">
             {!forexWalletData || forexWalletData.length === 0 ? (
-           <button onClick={() => { handleDeleteForexWallet(ForexWalletID).then(() => window.location.reload()) }} className="w-3/5 px-4 py-2 bg-[#ff0000c0] hover:bg-[#5c2121] text-[white] rounded-md">Delete Forex Wallet</button>) : null }
+           <button onClick={() => { handleDeleteForexWallet().then(() => window.location.reload()) }} className="w-3/5 px-4 py-2 bg-[#ff0000c0] hover:bg-[#5c2121] text-[white] rounded-md">Delete Forex Wallet</button>) : null }
            <h1 className='text-2xl border-[#BB86FC] border-b-2 py-2 my-4'>Hello { userData.firstName } { userData.surname }!</h1>
            <div className='mt-4 mb-4'>
             {forexWalletData.length > 0 && !isLoading ? (

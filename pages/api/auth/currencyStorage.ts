@@ -8,13 +8,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       let token = getCookie('token', { req, res });
       if (token !== undefined) {
-      const response =  await prisma.currency_Storage.findMany({
-          where: {wallet_id: parseInt(req.query.id as string)}, 
-        });
-        return res.status(200).json(response);
-      } else {
+        let token_json = parseJwt(token);
+        let user_id = parseInt(token_json._id);
+        const user = await prisma.user.findUnique({where:{id: user_id}})
+        if (user !== null && user.wallet_id) {
+          const response =  await prisma.currency_Storage.findMany({
+            where: {wallet_id: user.wallet_id}, 
+          });
+          return res.status(200).json(response);
+        }
         return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
       }
+      return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
     } catch (error) {
       console.error('Error while managing request', error);
       return res.status(500).json({ error: 'Server error occured.' });
@@ -74,20 +79,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(500).json({ error: 'Server error occurred.' });
       }
     }
-  if (req.method === 'DELETE') {
-    let token = getCookie('token', { req, res });
-    if (token !== undefined) {
-      try {
-        await prisma.currency_Storage.delete({
-          where: {id: parseInt(req.query.id as string)}, 
-        });
-        return res.status(200).json({ message: "Currency Storage deleted." });
-      } catch (error) {
-        console.error('Error while deleting currency storage', error);
-        return res.status(500).json({ error: 'Server error occurred.' });
-      }
-    } else {
-      return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
-    }
-  }
 }

@@ -4,10 +4,9 @@ import axios from 'axios'
 
 const url = api_url('auth/forexCurrencyStorage')
 
-export const getForexCurrencyStorage = async (forex_wallet_id: number) => {
+export const getForexCurrencyStorage = async () => {
     try {
-        const combined_url = api_url('auth/forexCurrencyStorage?id=' + forex_wallet_id.toString())
-        const res  = await axios.get(combined_url, {headers: {Accept: 'application/json'}})
+        const res  = await axios.get(url, {headers: {Accept: 'application/json'}})
         return {data: res.data};
     } catch (error) {
         console.log('unexpected error: ', error);

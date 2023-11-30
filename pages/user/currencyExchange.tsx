@@ -47,7 +47,7 @@ const loadData = async () =>{
       }
     
       var walletData = await getWalletData();
-      const userCurrencies = await getCurrencyStorage(walletData.wallet_id);
+      const userCurrencies = await getCurrencyStorage();
       const newupdatedUserCurrencies = userCurrencies.data.map((data: any) => ({
         id: data.id, 
         amount: data.amount,

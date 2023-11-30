@@ -40,10 +40,9 @@ export const handleCreateForexWallet = async () => {
         }
     }
 
-export const handleDeleteForexWallet = async (id: number) => {
+export const handleDeleteForexWallet = async () => {
         try {
-          const combined_url = api_url('auth/forexWallet?id=' + id.toString())
-          const res = await axios.delete(combined_url, {
+          const res = await axios.delete(url, {
               headers: { Accept: 'application/json' },    
           });
           return { message: res.data.message, status: res.status };
