@@ -61,7 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           wallet_id: null
         }
       });
-      if (wallet_id !== null) {
+      if (wallet_id) {
         await prisma.wallet.delete({
           where: {id: wallet_id}, 
         });
