@@ -59,7 +59,7 @@ export default function UsersTransactions() {
         setCurrenciesNames(currencies);
         const walletData = await getWalletData();
         setUserWalletData(walletData);
-        const userCurrencies = await getCurrencyStorage(walletData.wallet_id);
+        const userCurrencies = await getCurrencyStorage();
         setUserOwnedCurrencies(userCurrencies.data);
         setCurrencyMapData(userCurrencies.data, currencies);
         setLoadedCurrentBalance(userCurrencies.data);
@@ -288,7 +288,7 @@ const resetData = () =>{
             <h1 className='text-2xl textUnderline'>Hello {userWalletData.first_name} {userWalletData.last_name}</h1>
             <h4 className='text-wrap textUnderline mx-2 py-2'>Czy chcesz wysłać przelew do innego użytkownika w naszej aplikacji? Teraz jest to łatwiejsze niż kiedykolwiek wcześniej. Dzięki aplikacji Bankera, wszystko, co musisz zrobić, to wyszukać innego użytkownika za pomocą danych osobowych lub adresu e-mail, wybrać kwotę i walutę. Następnie klikasz przycisk przelej kwotę i to tyle!</h4>
             <div className='flex flex-col w-full items-center justify-center pt-2'>
-            <div className='flex flex-col gap-6 4 w-full flex-wrap items-center justify-center inline-flex'>
+            <div className='flex flex-col gap-6 4 w-full flex-wrap items-center justify-center'>
               <h2 className='text-wrap text-xl textUnderline mx-2'>Stan konta</h2>
               <div className='flex flex-row items-center justify-center textUnderline py-2'>
                 <div className='hover:cursor-pointer ' onClick={() => setMaximumAmountToSend()}>
@@ -308,7 +308,7 @@ const resetData = () =>{
                       placeholder="Type..."
                       id="user"
                       type="text"
-                      className="border w-full rounded-md border py-1 pl-2 pr-15 focus:text-white sm:text-sm sm:leading-6 bg-[#1f1b24b2]"
+                      className="border w-full rounded-md py-1 pl-2 pr-15 focus:text-white sm:text-sm sm:leading-6 bg-[#1f1b24b2]"
                       onChange={handleSearchPhrase}
                       value={searchPhrase}
                       disabled={userCliked}
@@ -340,7 +340,7 @@ const resetData = () =>{
                   type="number"
                   min="0"
                   max={valueToSendBalance.balance}
-                  className="border w-full rounded-md border py-1 pl-2 pr-15 focus:text-white sm:text-sm sm:leading-6 bg-[#1f1b24b2]"
+                  className="border w-full rounded-md  py-1 pl-2 pr-15 focus:text-white sm:text-sm sm:leading-6 bg-[#1f1b24b2]"
                   onChange={handleAmountChange}
                   value={transferToSend.amountToChange}
                 />

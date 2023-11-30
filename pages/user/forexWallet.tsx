@@ -34,7 +34,7 @@ export default function ForexWallet() {
           let currenciesSaved : {data: IForexCurrencyStorage []} = {data: []}
           const ifWalletExist = await checkExistenceOfWallet();
           setReturnedalletID(ifWalletExist.wallet_id);
-          currenciesSaved = await getForexCurrencyStorage(forexWalletId.forex_wallet_id);
+          currenciesSaved = await getForexCurrencyStorage();
           setForexWalletID(forexWalletId.forex_wallet_id);
           setuserData((data) => ({
             ...data,

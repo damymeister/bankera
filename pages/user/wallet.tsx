@@ -40,7 +40,7 @@ export default function Wallet() {
       const currencyData = await getCurrencies();
       let currenciesSaved : {data: any} = {data: []}
   
-      currenciesSaved = await getCurrencyStorage(walletId.wallet_id);
+      currenciesSaved = await getCurrencyStorage();
       setWalletID(walletId.wallet_id);
 
       setuserData((data) => ({

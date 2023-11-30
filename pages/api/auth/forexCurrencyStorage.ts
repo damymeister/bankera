@@ -1,13 +1,24 @@
+import parseJwt from '@/lib/parse_jwt';
 import prisma from '@/lib/prisma';
+import { getCookie } from 'cookies-next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     try {
-      const response =  await prisma.forex_Currency_Storage.findMany({
-          where: {forex_wallet_id: parseInt(req.query.id as string)}, 
-        });
-        return res.status(200).json(response);
+      let token = getCookie('token', { req, res });
+      if (token) {
+        let token_json = parseJwt(token);
+        let user_id = parseInt(token_json._id);
+        const user = await prisma.user.findUnique({where:{id: user_id}})
+        if (user !== null && user.forex_wallet_id) {
+          const response =  await prisma.forex_Currency_Storage.findMany({
+            where: {forex_wallet_id: parseInt(req.query.id as string)}, 
+          });
+          return res.status(200).json(response);
+        }
+        return res.status(401).json({ error: 'Permission denied. User is not authenticated.' });
+      }
     } catch (error) {
       console.error('Error while managing request', error);
       return res.status(500).json({ error: 'Server error occured.' });
