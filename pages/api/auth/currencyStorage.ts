@@ -36,9 +36,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         currency_id : req.body.currency_id,
       }
     })
-    if (wallet_currency_duplicate !== null) {
-      return res.status(409).json({ message: "You can not add same currency twice!" })
-    }
+
+    if (wallet_currency_duplicate !== null) return res.status(409).json({ message: "You can not add same currency twice!" })
+
     await prisma.currency_Storage.create({data: {
       wallet_id: wallet_id,
       amount: req.body.amount,
@@ -55,7 +55,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
       });
       if(!doesCurrencyStorageExist) return res.status(404).json({ error: 'Currency storage does not exist.' });
-      const amountLeft = await prisma.currency_Storage.update({
+
+      if(req.body.amount == 0){
+        await prisma.currency_Storage.delete({
+          where:{id: doesCurrencyStorageExist.id}, 
+      });
+        return res.status(200).json('Currency storage deleted.');
+      }
+      
+       await prisma.currency_Storage.update({
         where: {
           id: req.body.id, 
         },
@@ -63,11 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           amount: req.body.amount,
         }
       });
-      if(amountLeft.amount == 0){
-        await prisma.currency_Storage.delete({
-          where: {id: amountLeft.id}, 
-        });
-      }
+   
       return res.status(200).json('Currency storage updated.');
     } catch (error) {
       console.error('Error while updating currency storage', error);

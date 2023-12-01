@@ -126,9 +126,9 @@ const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus:
       return;
     }
 
-    const dataa = {id: data.currencyRow_id, amount: newCurrentValueBalance}
+    const currencyDataToSend = {id: data.currencyRow_id, amount: newCurrentValueBalance}
     if (!window.confirm("Czy na pewno chcesz dodać wartości do swojego portfela?")) return
-    const res = await updateCurrencyStorage(dataa);
+    const res = await updateCurrencyStorage(currencyDataToSend);
     setData((dat: any) => ({
       ...dat,
       amount: newCurrentValueBalance,
@@ -149,9 +149,9 @@ const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus:
       setAmountToChange(0);
       return
     }
-      const dataa = {id: data.currencyRow_id, amount: newCurrentValueBalance}
+      const currencyDataToSend = {id: data.currencyRow_id, amount: newCurrentValueBalance}
       if (!window.confirm("Czy na pewno chcesz wypłacić pieniądze z konta?")) return
-      const res = await updateCurrencyStorage(dataa);
+      const res = await updateCurrencyStorage(currencyDataToSend);
     
         setData((dat: any) => ({
           ...dat,
