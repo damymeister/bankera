@@ -1,5 +1,5 @@
 import api_url from '@/lib/api_url';
-import { ICreateCurrencyStorage, IEditCurrencyStorage, IUpdateSelectedStorage } from '@/lib/interfaces/currencyStorage';
+import { ICreateCurrencyStorage, IEditCurrencyStorage} from '@/lib/interfaces/currencyStorage';
 import axios from 'axios'
 
 const url = api_url('auth/currencyStorage')
@@ -32,18 +32,7 @@ export const updateCurrencyStorage = async (data : IEditCurrencyStorage) => {
             throw error;
         }
     };
-export const updateCurrencyStorageForexOperations  = async (data: IUpdateSelectedStorage) => {
-    try {
-        const specified_URL = api_url('auth/currencyStorageForex');
-        const res = await axios.put(specified_URL, data, {
-            headers: { Accept: 'application/json' },    
-        });
-        return { message: res.data.message, status: res.status };
-    } catch (error) {
-        console.log('unexpected error: ', error);
-        throw error;
-    }
-};
+
 
 
 

@@ -1,4 +1,4 @@
-export  interface IInnerTransaction {
+export interface IInnerTransaction {
     id?: number,
     wallet_id: number,
     currency_pair_id: number,
