@@ -53,37 +53,45 @@ export default function ChartExample() {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstanceRef = useRef<Chart | null>(null)
 
-  function generateFutureData (): number[] {
-    if (!currencyHistory[0].future) return []
-    const hours = getHours(pastTimestamp)
-    let values: number[] = []
+  function generateFutureData(): number[] {
+    if (!currencyHistory[0].future) return [];
+    const hours = getHours(pastTimestamp);
+    let values: number[] = [];
     for (let i = hours; i >= 0; i--) {
-      values.push(currencyHistory[0].future.byx * (-i) + currencyHistory[0].future.alfa)
-      values.push(currencyHistory[0].future.byx * (-i + 0.5) + currencyHistory[0].future.alfa)
+      values.push(currencyHistory[0].future.byx * (-i) + currencyHistory[0].future.alfa);
+      values.push(currencyHistory[0].future.byx * (-i + 0.5) + currencyHistory[0].future.alfa);
     }
-    return values
+    return values;
   }
-
+  
   useEffect(() => {
     if (currencyHistory.length > 0 && chartRef.current) {
       if (chartInstanceRef.current) {
         chartInstanceRef.current.destroy();
       }
-      const labels = currencyHistory.map((currency) =>
-        currency.history.reverse().map((historyItem) =>
-          new Date(historyItem.date).toLocaleString(undefined, {
-            minute: "numeric",
-            hour: "numeric",
-            day: "numeric",
-            month: "numeric",
-            year: "numeric",
-          })
+      const labels = currencyHistory
+        .map((currency) =>
+          currency.history
+            .reverse()
+            .map((historyItem) =>
+              new Date(historyItem.date).toLocaleString(undefined, {
+                minute: "numeric",
+                hour: "numeric",
+                day: "numeric",
+                month: "numeric",
+                year: "numeric",
+              })
+            )
         )
-      ).flat();
-      const data = currencyHistory.map((currency) =>
-        currency.history.reverse().map((historyItem) => historyItem.conversion_value)
-      ).flat();
-      const futureData = generateFutureData()
+        .flat();
+      const data = currencyHistory
+        .map((currency) => currency.history.reverse().map((historyItem) => historyItem.conversion_value))
+        .flat();
+      const futureData = generateFutureData();
+      const futureDataColor = futureData.every((value, index, array) => {
+        if (index === 0) return true;
+        return value >= array[index - 1];
+      }) ? "green" : "red";
       chartInstanceRef.current = new Chart(chartRef.current, {
         type: "line",
         data: {
@@ -101,10 +109,10 @@ export default function ChartExample() {
               data: futureData,
               fill: false,
               borderDash: [5, 5],
-              borderColor: "rgb(188, 136, 252)",
+              borderColor: futureDataColor,
               backgroundColor: "transparent",
-              pointStyle: false
-            }
+              pointStyle: false,
+            },
           ],
         },
         options: {
@@ -115,11 +123,11 @@ export default function ChartExample() {
               title: {
                 display: true,
                 text: "",
-                color:"rgb(188, 136, 252)",
+                color: "rgb(188, 136, 252)",
                 font: {
-                  family: 'monospace',
+                  family: "monospace",
                   size: 20,
-                  weight: 'bold',
+                  weight: "bold",
                   lineHeight: 1.2,
                 },
               },
@@ -131,12 +139,12 @@ export default function ChartExample() {
               display: true,
               title: {
                 display: true,
-                text: "Kurs "+ sellingCurrency.name + '/' + buyingCurrency.name,
-                color:"rgb(188, 136, 252)",
+                text: "Kurs " + sellingCurrency.name + "/" + buyingCurrency.name,
+                color: "rgb(188, 136, 252)",
                 font: {
-                  family: 'monospace',
+                  family: "monospace",
                   size: 20,
-                  weight: 'bold',
+                  weight: "bold",
                   lineHeight: 1.2,
                 },
               },
@@ -149,7 +157,7 @@ export default function ChartExample() {
             },
           },
           animation: {
-            duration: 2000, 
+            duration: 2000,
           },
           interaction: {
             intersect: false,
@@ -158,12 +166,12 @@ export default function ChartExample() {
             legend: {
               title: {
                 display: true,
-                text: 'Wykres dla: ' + sellingCurrency.name + '/' + buyingCurrency.name,
-                color: '#fff',
+                text: "Wykres dla: " + sellingCurrency.name + "/" + buyingCurrency.name,
+                color: "#fff",
                 font: {
-                  family: 'monospace',
+                  family: "monospace",
                   size: 20,
-                  weight: 'bold',
+                  weight: "bold",
                   lineHeight: 1.2,
                 },
               },
@@ -178,12 +186,11 @@ export default function ChartExample() {
               borderColor: "rgb(188, 136, 252)",
             },
           },
-          // backgroundColor: "#bb86fc8a", 
+          // backgroundColor: "#bb86fc8a",
         },
       });
     }
   }, [currencyHistory]);
-
   return (
       <div className="bg-[#121212] borderLight p-4 m-2 bgGlass overflow-hidden">
         <div className="aspect-w-16 aspect-h-9">
