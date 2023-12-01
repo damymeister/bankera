@@ -8,7 +8,7 @@
 - ✓ Flex wrap do postów, posty wyższe niż szersze
 - **FOREX**!!!
 - ✓ Prosty wykres z currencyHistory
-- Edycja użytkowników w adminPanelu
+- ✓ Edycja użytkowników w adminPanelu
 - Implementacja speculativeTransaction
 - CRON do transakcji spekulacyjnych
 - ✓ Testy **SOŁ**
