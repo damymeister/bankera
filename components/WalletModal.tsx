@@ -1,11 +1,9 @@
 import Layout from '@/app/layoutPattern';
 import '@/components/css/home.css';
-import { GrClose } from "react-icons/gr";
 import React, { ChangeEventHandler, useEffect, useState } from 'react';
 import { postCurrencyStorage, updateCurrencyStorage } from '@/pages/api/services/currencyStorageService';
 import { GrMoney } from "react-icons/gr";
 import { GiMoneyStack } from "react-icons/gi";
-import { GoSingleSelect } from "react-icons/go";
 import { FaWindowClose, FaMoneyBillWaveAlt}  from "react-icons/fa";
 import SnackBar from '@/components/snackbar';
 import {FaExclamation}  from "react-icons/fa";
@@ -37,7 +35,7 @@ const snackbarProps = {
 useEffect(()=>{
   setTimeout(()=>{
     setShowSnackbar(false);
-   }, 4000)
+   }, 6000)
 },[showSnackbar])
 
 const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus: string, message: string, showSnackbar?: boolean }) => {
@@ -114,72 +112,97 @@ const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus:
   };
 
   const addBalanceToAccount = async () =>{
-    if(amountToChange === 0){
-      setSnackbarProps({snackStatus: "danger", message: "Incorrect value.", showSnackbar: true});
-      return;
-    }
+    var mes = '';
+    var status = ''
+    try{
+      if(amountToChange === 0){
+        setSnackbarProps({snackStatus: "danger", message: "Incorrect value.", showSnackbar: true});
+        return;
+      }
 
-    const newCurrentValueBalance = data.amount + amountToChange;
-    if(newCurrentValueBalance <= 0){
-      setSnackbarProps({snackStatus: "danger", message: "You don't have that amount of money.", showSnackbar: true}); 
+      const newCurrentValueBalance = data.amount + amountToChange;
+      if(newCurrentValueBalance <= 0){
+        setSnackbarProps({snackStatus: "danger", message: "You don't have that amount of money.", showSnackbar: true}); 
+        setAmountToChange(0);
+        return;
+      }
+
+      const currencyDataToSend = {id: data.currencyRow_id, amount: newCurrentValueBalance}
+      if (!window.confirm("Czy na pewno chcesz dodać wartości do swojego portfela?")) return
+      await updateCurrencyStorage(currencyDataToSend);
+
+      mes = "Operacja zakończona sukcesem.";
+      status = "success";
+    }
+    catch(error){
+      mes = "Wystapił problem podczas aktualizacji portfela";
+      status = "danger";
+    }
+    finally{
       setAmountToChange(0);
-      return;
+      props.setSnackbarProps({snackStatus: status, message: mes , showSnackbar: true});
+      props.closeWalletModal();
     }
-
-    const currencyDataToSend = {id: data.currencyRow_id, amount: newCurrentValueBalance}
-    if (!window.confirm("Czy na pewno chcesz dodać wartości do swojego portfela?")) return
-    const res = await updateCurrencyStorage(currencyDataToSend);
-    setData((dat: any) => ({
-      ...dat,
-      amount: newCurrentValueBalance,
-    }));
-
-    setSnackbarProps({snackStatus: "danger", message: res.message, showSnackbar: true});
-    setAmountToChange(0);
   }
   
   const withDrawMoneyFromAccount = async () =>{
-    if(amountToChange === 0){
-      setSnackbarProps({snackStatus: "danger", message: "Incorrect value.", showSnackbar: true});
-      return;
+    var mes = '';
+    var status = ''
+    try{
+      if(amountToChange === 0){
+        setSnackbarProps({snackStatus: "danger", message: "Incorrect value.", showSnackbar: true});
+        return;
+      }
+      const newCurrentValueBalance = data.amount - amountToChange;
+      if(newCurrentValueBalance < 0){
+        setSnackbarProps({snackStatus: "danger", message: "You dont have that amount of money.", showSnackbar: true});
+        setAmountToChange(0);
+        return
+      }
+        const currencyDataToSend = {id: data.currencyRow_id, amount: newCurrentValueBalance}
+        if (!window.confirm("Czy na pewno chcesz wypłacić pieniądze z konta?")) return
+        await updateCurrencyStorage(currencyDataToSend);
+      
+        mes = "Operacja zakończona sukcesem.";
+        status = "success";
+    }catch(error){
+        mes = "Wystapił problem podczas aktualizacji portfela";
+        status = "danger";  
     }
-    const newCurrentValueBalance = data.amount - amountToChange;
-    if(newCurrentValueBalance < 0){
-      setSnackbarProps({snackStatus: "danger", message: "You dont have that amount of money.", showSnackbar: true});
-      setAmountToChange(0);
-      return
+    finally{
+        setAmountToChange(0);
+        props.setSnackbarProps({snackStatus: "success", message: "Operacja zakończona sukcesem.", showSnackbar: true});
+        props.closeWalletModal();
     }
-      const currencyDataToSend = {id: data.currencyRow_id, amount: newCurrentValueBalance}
-      if (!window.confirm("Czy na pewno chcesz wypłacić pieniądze z konta?")) return
-      const res = await updateCurrencyStorage(currencyDataToSend);
-    
-        setData((dat: any) => ({
-          ...dat,
-          amount: newCurrentValueBalance,
-        }));
-    
-      setSnackbarProps({snackStatus: "danger", message: res.message, showSnackbar: true});
-      props.closeWalletModal();
-      setAmountToChange(0);
   }
   
   const addNewCurrency = async () =>{
-    if(amountToChange === 0){
-      setSnackbarProps({snackStatus: "danger", message: "Incorrect value.", showSnackbar: true});
-      return;
+    var mes = '';
+    var status = ''
+    try{
+      if(amountToChange === 0){
+        setSnackbarProps({snackStatus: "danger", message: "Incorrect value.", showSnackbar: true});
+        return;
+      }
+      const dataCurr = {
+        wallet_id : parseInt(data.wallet_id),
+        currency_id : parseInt(data.currency_id),
+        amount: amountToChange,
+      }
+      if (!window.confirm("Czy na pewno chcesz dodać wartości do swojego portfela?")) return
+      await postCurrencyStorage(dataCurr);
+
+      mes = "Operacja zakończona sukcesem.";
+      status = "success";
+  }catch(error){
+      mes = "Wystapił problem podczas aktualizacji portfela";
+      status = "danger";
+  }finally{
+      setAmountToChange(0);
+      props.setSnackbarProps({snackStatus: status, message: mes , showSnackbar: true});
+      props.closeWalletModal();
     }
-    const dataCurr = {
-      wallet_id : parseInt(data.wallet_id),
-      currency_id : parseInt(data.currency_id),
-      amount: amountToChange,
-    }
-    if (!window.confirm("Czy na pewno chcesz dodać wartości do swojego portfela?")) return
-    const res = await postCurrencyStorage(dataCurr);
-    setAmountToChange(0);
-    props.closeWalletModal();
-    setSnackbarProps({snackStatus: "danger", message: res.message, showSnackbar: true});
   }
-  
 const displayButton = () =>{
   if(operationType == Operation.Deposit && data.currencyRow_id !== -1){
     return <button onClick={() => addBalanceToAccount()} className="py-4 button2 text-white rounded-xl">Deposit</button>

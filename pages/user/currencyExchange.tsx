@@ -101,7 +101,7 @@ const handleValueToExchange = async (e: React.ChangeEvent<HTMLInputElement>, cur
 
   const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map(async (currency) => {
     if (currency.id === currencyID) {
-      const convertedAmount = await setConvertedAmount(parseFloat(insertedValue), currency.rate);
+      const convertedAmount = setConvertedAmount(parseFloat(insertedValue), currency.rate);
       return {
         ...currency,
         value: parseFloat(insertedValue),

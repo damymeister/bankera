@@ -109,6 +109,8 @@ export default function ForexWalletModal(props:any){
         setSnackbarProps({ snackStatus: "danger", message: "Wprowadziłeś nieprawidłowe wartości.", showSnackbar: true });
         return
       }
+      var mes = '';
+      var status = '';
       try{
         if (!window.confirm("Czy na pewno chcesz przelać pieniądze do portfela Forex?")) return
         if(userWallets.forex_wallet_id <=0 || userWallets.forex_wallet_id == undefined || userWallets.forex_wallet_id == null){
@@ -116,12 +118,16 @@ export default function ForexWalletModal(props:any){
           return
         }
         await createWalletForexWalletTransactions(WalletOperation.walletForexWallet);
-        props.closeForexWalletModal();
-        setSnackbarProps({ snackStatus: "danger", message: "Dodano wartości do portfela Forex.", showSnackbar: true });
+  
+        mes = "Dodano wartości do portfela Forex.";
+        status = "success";
       }catch(error){
-        console.log(error);
-        setSnackbarProps({ snackStatus: "danger", message: "Wystąpił błąd podczas wykonywania transferu.", showSnackbar: true });
-      }
+        mes = "Wystąpił błąd podczas wykonywania transferu.";
+        status = "danger";
+      }finally{
+        props.setSnackbarProps({ snackStatus: status, message: mes, showSnackbar: true });
+        props.closeForexWalletModal();
+    }
     }
 
     const transferMoneyToCasualWallet = async () =>{
@@ -129,6 +135,8 @@ export default function ForexWalletModal(props:any){
         setSnackbarProps({ snackStatus: "danger", message: "Wprowadziłeś nieprawidłowe wartości.", showSnackbar: true });
         return
       }
+      var mes = '';
+      var status = '';
       try{
         if (!window.confirm("Czy na pewno chcesz przelać pieniądze do portfela Forex?")) return
         if(userWallets.wallet_id <=0 || userWallets.wallet_id == undefined || userWallets.wallet_id == null){
@@ -136,11 +144,14 @@ export default function ForexWalletModal(props:any){
           return
         }
         await createWalletForexWalletTransactions(WalletOperation.forexWalletWallet)
-        props.closeForexWalletModal();
-        setSnackbarProps({ snackStatus: "danger", message: "Dodano wartości do portfela.", showSnackbar: true });
+        mes = "Dodano wartości do portfela.";
+        status = "success";
       }catch(error){
-        console.log(error);
-        setSnackbarProps({ snackStatus: "danger", message: "Wystąpił błąd podczas wykonywania transferu.", showSnackbar: true });
+        mes = "Wystąpił błąd podczas wykonywania transferu.";
+        status = "danger";
+      }finally{
+        props.setSnackbarProps({ snackStatus: status, message: mes, showSnackbar: true });
+        props.closeForexWalletModal();  
       }
     }
 

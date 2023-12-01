@@ -10,10 +10,15 @@ import '@/components/css/home.css';
 import SidePanel from '@/components/sidepanel';
 import { ICurrencyStorage } from '@/lib/interfaces/currencyStorage';
 import { checkExistenceOfForexWallet } from '@/pages/api/services/forexWalletService';
+import {FaExclamation}  from "react-icons/fa";
+import SnackBar from '@/components/snackbar';
 // import Loader from '@/components/loader';
 //Paginator
 import { pageEndIndex, pageStartIndex } from '@/lib/pages';
 import Paginator from '@/components/paginator';
+
+
+
 
 export default function Wallet() {
   const [walletData, setWalletData] = useState<ICurrencyStorage[]>([]);
@@ -26,11 +31,38 @@ export default function Wallet() {
   const [pickedCurrency, setPickedCurrency] = useState({ currencyRow_id: 0, wallet_id:0, currency_id: 0, amount: 0.00 })
   const [currenciesToSend, setCurrenciesToSend] = useState<any[]>([]);
   const [userData, setuserData] = useState({firstName:"", surname: ""})
-  const [returnedForexWalletID, setReturnedForexWalletID] = useState<number>(-1);
+  const [returnedForexWalletID, setReturnedForexWalletID] = useState<number>(-1)
+      // Snackbar states
+  const [showSnackbar, setShowSnackbar] = useState(false)
+  const [snackMess, setsnackMess] = useState("")
+  const [snackStatus, setsnackStatus] = useState("danger")
       // PAGINATION states
   const [walletDataPage, setWalletDataPage] = useState(0)
   const [walletDataTotalPages, setWalletDataTotalPages] = useState(0)
   const recordsPerPage = 5
+
+  const snackbarProps = {
+    status: snackStatus,
+    icon: <FaExclamation />,
+    description: snackMess
+  };
+  
+  useEffect(()=>{
+    setTimeout(()=>{
+      setShowSnackbar(false);
+     }, 6000)
+  },[showSnackbar])
+  
+  const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus: string, message: string, showSnackbar?: boolean }) => {
+    if (snackStatus && message) {
+      setsnackStatus(snackStatus);
+      setsnackMess(message);
+  
+      if (showSnackbar !== undefined) {
+        setShowSnackbar(showSnackbar);
+      }
+  };
+  }
 
   const fetchWalletData = async () => {
     try {
@@ -135,6 +167,7 @@ const mapUserCurrencies = () =>{
     <Layout>
       <SidePanel></SidePanel>
       <div className="containerCustom borderLightY text-white">
+      {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
       <div className="items-center bg-[#1f1b24b2] justify-center flex h-full w-full">
         {isLoading ? (<div>Is loading... </div>):
         walletID === null ?
@@ -182,10 +215,10 @@ const mapUserCurrencies = () =>{
       </div>
     </div>
       {showWalletModal ? 
-            <WalletModal findCurrencyName = {findCurrencyName} walletID = {walletID} closeWalletModal={closeWalletModal} currencies={currencies} walletData = {pickedCurrency} currenciesToSend = {currenciesToSend}/>: null
+            <WalletModal setSnackbarProps = {setSnackbarProps} findCurrencyName = {findCurrencyName} walletID = {walletID} closeWalletModal={closeWalletModal} currencies={currencies} walletData = {pickedCurrency} currenciesToSend = {currenciesToSend}/>: null
         }
           {showForexWalletModal   ? 
-            <ForexWalletModal closeForexWalletModal={closeForexWalletModal} walletData={walletData} findCurrencyName={findCurrencyName}/>: null
+            <ForexWalletModal setSnackbarProps = {setSnackbarProps} closeForexWalletModal={closeForexWalletModal} walletData={walletData} findCurrencyName={findCurrencyName}/>: null
         }
     </Layout>
   );

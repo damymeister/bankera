@@ -8,6 +8,8 @@ import { getCurrencies } from '@/pages/api/services/currencyService';
 import { IForexCurrencyStorage } from '@/lib/interfaces/forexCurrencyStorage';
 import { getForexCurrencyStorage } from '../api/services/forexCurrencyStorageService';
 import { checkExistenceOfWallet } from '@/pages/api/services/walletService';
+import {FaExclamation}  from "react-icons/fa";
+import SnackBar from '@/components/snackbar';
 //Paginator
 import { pageEndIndex, pageStartIndex } from '@/lib/pages';
 import Paginator from '@/components/paginator';
@@ -21,12 +23,37 @@ export default function ForexWallet() {
     const [forexWalletData, setForexWalletData] = useState<IForexCurrencyStorage[]>([]);
     const [userData, setuserData] = useState({firstName:"", surname: ""})
     const [returnedWalletID, setReturnedalletID] = useState<number>(-1);
+          // Snackbar states
+    const [showSnackbar, setShowSnackbar] = useState(false)
+    const [snackMess, setsnackMess] = useState("")
+    const [snackStatus, setsnackStatus] = useState("danger")
     // PAGINATION states
     const [forexWalletDataPage, setForexWalletDataPage] = useState(0)
     const [forexWalletDataTotalPages, setForexWalletDataTotalPages] = useState(0)
     const recordsPerPage = 5
 
-
+    const snackbarProps = {
+      status: snackStatus,
+      icon: <FaExclamation />,
+      description: snackMess
+    };
+    
+    useEffect(()=>{
+      setTimeout(()=>{
+        setShowSnackbar(false);
+       }, 6000)
+    },[showSnackbar])
+    
+    const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus: string, message: string, showSnackbar?: boolean }) => {
+      if (snackStatus && message) {
+        setsnackStatus(snackStatus);
+        setsnackMess(message);
+    
+        if (showSnackbar !== undefined) {
+          setShowSnackbar(showSnackbar);
+        }
+    };
+    }
     const fetchWalletData = async () => {
         try {
           const forexWalletId = await getForexWalletData();
@@ -95,6 +122,7 @@ const mapUserCurrencies = () => {
     <Layout>
       <SidePanel></SidePanel>
       <div className="containerCustom borderLightY text-white">
+      {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
       <div className="items-center bg-[#1f1b24b2] justify-center flex h-full w-full">
         {isLoading ? (<div>Is loading... </div>):
         ForexWalletID === 0 ?
@@ -139,7 +167,7 @@ const mapUserCurrencies = () => {
       </div>
     </div>
           {showForexWalletModal ? 
-            <ForexWalletModal closeForexWalletModal={closeForexWalletModal} walletData={forexWalletData} findCurrencyName={findCurrencyName} isForexWallet={true}/>: null
+            <ForexWalletModal setSnackbarProps={setSnackbarProps} closeForexWalletModal={closeForexWalletModal} walletData={forexWalletData} findCurrencyName={findCurrencyName} isForexWallet={true}/>: null
         }
     </Layout>
   );
