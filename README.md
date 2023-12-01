@@ -1,6 +1,6 @@
 # TODO List
 
-- Poprawić błędy z snackbarami
+- ✓ Poprawić błędy z snackbarami
 - ujednolicić język
 - ✓ Paginacja do currencyExchange, wallet, forexWallet
 - Ostatnia strona ma być wielkości tak jak poprzednich
