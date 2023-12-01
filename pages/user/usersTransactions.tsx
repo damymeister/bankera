@@ -8,11 +8,11 @@ import {FaExclamation}  from "react-icons/fa";
 import SnackBar from '@/components/snackbar'
 import '@/components/css/home.css';
 import '@/components/css/forms.css';
-import { updateCurrencyStorage, updateSelectedCurrencyStorage } from '@/pages/api/services/currencyStorageService';
 import { handleCreateUsersTransactions } from '@/pages/api/services/usersTransactionsService';
 import { FaWindowClose }  from "react-icons/fa";
 import { ICurrencyNameBalance, IUserTransactionValueTypes } from '@/lib/interfaces/userTransaction';
 import { IUserSearch } from '@/lib/interfaces/user';
+import { IUserTransaction, IWithDrawData, IDataUserToSend } from '@/lib/interfaces/userTransaction';
 import {ICurrencyStorage} from '@/lib/interfaces/currencyStorage';
 import ICurrency from '@/lib/interfaces/currency';
 import {IWallet} from '@/lib/interfaces/wallet';
@@ -218,9 +218,9 @@ const sendMoneyTransfer = async () => {
   }
 
   try{
-    await withDrawMoneyFromAccount()
-    await transferMoneyToSelectedUser()
-    await informUsersTransactions()
+    const withDrawData = await withDrawMoneyFromAccount()
+    const dataToSendToUser = await transferMoneyToSelectedUser()
+    await executeUsersTransactions(withDrawData, dataToSendToUser)
   }catch(error){
     setSnackbarProps({ snackStatus: "danger", message:"Wystąpił błąd podczas wykonywania transakcji.", showSnackbar: true });
    }
@@ -242,9 +242,9 @@ const withDrawMoneyFromAccount = async () => {
         }))
         return
       }
-      const withDrawal = {id: currencyStorageID[0].id, amount: currencyMoneyLeft}
+      const withDrawal = {id: currencyStorageID[0].id, amount: transferToSend.amountToChange}
       if (!window.confirm("Czy na pewno chcesz wykonać przelew?")) return
-      const res = await updateCurrencyStorage(withDrawal);
+      return withDrawal;
 }
 
 const transferMoneyToSelectedUser = async () =>{
@@ -253,10 +253,10 @@ const transferMoneyToSelectedUser = async () =>{
     amount: transferToSend.amountToChange,
     currency_id: transferToSend.currencyToSend
   }
-   await updateSelectedCurrencyStorage(dataToSend);
+   return dataToSend
 }
 
-const informUsersTransactions = async () =>{
+const executeUsersTransactions = async (withDrawData?: IWithDrawData , dataToSendToUser?: IDataUserToSend) =>{
   const currDate = new Date();
 
   const userToUserTransaction = {
@@ -266,7 +266,18 @@ const informUsersTransactions = async () =>{
     amount: transferToSend.amountToChange,
     transaction_date: currDate
   }
-  await handleCreateUsersTransactions(userToUserTransaction);
+  if (!withDrawData || !dataToSendToUser) {
+    setSnackbarProps({ snackStatus: "danger", message: "Niepoprawne dane.", showSnackbar: true });
+    return
+  }
+
+  const userToUserTransactionRequest : IUserTransaction = 
+  {
+    userToUserTransaction, 
+    withDrawData: withDrawData, 
+    dataUserToSend: dataToSendToUser}
+
+  await handleCreateUsersTransactions(userToUserTransactionRequest);
 }
 
 

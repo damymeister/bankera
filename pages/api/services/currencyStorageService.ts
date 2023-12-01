@@ -32,30 +32,6 @@ export const updateCurrencyStorage = async (data : IEditCurrencyStorage) => {
             throw error;
         }
     };
-export const deleteCurrencyStorage = async (id: number) => {
-    try {
-        const urll = api_url('auth/currencyStorage?id=' + id.toString())
-        const res = await axios.delete(urll, {
-            headers: { Accept: 'application/json' },    
-        });
-        return { message: res.data.message, status: res.status };
-    } catch (error) {
-        console.log('unexpected error: ', error);
-        throw error;
-    }
-};
-export const updateSelectedCurrencyStorage = async (data: IUpdateSelectedStorage) => {
-    try {
-        const specified_URL = api_url('auth/currencyStorageUser');
-        const res = await axios.put(specified_URL, data, {
-            headers: { Accept: 'application/json' },    
-        });
-        return { message: res.data.message, status: res.status };
-    } catch (error) {
-        console.log('unexpected error: ', error);
-        throw error;
-    }
-};
 export const updateCurrencyStorageForexOperations  = async (data: IUpdateSelectedStorage) => {
     try {
         const specified_URL = api_url('auth/currencyStorageForex');

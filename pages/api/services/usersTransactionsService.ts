@@ -6,6 +6,7 @@ const url = api_url('auth/usersTransactions')
 
 export const handleCreateUsersTransactions = async (data : IUserTransaction) => {
     try{
+        console.log(data)
         const res  = await axios.post(url, data, {headers: {Accept: 'application/json'}})
         return {message: res.data.message, status: res.status};
     } catch (error) {

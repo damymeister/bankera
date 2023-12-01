@@ -1,10 +1,24 @@
 export interface IUserTransaction{
-    id?: number,
-    wallet_sender_id: number,
-    wallet_recipient_id: number,
+    userToUserTransaction: {
+        id?: number,
+        wallet_sender_id: number,
+        wallet_recipient_id: number,
+        currency_id: number,
+        amount: number,
+        transaction_date: Date,
+    },
+    withDrawData: IWithDrawData,
+    dataUserToSend: IDataUserToSend
+}
+export interface IWithDrawData {
+    id: number,
+    amount: number,
+}
+
+export interface IDataUserToSend {
+    wallet_id: number,
     currency_id: number,
     amount: number,
-    transaction_date: Date,
 }
 
 export interface ICurrencyNameBalance {
