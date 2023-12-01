@@ -16,23 +16,82 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const targetWallet = await prisma.wallet.findUnique({
         where: {
-          id: req.body.wallet_recipient_id,
+          id: req.body.userToUserTransaction.wallet_recipient_id,
         },
       });
       if (targetWallet === null) return res.status(404).json({ error: 'Target wallet does not exist.' })
-      await prisma.user_to_User_Transaction.create({data: {
-        wallet_sender_id: wallet_id,
-        wallet_recipient_id: req.body.wallet_recipient_id,
-        transaction_date: req.body.transaction_date,
-        amount: req.body.amount,
-        currency_id: req.body.currency_id,
-      }})
+      const { userToUserTransaction, withDrawData, dataUserToSend } = req.body; 
+      
+      const findSenderCurrencyStorage = await prisma.currency_Storage.findFirst({
+        where: {
+          id: withDrawData.id,
+        },
+      });
+      if (findSenderCurrencyStorage === null) return res.status(404).json({ error: 'Currency storage does not exist.' })
+      if (findSenderCurrencyStorage.amount < withDrawData.amount) return res.status(400).json({ error: 'Insufficient funds.' })
+      if (findSenderCurrencyStorage.currency_id !== dataUserToSend.currency_id) return res.status(400).json({ error: 'Currency does not match.' })
+      if (findSenderCurrencyStorage.wallet_id !== userToUserTransaction.wallet_sender_id) return res.status(400).json({ error: 'Wallet does not match.' })
+      if (findSenderCurrencyStorage.wallet_id === dataUserToSend.wallet_id) return res.status(400).json({ error: 'You cannot send money to yourself.' })
+
+      if ((findSenderCurrencyStorage.amount - withDrawData.amount) == 0){
+        await prisma.currency_Storage.delete({
+          where: {
+            id: withDrawData.id,
+          },
+        });
+      }else{
+        await prisma.currency_Storage.update({
+          where: {
+            id: withDrawData.id,
+          },
+          data: {
+            amount: (findSenderCurrencyStorage.amount - withDrawData.amount),
+          },
+      });
+      }
+
+      const findRecipientCurrencyStorage = await prisma.currency_Storage.findFirst({
+        where: {
+          wallet_id: dataUserToSend.wallet_id,
+          currency_id: dataUserToSend.currency_id,
+        },
+      });
+
+      if (findRecipientCurrencyStorage === null){
+        await prisma.currency_Storage.create({
+          data: {
+            wallet_id: dataUserToSend.wallet_id,
+            currency_id: dataUserToSend.currency_id,
+            amount: dataUserToSend.amount,
+          },
+        });
+      }else{
+        await prisma.currency_Storage.update({
+          where: {
+            id: findRecipientCurrencyStorage.id,
+          },
+          data: {
+            amount:findRecipientCurrencyStorage.amount + dataUserToSend.amount,
+          },
+        });
+      }
+      await prisma.user_to_User_Transaction.create({
+        data: {
+          wallet_sender_id: userToUserTransaction.wallet_sender_id,
+          wallet_recipient_id: userToUserTransaction.wallet_recipient_id,
+          transaction_date: new Date(userToUserTransaction.transaction_date),
+          amount: userToUserTransaction.amount,
+          currency_id: userToUserTransaction.currency_id,
+        }
+      })
       return res.status(201).json({ message: "Transfer sent successfully." })
     } catch (error) {
       console.error('Error while managing request', error);
-      return res.status(500).json({ error: 'Server error occured.' });
+      return res.status(500).json({ message: error });
     }
   }
   return res.status(500).json({message: "This HTTP method is not supported on this endpoint"})
 }
 
+
+  

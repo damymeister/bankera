@@ -4,9 +4,8 @@ import { getCurrencyStorage } from '@/pages/api/services/currencyStorageService'
 import { getCurrencyPair } from '@/pages/api/services/currencyPairService';
 import React, { useEffect, useState } from 'react';
 import { getWalletData } from '@/pages/api/services/walletService';
-import { LiaExchangeAltSolid } from "react-icons/lia";
 import { handleCreateInnerTransaction } from '@/pages/api/services/innerTransactionService';
-import { updateCurrencyStorage, deleteCurrencyStorage, postCurrencyStorage} from '@/pages/api/services/currencyStorageService';
+import { updateCurrencyStorage, postCurrencyStorage} from '@/pages/api/services/currencyStorageService';
 import SnackBar from '@/components/snackbar'
 import {FaExclamation}  from "react-icons/fa";
 import SidePanel from '@/components/sidepanel';
