@@ -6,6 +6,11 @@ export const getTimestamp = (f_time: string) => {
     if (f_time.endsWith('d')) return parseInt(f_time.slice(0, f_time.length - 1)) * MILLIS_IN_DAY
     return 0
 }
+export const getHours = (f_time: string) => {
+    if (f_time.endsWith('h')) return parseInt(f_time.slice(0, f_time.length - 1))
+    if (f_time.endsWith('d')) return parseInt(f_time.slice(0, f_time.length - 1)) * 24
+    return 0
+}
 export const getCurrentTimestamp = () => {
     let d = new Date()
     return d.getTime()

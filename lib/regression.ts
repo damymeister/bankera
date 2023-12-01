@@ -38,7 +38,7 @@ function varianceY (points: Point[], pMean: Point) {
 function covariance (points: Point[], pMean: Point) {
     let sxy = 0
     for (let i = 0; i < points.length; i++) {
-        sxy += ((points[i].x - pMean.x) * (points[i].y - pMean.y))
+        sxy += ((Math.abs(points[i].x) - Math.abs(pMean.x)) * (points[i].y - pMean.y))
     }
     return sxy / (points.length - 1.0)
 }

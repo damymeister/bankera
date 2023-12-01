@@ -6,6 +6,7 @@ import ICurrency from "@/lib/interfaces/currency";
 import ICurrencyHistory from "@/lib/interfaces/currencyHistory";
 import { getCurrencyIdByName, getCurrencyNameById } from "@/lib/currency";
 import { FaExchangeAlt } from "react-icons/fa";
+import { getHours } from "@/lib/time";
 
 export default function ChartExample() {
   const [currencies, setCurrencies] = useState<ICurrency[]>([]);
@@ -14,6 +15,7 @@ export default function ChartExample() {
   const [sellingCurrency, setSellingCurrency] = useState<ICurrency>(allSelector)
   const [buyingCurrency, setBuyingCurrency] = useState<ICurrency>(allSelector)
   const [pastTimestamp, setPastTimestamp] = useState('1d')
+  const [trendlineEnabled, setTrendlineEnabled] = useState(false)
 
   useEffect(() => {
     const handleGetCurrencies = async () => {
@@ -34,7 +36,7 @@ export default function ChartExample() {
   useEffect(() => {
     const handleHistoryGet = async () => {
       let url = api_url('auth/currencyHistory') + '?timestamp=' + pastTimestamp + '&sell_currency_id=' + sellingCurrency.id + '&buy_currency_id=' + buyingCurrency.id
-
+      if (trendlineEnabled) url += '&predict=true'
       // if (buyingCurrency.id !== -1) {
       //   url += '&buy_currency_id=' + "150"
       // }
@@ -46,10 +48,21 @@ export default function ChartExample() {
       handleHistoryGet()
     }
    
-  }, [sellingCurrency, buyingCurrency, pastTimestamp])
+  }, [sellingCurrency, buyingCurrency, pastTimestamp, trendlineEnabled])
 
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstanceRef = useRef<Chart | null>(null)
+
+  function generateFutureData (): number[] {
+    if (!currencyHistory[0].future) return []
+    const hours = getHours(pastTimestamp)
+    let values: number[] = []
+    for (let i = hours; i >= 0; i--) {
+      values.push(currencyHistory[0].future.byx * (-i) + currencyHistory[0].future.alfa)
+      values.push(currencyHistory[0].future.byx * (-i + 0.5) + currencyHistory[0].future.alfa)
+    }
+    return values
+  }
 
   useEffect(() => {
     if (currencyHistory.length > 0 && chartRef.current) {
@@ -70,6 +83,7 @@ export default function ChartExample() {
       const data = currencyHistory.map((currency) =>
         currency.history.reverse().map((historyItem) => historyItem.conversion_value)
       ).flat();
+      const futureData = generateFutureData()
       chartInstanceRef.current = new Chart(chartRef.current, {
         type: "line",
         data: {
@@ -82,6 +96,15 @@ export default function ChartExample() {
               borderColor: "rgb(188, 136, 252)",
               backgroundColor: "rgb(188, 136, 252)",
             },
+            {
+              label: "Trend",
+              data: futureData,
+              fill: false,
+              borderDash: [5, 5],
+              borderColor: "rgb(188, 136, 252)",
+              backgroundColor: "transparent",
+              pointStyle: false
+            }
           ],
         },
         options: {
@@ -214,8 +237,18 @@ export default function ChartExample() {
               <option key={'6h'} value={'6h'}>6 godzin</option>
               <option key={'12h'} value={'12h'}>12 godzin</option>
               <option key={'1d'} value={'1d'}>1 dzień</option>
-              <option key={'6d'} value={'6d'}>7 dzień</option>
+              <option key={'3d'} value={'3d'}>3 dni</option>
+              <option key={'6d'} value={'6d'}>7 dni</option>
           </select>
+          <div className="p-2 flex flex-row gap-x-4">
+            <span>Linia trendu</span>
+            <input type="checkbox" checked={trendlineEnabled} onChange={(event) => {
+              setTrendlineEnabled(event.target.checked)
+            }} />
+          </div>
+          { trendlineEnabled && currencyHistory[0].future &&
+            <div>Dokładność linii trendu: {Math.abs(currencyHistory[0].future.correlation * 100.0).toFixed(2)}%</div>
+          }
         </div>
       </div>
   );
