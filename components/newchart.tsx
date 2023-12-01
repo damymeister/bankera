@@ -192,7 +192,7 @@ export default function ChartExample() {
     }
   }, [currencyHistory]);
   return (
-      <div className="bg-[#121212] borderLight p-4 m-2 bgGlass overflow-hidden">
+      <div className="bg-[#121212] borderLight p-4 m-2 bgGlass overflow-hidden text-white">
         <div className="aspect-w-16 aspect-h-9">
           <canvas
             ref={chartRef}
