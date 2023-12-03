@@ -98,6 +98,7 @@ export default function ChartExample() {
               data: futureData,
               fill: false,
               borderDash: [5, 5],
+              borderWidth: 2,
               borderColor: futureDataColor,
               backgroundColor: "transparent",
               pointStyle: false,
