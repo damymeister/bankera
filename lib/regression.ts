@@ -1,10 +1,14 @@
+import { breakpointColor } from "./colors";
 import ICurrencyHistory from "./interfaces/currencyHistory";
 import { LinearModel, Point } from "./interfaces/regression";
 
 function transofrmHistory (currencyHistory: ICurrencyHistory) {
     let points: Point[] = []
-    for (let i = 0; i < currencyHistory.history.length; i++) {
-        points.push({x: -i, y: currencyHistory.history[i].conversion_value})
+    const len = currencyHistory.history.length
+    let curr_x = 0
+    for (let i = len - 1; i >= 0; i--) {
+        points.push({x: curr_x, y: currencyHistory.history[i].conversion_value})
+        curr_x += 0.5
     }
     return points
 }
@@ -38,7 +42,7 @@ function varianceY (points: Point[], pMean: Point) {
 function covariance (points: Point[], pMean: Point) {
     let sxy = 0
     for (let i = 0; i < points.length; i++) {
-        sxy += ((Math.abs(points[i].x) - Math.abs(pMean.x)) * (points[i].y - pMean.y))
+        sxy += ((points[i].x - pMean.x) * (points[i].y - pMean.y))
     }
     return sxy / (points.length - 1.0)
 }
@@ -50,5 +54,20 @@ export function linearRegression (currencyHistory: ICurrencyHistory): LinearMode
     const corr = covariance(points, pMean) / Math.sqrt(varianceX(points, pMean) * varianceY(points, pMean))
     const byx = covariance(points, pMean) / varianceX(points, pMean)
     const alfa = pMean.y - byx * pMean.x
-    return {byx: byx, alfa: alfa, correlation: corr}
+    return {byx: byx, alfa: alfa, correlation: corr, nextX: (currencyHistory.history.length / 2.0)}
+}
+
+export function regressionColor (byx: number) {
+    if (byx >= -1.0E-6 && byx <= 1.0E-6) return 'rgb(170, 170, 170)'
+    let color: {r: number, g: number, b: number} = {r: 0, g: 0, b: 0}
+    let ln_byx = Math.log(Math.abs(byx))
+    if (byx < 0) {
+        if (ln_byx > 6) color.r = 255.0
+        else color = breakpointColor([{r: 170, g: 170, b: 170, v: -17}, {r: 255, g: 0, b: 0, v: 6}], ln_byx)
+    }
+    else {
+        if (ln_byx > 6) color.g = 255.0
+        else color = breakpointColor([{r: 170, g: 170, b: 170, v: -17}, {r: 0, g: 255, b: 0, v: 6}], ln_byx)
+    }
+    return `rgb(${color.r.toFixed(0)}, ${color.g.toFixed(0)}, ${color.b.toFixed(0)})`
 }
