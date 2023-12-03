@@ -5,5 +5,6 @@ export interface Point {
 export interface LinearModel {
     byx: number,
     alfa: number,
-    correlation: number
+    correlation: number,
+    nextX: number
 }
