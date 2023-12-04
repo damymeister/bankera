@@ -163,6 +163,10 @@ model Speculative_Transaction {
   transaction_balance        Float
   entry_date                 DateTime
   exit_date                  DateTime?
+  pip_price                  Float
+  spread                     Float
+  stop_loss                  Float?
+  take_profit                Float?
   currency_pair              Currency_Pair @relation(fields: [currency_pair_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   forex_wallet               Forex_Wallet  @relation(fields: [forex_wallet_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
