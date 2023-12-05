@@ -154,7 +154,6 @@ model Wallet_Forex_Wallet_Transaction {
 model Speculative_Transaction {
   id                         Int           @id @default(autoincrement())
   forex_wallet_id            Int
-  transaction_type           Int
   currency_pair_id           Int
   financial_leverage         Int
   lots                       Float
@@ -164,7 +163,6 @@ model Speculative_Transaction {
   entry_date                 DateTime
   exit_date                  DateTime?
   pip_price                  Float
-  spread                     Float
   stop_loss                  Float?
   take_profit                Float?
   currency_pair              Currency_Pair @relation(fields: [currency_pair_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
