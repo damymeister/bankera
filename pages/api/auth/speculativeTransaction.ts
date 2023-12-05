@@ -46,7 +46,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           entry_course_value: entry_course_value,
           transaction_balance: transaction_balance,
           entry_date: entry_date,
-          spread: spread,
           pip_price: pip_price,
           stop_loss: stopLoss,
           take_profit: takeProfit,
