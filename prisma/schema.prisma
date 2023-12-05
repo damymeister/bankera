@@ -153,6 +153,7 @@ model Wallet_Forex_Wallet_Transaction {
 
 model Speculative_Transaction {
   id                         Int           @id @default(autoincrement())
+  transaction_type           Int
   forex_wallet_id            Int
   currency_pair_id           Int
   financial_leverage         Int
