@@ -244,7 +244,7 @@ const mapUserCurrencies = () => {
         rows.push(
           <tr key={userOwnedCurrencies[i].id} className='border-b border-gray-700'>
             <td className='p-2'>{findCurrencyName(userOwnedCurrencies[i].currency_id)}</td>
-            <td className='hover:cursor-pointer pt-2' onClick={() => setMaxAmountToExchange(i)}>{userOwnedCurrencies[i].amount}</td>
+            <td className='hover:cursor-pointer pt-2' onClick={() => setMaxAmountToExchange(i)}>{userOwnedCurrencies[i].amount.toFixed(significantDigits(userOwnedCurrencies[i].amount))}</td>
             <td className='p-2'>{displaySelectOfAvailableCurrencies(userOwnedCurrencies[i].currency_id, userOwnedCurrencies[i].id)}</td>
             <td className="flex items-center justify-center p-2  inset-y-0 right-0">
               <input
