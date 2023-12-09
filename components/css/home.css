@@ -52,6 +52,12 @@
 a:link {
     text-decoration: none;
 }
+.snackbar {
+  position: fixed;
+  top:40px;
+  width: 100%;
+  z-index: 9999; 
+}
 
 body{
   font-family: Montserrat,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji" ;

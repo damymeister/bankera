@@ -24,7 +24,7 @@ export default function LoginPage() {
       status: snackStatus,
       icon: <FaExclamation />,
       description: snackMess
-  };
+    };
 
 
     const handleSubmit = async (e: React.SyntheticEvent) => {
@@ -41,7 +41,7 @@ export default function LoginPage() {
       } catch (error) {
         
         setShowSnackbar(true);
-        setsnackMess("Błąd przy logowaniu");
+        setsnackMess("Błędny email lub hasło");
         if (axios.isAxiosError(error)) {
           if (
               error.response &&

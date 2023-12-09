@@ -1,6 +1,6 @@
 # TODO List
 
-- Poprawić błędy z snackbarami
+- ✓ Poprawić błędy z snackbarami
 - ujednolicić język
 - ✓ Paginacja do currencyExchange, wallet, forexWallet
 - Ostatnia strona ma być wielkości tak jak poprzednich
@@ -8,7 +8,7 @@
 - ✓ Flex wrap do postów, posty wyższe niż szersze
 - **FOREX**!!!
 - ✓ Prosty wykres z currencyHistory
-- Edycja użytkowników w adminPanelu
+- ✓ Edycja użytkowników w adminPanelu
 - Implementacja speculativeTransaction
 - CRON do transakcji spekulacyjnych
 - ✓ Testy **SOŁ**

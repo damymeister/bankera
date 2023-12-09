@@ -23,11 +23,59 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   if (req.method === 'POST') {
     try {
+      const {currency_pair_id, initial_amount, converted_amount, wallet_id } = req.body;
+      if(wallet_id !== user.wallet_id) return res.status(400).json({ error: `Wallet does not match.`});
+      const findCurrencyPair = await prisma.currency_Pair.findUnique({where: {id: currency_pair_id}});
+      if (findCurrencyPair === null) return res.status(404).json({ error: 'Currency pair does not exist.' })
+      if(findCurrencyPair.buy_currency_id === null || findCurrencyPair.sell_currency_id === null) return res.status(404).json({ error: 'Currency pair does not exist.' })
+
+      const findCurrencyWithDraw = await prisma.currency_Storage.findFirst({
+        where:{
+          wallet_id: wallet_id,
+          currency_id: findCurrencyPair.buy_currency_id
+        }
+      })
+      if (findCurrencyWithDraw === null) return res.status(404).json({ error: 'You don not have this currency in your wallet.' })
+      if (findCurrencyWithDraw.amount < initial_amount) return res.status(400).json({ error: 'You do not have enough currency to exchange.' })
+
+      if(findCurrencyWithDraw.amount - initial_amount === 0) {
+        await prisma.currency_Storage.delete({where: {id: findCurrencyWithDraw.id}})
+      } else{
+        await prisma.currency_Storage.update({
+          where: {
+            id: findCurrencyWithDraw.id}, 
+            data: {amount: findCurrencyWithDraw.amount - initial_amount}
+          })
+      }
+
+      const findCurrencyDeposit = await prisma.currency_Storage.findFirst({
+        where:{
+          wallet_id: wallet_id,
+          currency_id: findCurrencyPair.sell_currency_id
+        }
+      })
+
+      if (findCurrencyDeposit === null) {
+        await prisma.currency_Storage.create({
+          data: {
+            wallet_id: wallet_id,
+            currency_id: findCurrencyPair.sell_currency_id,
+            amount: converted_amount
+          }
+        })
+      } else {
+        await prisma.currency_Storage.update({
+          where: {
+            id: findCurrencyDeposit.id}, 
+            data: {amount: findCurrencyDeposit.amount + converted_amount}
+          })
+      }
+      
       await prisma.inner_Transaction.create({data: {
         wallet_id: wallet_id,
-        currency_pair_id: parseInt(req.body.currency_pair_id),
-        inital_amount: parseFloat(req.body.initial_amount),
-        converted_amount: parseFloat(req.body.converted_amount),
+        currency_pair_id: currency_pair_id,
+        inital_amount: initial_amount,
+        converted_amount: converted_amount,
         transaction_date: new Date(req.body.transaction_date)
       }})
       return res.status(201).json({ message: "Currency exchange completed successfully." })

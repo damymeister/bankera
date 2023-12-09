@@ -5,12 +5,10 @@ import { getCurrencyPair } from '@/pages/api/services/currencyPairService';
 import React, { useEffect, useState } from 'react';
 import { getWalletData } from '@/pages/api/services/walletService';
 import { handleCreateInnerTransaction } from '@/pages/api/services/innerTransactionService';
-import { updateCurrencyStorage, postCurrencyStorage} from '@/pages/api/services/currencyStorageService';
 import SnackBar from '@/components/snackbar'
 import {FaExclamation}  from "react-icons/fa";
 import SidePanel from '@/components/sidepanel';
-import { significantDigits } from '@/lib/currency';
-import { ICreateCurrencyStorage } from '@/lib/interfaces/currencyStorage';
+import { significantDigits } from '@/lib/currency';;
 import {IInnerTransaction} from '@/lib/interfaces/innerTransaction';
 import ICurrencyExchange from '@/lib/interfaces/currencyExchange';
 import ICurrency from '@/lib/interfaces/currency';
@@ -103,7 +101,7 @@ const handleValueToExchange = async (e: React.ChangeEvent<HTMLInputElement>, cur
 
   const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map(async (currency) => {
     if (currency.id === currencyID) {
-      const convertedAmount = await setConvertedAmount(parseFloat(insertedValue), currency.rate);
+      const convertedAmount = setConvertedAmount(parseFloat(insertedValue), currency.rate);
       return {
         ...currency,
         value: parseFloat(insertedValue),
@@ -134,8 +132,8 @@ const displaySelectOfAvailableCurrencies = (currencyID: number, currencyNumber: 
 const handleCurrencyChange = async (e: React.ChangeEvent<HTMLSelectElement>, currencyNumber: number) => {
   const selectID = e.target.value;
   const updatedUserOwnedCurrencies = await Promise.all(userOwnedCurrencies.map(async (currency) => {
-    const rateReturned = await findCurrencyRate(currency.currency_id, parseInt(selectID));
     if (currency.id == currencyNumber) {
+      const rateReturned = await findCurrencyRate(currency.currency_id, parseInt(selectID));
       return {
         ...currency,
         value:0,
@@ -181,14 +179,6 @@ const checkValues = (index: number) => {
   );
 }
 
-const decideAddOrUpdateCurrencyStorage = (index: number) => {
-  const targetCurrency = userOwnedCurrencies.find(element => element.currency_id === userOwnedCurrencies[index].quoteCurrency);
-  if (targetCurrency) {
-    return targetCurrency.id;
-  }
-  return false;
-}
-
 const saveInnerTransaction = async (userCurr: any) =>{
   const currentDate = new Date();
 
@@ -212,30 +202,10 @@ const saveExchange = async (index: number) => {
 
   if (!window.confirm("Czy na pewno chcesz wymienić tą walutę?")) return
 
-  const userCurr = userOwnedCurrencies[index];
-  const newCurrentValueBalance = userCurr.amount - userCurr.value;
-  const dataToSubtract = { id: userCurr.id, amount: parseFloat(newCurrentValueBalance.toFixed(2)) };
-
-  try {
-    await updateCurrencyStorage(dataToSubtract);
-    const operation = decideAddOrUpdateCurrencyStorage(index);
-    if (operation) {
-      const findIndex = userOwnedCurrencies.find((data) => data.id == operation);
-      let newCurrBalanceToAdd = (findIndex?.amount ?? 0) + userCurr.converted_amount;
-      const dataToAdd = { id: operation, amount: parseFloat(newCurrBalanceToAdd.toFixed(2)) };
-      await updateCurrencyStorage(dataToAdd);
-    } else {
-      let newCurrBalanceToAdd = userOwnedCurrencies[index].converted_amount;
-      const addNewCurrStorage : ICreateCurrencyStorage = {
-        wallet_id: userOwnedCurrencies[index].wallet_id,
-        currency_id: userOwnedCurrencies[index].quoteCurrency,
-        amount: parseFloat(newCurrBalanceToAdd.toFixed(2)),
-      };
-      await postCurrencyStorage(addNewCurrStorage);
-    }
-    const saveTransaction = await saveInnerTransaction(userCurr);
+  try{
+    const saveTransaction = await saveInnerTransaction(userOwnedCurrencies[index]);
     setSnackbarProps({ snackStatus: 'success', message: saveTransaction.message, showSnackbar: true });
-  } catch (error) {
+  }catch (error) {
     setSnackbarProps({ snackStatus: "danger", message: "Nie udało się dokonać wymiany.", showSnackbar: true });
   } finally {
     loadData();
@@ -274,7 +244,7 @@ const mapUserCurrencies = () => {
         rows.push(
           <tr key={userOwnedCurrencies[i].id} className='border-b border-gray-700'>
             <td className='p-2'>{findCurrencyName(userOwnedCurrencies[i].currency_id)}</td>
-            <td className='hover:cursor-pointer pt-2' onClick={() => setMaxAmountToExchange(i)}>{userOwnedCurrencies[i].amount}</td>
+            <td className='hover:cursor-pointer pt-2' onClick={() => setMaxAmountToExchange(i)}>{userOwnedCurrencies[i].amount.toFixed(significantDigits(userOwnedCurrencies[i].amount))}</td>
             <td className='p-2'>{displaySelectOfAvailableCurrencies(userOwnedCurrencies[i].currency_id, userOwnedCurrencies[i].id)}</td>
             <td className="flex items-center justify-center p-2  inset-y-0 right-0">
               <input
