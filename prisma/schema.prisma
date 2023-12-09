@@ -156,7 +156,7 @@ model Speculative_Transaction {
   forex_wallet_id            Int
   transaction_type           Int
   currency_pair_id           Int
-  financial_leverage         Int
+  financial_leverage         Float
   lots                       Float
   entry_course_value         Float
   exit_course_value          Float?
@@ -164,7 +164,6 @@ model Speculative_Transaction {
   entry_date                 DateTime
   exit_date                  DateTime?
   pip_price                  Float
-  spread                     Float
   stop_loss                  Float?
   take_profit                Float?
   currency_pair              Currency_Pair @relation(fields: [currency_pair_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
