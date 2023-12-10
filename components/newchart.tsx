@@ -9,7 +9,7 @@ import { FaExchangeAlt } from "react-icons/fa";
 import { getHours } from "@/lib/time";
 import { regressionColor } from "@/lib/regression";
 
-export default function ChartExample() {
+export default function ChartExample(props:any) {
   const [currencies, setCurrencies] = useState<ICurrency[]>([]);
   const [currencyHistory, setCurrencyHistory] = useState<ICurrencyHistory>();
   const [sellingCurrency, setSellingCurrency] = useState<ICurrency>({id: getCurrencyIdByName(currencies, 'PLN'), name: 'PLN'})
@@ -22,7 +22,7 @@ export default function ChartExample() {
       const { data } = await axios.get(api_url('currency'), {headers: {Accept: 'application/json'}})
       setCurrencies(data as ICurrency[])
     }
-    
+    props.setSellBuyCurrencies(sellingCurrency, buyingCurrency);
     handleGetCurrencies()
   }, [])
 
@@ -32,6 +32,7 @@ export default function ChartExample() {
       setBuyingCurrency({id: getCurrencyIdByName(currencies, 'USD'), name: 'USD'})
     }
   }, [currencies])
+
 
   useEffect(() => {
     const handleHistoryGet = async () => {
@@ -43,7 +44,7 @@ export default function ChartExample() {
     if (sellingCurrency.id !== -1) {
       handleHistoryGet()
     }
-   
+    props.setSellBuyCurrencies(sellingCurrency, buyingCurrency);
   }, [sellingCurrency, buyingCurrency, pastTimestamp, trendlineEnabled])
 
   const chartRef = useRef<HTMLCanvasElement>(null);

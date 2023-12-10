@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   if (req.method === 'POST') {
     try {
-      const { forex_wallet_id, transaction_type, currency_pair_id, financial_leverage, lots, entry_course_value, transaction_balance, entry_date, spread, stop_loss, take_profit, pip_price } = req.body;
+      const { forex_wallet_id, transaction_type, currency_pair_id, financial_leverage, lots, entry_course_value, transaction_balance, entry_date, stop_loss, take_profit, pip_price } = req.body;
       if(forex_wallet_id !== user.forex_wallet_id) return res.status(400).json({ error: `Wallet does not match.`});
       const findCurrencyPair = await prisma.currency_Pair.findUnique({where: {id: currency_pair_id}});
       if (findCurrencyPair === null) return res.status(404).json({ error: 'Currency pair does not exist.' })
@@ -54,7 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       return res.status(201).json({ message: "Speculative transaction created successfully." })
     } catch(error) {
-      return res.status(500).json({ message: 'Error while trying to create speculative transaction.' });
+      return res.status(500).json({ message: error});
     }
   }
   if(req.method === 'PUT') {
@@ -64,7 +64,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const findSpeculativeTransaction = await prisma.speculative_Transaction.findUnique({where: {id: id}});
       if (findSpeculativeTransaction === null) return res.status(404).json({ error: 'Speculative transaction does not exist.' })
       await prisma.speculative_Transaction.update({
-        where: { id: id },
+        where: { 
+          id: id,
+          forex_wallet_id: forex_wallet_id },
         data: {
           exit_course_value: exit_course_value,
           exit_date: exit_date

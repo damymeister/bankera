@@ -156,7 +156,7 @@ model Speculative_Transaction {
   transaction_type           Int
   forex_wallet_id            Int
   currency_pair_id           Int
-  financial_leverage         Int
+  financial_leverage         Float
   lots                       Float
   entry_course_value         Float
   exit_course_value          Float?
