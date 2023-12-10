@@ -164,6 +164,9 @@ model Speculative_Transaction {
   entry_date                 DateTime
   exit_date                  DateTime?
   pip_price                  Float
+  base_currency_id           Int
+  profit_loss                Float?
+  deposit_amount             Float
   stop_loss                  Float?
   take_profit                Float?
   currency_pair              Currency_Pair @relation(fields: [currency_pair_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
