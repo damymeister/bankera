@@ -1,5 +1,5 @@
 import '@/components/css/home.css';
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaWindowClose }  from "react-icons/fa";
 import SnackBar from '@/components/snackbar';
 import { FaExclamation }  from "react-icons/fa";
@@ -7,7 +7,6 @@ import { getCurrencyPair } from '@/pages/api/services/currencyPairService';
 import { SpeculativeTransactionCreate } from '@/lib/interfaces/speculative_Transaction';
 import { handleCreateSpeculativeTransaction } from '@/pages/api/services/speculativeTransactionService';
 import { getForexCurrencyStorageById } from '@/pages/api/services/forexCurrencyStorageService';
-import { parse } from 'path';
 export default function SpeculativeTransactionModal(props:any){
     //Snackbar states
     const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
@@ -19,8 +18,6 @@ export default function SpeculativeTransactionModal(props:any){
     const [stopLossIncluded, setStopLossIncluded] = useState<boolean>(false);
     const [takeProfitIncluded, setTakeProfitIncluded] = useState<boolean>(false);
     const [baseCurrencyAmount, setBaseCurrencyAmount] = useState<number>(0);
-    const [minMaxTakeProfitVariable, setMinMaxTakeProfitVariable] = useState<{min: number, max: number}>({min: -1 , max: -1 })
-    const [minMaxStopLossVariable, setMinMaxStopLossVariable] = useState<{min: number, max: number}>({min: -1 , max: -1 })
     const [createSpeculativeTransactionData, setCreateSpeculativeTransactionData] =  useState<SpeculativeTransactionCreate>({
         forex_wallet_id: 0,
         transaction_type: 1,
@@ -38,16 +35,11 @@ export default function SpeculativeTransactionModal(props:any){
 
     //Snackbar functions
     const snackbarProps = {
-    status: snackStatus,
-    icon: <FaExclamation />,
-    description: snackMess
+        status: snackStatus,
+        icon: <FaExclamation />,
+        description: snackMess
     };
-    useEffect(()=>{
-    setTimeout(()=>{
-        setShowSnackbar(false);
-    }, 4000)
-    },[showSnackbar])
-
+ 
     
     const setSnackbarProps = ({ snackStatus, message, showSnackbar }: { snackStatus: string, message: string, showSnackbar?: boolean }) => {
         if (snackStatus && message) {
@@ -61,18 +53,13 @@ export default function SpeculativeTransactionModal(props:any){
       }
     
     const calculateData = () =>{
+        
         setRate();
         calculatePipPrice();
         calculateTransactionBalance();
         calculateTransactionDeposit();
         calulacteBaseCurrencyAmount();
-        setMaxMinStopLoss();
-        setMaxMinTakeProfit();
     }
-
-    useEffect(() => {
-        calculateData();
-      }, []);
 
     const calulacteBaseCurrencyAmount = async () => {
         const getForexCurrencyStorage = await getForexCurrencyStorageById(props.forexWalletID, props.buyingCurrency.id);
@@ -81,15 +68,7 @@ export default function SpeculativeTransactionModal(props:any){
         }
         setBaseCurrencyAmount(getForexCurrencyStorage.data.forex_currency_amount);
     }
-      useEffect(() => {
-        calculatePipPrice();
-        calculateTransactionBalance();
-        calculateTransactionDeposit();
-      }, [currentVolume, createSpeculativeTransactionData.financial_leverage])
-
-      useEffect(() => {
-        calculateTransactionDeposit();
-    }, [createSpeculativeTransactionData.transaction_balance]); 
+   
 
       const setRate = async () => {
         try {
@@ -211,35 +190,39 @@ export default function SpeculativeTransactionModal(props:any){
         }
         setTakeProfitIncluded(!takeProfitIncluded);
     }
-    const setMaxMinTakeProfit = () =>{
-        if(createSpeculativeTransactionData.transaction_type == 1){
-            setMinMaxTakeProfitVariable({min: createSpeculativeTransactionData.entry_course_value, max: 15000})
-            return
-        }
-        setMinMaxTakeProfitVariable({min: 0, max: createSpeculativeTransactionData.entry_course_value})
-    }
-    const setMaxMinStopLoss = () =>{
-        if(createSpeculativeTransactionData.transaction_type == 1){
-            setMinMaxStopLossVariable({min: 0, max: createSpeculativeTransactionData.entry_course_value})
-            return
-        }
-        setMinMaxStopLossVariable({min: createSpeculativeTransactionData.entry_course_value, max: 15000})
-    }
+    useEffect(() => {
+        calculateData();
+    }, []);
 
-useEffect(() => {
-    setMaxMinStopLoss();
-    setMaxMinTakeProfit();
-    console.log(minMaxStopLossVariable)
-    console.log(minMaxTakeProfitVariable);
+  useEffect(() => {
+    calculatePipPrice();
+    calculateTransactionBalance();
+    calculateTransactionDeposit();
+  }, [currentVolume, createSpeculativeTransactionData.financial_leverage])
+
+  useEffect(() => {
+    calculateTransactionDeposit();
+    }, [createSpeculativeTransactionData.transaction_balance]); 
+
+    useEffect(()=>{
+        setTimeout(()=>{
+            setShowSnackbar(false);
+        }, 4000)
+    },[showSnackbar])
+
+const checkIfDataLoaded = () =>{
+    if(createSpeculativeTransactionData.entry_course_value !== -1 && createSpeculativeTransactionData.transaction_balance !== -1 && currentVolume !== -1){
+        return true
+    }
+    return false
 }
-, [createSpeculativeTransactionData.transaction_type]);
 
     return (
         <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black bg-opacity-80 text-white z-50">
             {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
           <div className="lg:w-2/5 w-2/3 py-2 min-h-2/3 h-auto bgdark text-white rounded-xl relative border-2 border-black borderLight p-6">
               <div className="text-white flex flex-col items-center">
-              {createSpeculativeTransactionData.entry_course_value !== -1 && createSpeculativeTransactionData.transaction_balance !== -1 && currentVolume !== -1 ? (
+              {checkIfDataLoaded() ? (
                 <div className='flex flex-col justify-center items-center font-bold mb-4 py-6 gap-6'>
                     <h2 className="text-lg mb-4">Stwórz zlecenie</h2>
                     <div className='flex flex-row gap-2 flex-wrap w-full justify-between items-center border-[#BB86FC] border-b-2'>
@@ -298,8 +281,8 @@ useEffect(() => {
                                   <input
                                   id="stopLoss"
                                   type="number"
-                                  min={minMaxStopLossVariable.min}
-                                  max={minMaxStopLossVariable.max}
+                                  min={createSpeculativeTransactionData.transaction_type == 1 ? 0 : createSpeculativeTransactionData.entry_course_value}
+                                  max={createSpeculativeTransactionData.transaction_type == 1 ? createSpeculativeTransactionData.entry_course_value : 15000 }
                                   step="0.00001"
                                   className="w-24 mb-2 mt-2 font-bold border border-white rounded-lg bgdark focus:border-black overflow-y-auto resize-none"
                                   onChange={(e) => {
@@ -325,8 +308,8 @@ useEffect(() => {
                                     <input
                                         id="takeProfit"
                                         type="number"
-                                        min={minMaxStopLossVariable.min}
-                                        max={minMaxStopLossVariable.max}
+                                        min={createSpeculativeTransactionData.transaction_type == 1 ? createSpeculativeTransactionData.entry_course_value : 0}
+                                        max={createSpeculativeTransactionData.transaction_type == 1 ? 15000 : createSpeculativeTransactionData.entry_course_value}
                                         step="0.00001"
                                         className="w-24 font-bold mb-2 border border-white rounded-lg bgdark focus:border-black overflow-y-auto resize-none mt-2"
                                         onChange={(e) => {
