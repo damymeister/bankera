@@ -126,6 +126,7 @@ const snackbarProps = {
         <tr>
           <th>Para walutowa</th>
           <th>Wartość transakcji</th>
+          <th>Typ</th>
           <th>Depozyt</th>
           <th>Data wejścia</th>
           <th>Kurs wejścia</th>
@@ -140,6 +141,7 @@ const snackbarProps = {
         <tr>
           <th>Para walutowa</th>
           <th>Wartość transakcji</th>
+          <th>Typ</th>
           <th>Depozyt</th>
           <th>Data wejścia</th>
           <th>Kurs wejścia</th>
@@ -156,7 +158,6 @@ const snackbarProps = {
       const currencyPairObject = { transactionID: SpeculativeTransactions[i].id, currencyPairID: currencyPairData.data.id, buyCurrency: currencyPairData.data.buy_currency, sellCurrency: currencyPairData.data.sell_currency};
       setCurrencyPairs((currencyPairs)=>[...currencyPairs, currencyPairObject]);
     }
-    console.log(currencyPairs);
   }
 
   const findCurrencyPair = (transactionID: number) =>{ 
@@ -211,10 +212,10 @@ const snackbarProps = {
       setSnackbarProps({ snackStatus: status, message: msg, showSnackbar: true });
       fetchForexWalletData();
     } catch (error) {
-      console.error("Błąd podczas zamykania transakcji", error);
-      msg = "Błąd podczas zamykania transakcji";
-      status = "danger";
-      setSnackbarProps({ snackStatus: status, message: msg, showSnackbar: true });
+        console.error("Błąd podczas zamykania transakcji", error);
+        msg = "Błąd podczas zamykania transakcji";
+        status = "danger";
+        setSnackbarProps({ snackStatus: status, message: msg, showSnackbar: true });
     }
   };
   
@@ -253,6 +254,7 @@ const snackbarProps = {
           <tr className="border" key={userSpeculativeTransactionsOpen[i].id}>
             <td>{findCurrencyPair(userSpeculativeTransactionsOpen[i].id)}</td>
             <td>{userSpeculativeTransactionsOpen[i].transaction_balance.toFixed(2)} {findCurrencyName(userSpeculativeTransactionsOpen[i].id)}</td>
+            <td>{userSpeculativeTransactionsOpen[i].transaction_type == 1 ? 'Kupno' : 'Sprzedaż'}</td>
             <td>{userSpeculativeTransactionsOpen[i].deposit_amount.toFixed(2)} {findCurrencyName(userSpeculativeTransactionsOpen[i].id)}</td>
             <td>{transformDateTime(userSpeculativeTransactionsOpen[i].entry_date)}</td>
             <td>{userSpeculativeTransactionsOpen[i].entry_course_value.toFixed(5)}</td>
@@ -270,6 +272,7 @@ const snackbarProps = {
           <tr className="border" key={userSpeculativeTransactionsClosed[i].id}>
             <td>{findCurrencyPair(userSpeculativeTransactionsClosed[i].id)}</td>
             <td>{userSpeculativeTransactionsClosed[i].transaction_balance.toFixed(2)} {findCurrencyName(userSpeculativeTransactionsClosed[i].id)}</td>
+            <td>{userSpeculativeTransactionsClosed[i].transaction_type == 1 ? 'Kupno' : 'Sprzedaż'}</td>
             <td>{userSpeculativeTransactionsClosed[i].deposit_amount.toFixed(2)} {findCurrencyName(userSpeculativeTransactionsClosed[i].id)}</td>
             <td>{transformDateTime(userSpeculativeTransactionsClosed[i].entry_date)}</td>
             <td>{userSpeculativeTransactionsClosed[i].entry_course_value.toFixed(5)}</td>
@@ -340,15 +343,15 @@ const snackbarProps = {
         </div>)}
       </div>
       {showSpeculativeTransactionModal ? (
-      <SpeculativeTransactionModal 
-        closeSpeculativeTransactionModal={closeSpeculativeTransactionModal} 
-        sellingCurrency={sellingCurrency}
-        buyingCurrency={buyingCurrency}
-        forexWalletID={ForexWalletID}
-        fetchForexWalletData={fetchForexWalletData}
-        setSnackbarProps={setSnackbarProps}/>
+        <SpeculativeTransactionModal 
+          closeSpeculativeTransactionModal={closeSpeculativeTransactionModal} 
+          sellingCurrency={sellingCurrency}
+          buyingCurrency={buyingCurrency}
+          forexWalletID={ForexWalletID}
+          fetchForexWalletData={fetchForexWalletData}
+          setSnackbarProps={setSnackbarProps}/>
       ): (
-        null
+          null
       )}
     </Layout>
   );
