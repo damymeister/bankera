@@ -157,7 +157,7 @@ export default function ChartExample(props:any) {
             legend: {
               title: {
                 display: true,
-                text: "Wykres dla: " + sellingCurrency.name + "/" + buyingCurrency.name,
+                text: "Para walutowa: " + sellingCurrency.name + "/" + buyingCurrency.name,
                 color: "#fff",
                 font: {
                   family: "monospace",

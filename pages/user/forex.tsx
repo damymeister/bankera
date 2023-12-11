@@ -2,7 +2,7 @@ import '@/components/css/home.css';
 import '@/components/css/dashboard.css';
 import '@/components/css/tailwind.css';
 import SidePanel from'@/components/sidepanel';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import Layout from '@/app/layoutPattern';
 import SnackBar from '@/components/snackbar'
 import ChartExample from '@/components/newchart';
@@ -16,6 +16,9 @@ import ICurrency from "@/lib/interfaces/currency";
 import { SpeculativeTransaction } from '@/lib/interfaces/speculative_Transaction';
 import {getCurrencyPairById} from '@/pages/api/services/currencyPairService';
 import { MdCurrencyExchange } from "react-icons/md";
+//Paginator
+import { pageEndIndex, pageStartIndex } from '@/lib/pages';
+import Paginator from '@/components/paginator';
 
 export default function Forex() {
 const [isLoading, setIsLoading] = useState(true);
@@ -33,6 +36,12 @@ const [currencyPairs , setCurrencyPairs] = useState<any[]>([]);
 const [showSnackbar, setShowSnackbar] = useState(false)
 const [snackMess, setsnackMess] = useState("")
 const [snackStatus, setsnackStatus] = useState("danger")
+// PAGINATION states
+const [openTransactionsDataPage, setOpenTransactionsDataPage] = useState(0)
+const [openTransactionsTotalPages, setOpenTransactionsTotalPages] = useState(0)
+const [closedTransactionsDataPage, setClosedTransactionsDataPage] = useState(0)
+const [closedTransactionsTotalPages, setClosedTransactionsTotalPages] = useState(0)
+const recordsPerPage = 10
 
 const fetchForexWalletData = async () => {
     try {
@@ -93,6 +102,14 @@ const snackbarProps = {
   const separateSpeculativeTransactions = (speculativeTransactions: SpeculativeTransaction []) =>{
     const openTransactions = speculativeTransactions.filter((transaction)=>transaction.exit_course_value === null && transaction.exit_date === null);
     const closedTransactions = speculativeTransactions.filter((transaction)=>transaction.exit_course_value !== null && transaction.exit_date !== null);
+    if(openTransactions.length > 0){
+      setOpenTransactionsDataPage(1);
+      setOpenTransactionsTotalPages(Math.ceil(openTransactions.length / recordsPerPage))
+    }
+    if(closedTransactions.length > 0){
+      setClosedTransactionsDataPage(1);
+      setClosedTransactionsTotalPages(Math.ceil(closedTransactions.length / recordsPerPage))
+    }
     setUserSpeculativeTransactionsOpen(openTransactions);
     setUserSpeculativeTransactionsClosed(closedTransactions);
   }
@@ -108,6 +125,7 @@ const snackbarProps = {
       return (
         <tr>
           <th>Para walutowa</th>
+          <th>Wartość transakcji</th>
           <th>Depozyt</th>
           <th>Data wejścia</th>
           <th>Kurs wejścia</th>
@@ -121,6 +139,7 @@ const snackbarProps = {
       return (
         <tr>
           <th>Para walutowa</th>
+          <th>Wartość transakcji</th>
           <th>Depozyt</th>
           <th>Data wejścia</th>
           <th>Kurs wejścia</th>
@@ -153,7 +172,7 @@ const snackbarProps = {
     const entryCourseValue = transaction.entry_course_value;
     const currRate = await getCurrentRate(transaction.currency_pair_id);
     if(transaction.transaction_type > 2 && transaction.transaction_type < 1){
-      setSnackbarProps({ snackStatus: "danger", message: "Niepoprawny ty[ transakcji!", showSnackbar: true });
+      setSnackbarProps({ snackStatus: "danger", message: "Niepoprawny typ transakcji!", showSnackbar: true });
       return
     }
     if(currRate === null){
@@ -190,6 +209,7 @@ const snackbarProps = {
       };
       await handleEditSpeculativeTransaction(transactionData);
       setSnackbarProps({ snackStatus: status, message: msg, showSnackbar: true });
+      fetchForexWalletData();
     } catch (error) {
       console.error("Błąd podczas zamykania transakcji", error);
       msg = "Błąd podczas zamykania transakcji";
@@ -220,7 +240,53 @@ const snackbarProps = {
     return '-';
   }
 
-
+  const transformDateTime = (dateTime: Date) =>{
+    const date = new Date(dateTime);
+    return date.toLocaleString();
+  }
+  
+  const mapUserCurrencies = () => {
+    let rows : JSX.Element [] = [];
+    if (!isLoading && userSpeculativeTransactionsOpen.length > 0 && showOpenTransactions) {
+      for(let i = pageStartIndex(recordsPerPage, openTransactionsDataPage); i < pageEndIndex(recordsPerPage, openTransactionsDataPage, openTransactionsTotalPages, userSpeculativeTransactionsOpen.length); i++ ){
+        rows.push(
+          <tr className="border" key={userSpeculativeTransactionsOpen[i].id}>
+            <td>{findCurrencyPair(userSpeculativeTransactionsOpen[i].id)}</td>
+            <td>{userSpeculativeTransactionsOpen[i].transaction_balance.toFixed(2)} {findCurrencyName(userSpeculativeTransactionsOpen[i].id)}</td>
+            <td>{userSpeculativeTransactionsOpen[i].deposit_amount.toFixed(2)} {findCurrencyName(userSpeculativeTransactionsOpen[i].id)}</td>
+            <td>{transformDateTime(userSpeculativeTransactionsOpen[i].entry_date)}</td>
+            <td>{userSpeculativeTransactionsOpen[i].entry_course_value.toFixed(5)}</td>
+            <td>Live Profit</td>
+            <td>{userSpeculativeTransactionsOpen[i].take_profit !== null && userSpeculativeTransactionsOpen[i].take_profit !== -1 ? userSpeculativeTransactionsOpen[i].take_profit : '-'}</td>
+            <td>{userSpeculativeTransactionsOpen[i].stop_loss !== null && userSpeculativeTransactionsOpen[i].stop_loss !== -1 ? userSpeculativeTransactionsOpen[i].stop_loss : '-'}</td>
+            <td className='justify-center flex items-center'><MdCurrencyExchange className='hover:cursor-pointer mt-1 inline' onClick={closeTransaction(userSpeculativeTransactionsOpen[i])} /></td>
+          </tr>
+        )
+      }
+    }
+    else if(!isLoading && userSpeculativeTransactionsClosed.length > 0 && !showOpenTransactions){
+      for(let i = pageStartIndex(recordsPerPage, closedTransactionsDataPage); i < pageEndIndex(recordsPerPage, closedTransactionsDataPage, closedTransactionsTotalPages, userSpeculativeTransactionsClosed.length); i++ ){
+        rows.push(
+          <tr className="border" key={userSpeculativeTransactionsClosed[i].id}>
+            <td>{findCurrencyPair(userSpeculativeTransactionsClosed[i].id)}</td>
+            <td>{userSpeculativeTransactionsClosed[i].transaction_balance.toFixed(2)} {findCurrencyName(userSpeculativeTransactionsClosed[i].id)}</td>
+            <td>{userSpeculativeTransactionsClosed[i].deposit_amount.toFixed(2)} {findCurrencyName(userSpeculativeTransactionsClosed[i].id)}</td>
+            <td>{transformDateTime(userSpeculativeTransactionsClosed[i].entry_date)}</td>
+            <td>{userSpeculativeTransactionsClosed[i].entry_course_value.toFixed(5)}</td>
+            <td>{userSpeculativeTransactionsClosed[i].exit_date !== undefined ? transformDateTime(userSpeculativeTransactionsClosed[i].exit_date as Date): null}
+          </td>
+            <td>{userSpeculativeTransactionsClosed[i].exit_course_value?.toFixed(5)}</td>
+            <td>{userSpeculativeTransactionsClosed[i].profit_loss} {findCurrencyName(userSpeculativeTransactionsClosed[i].id)}</td>
+          </tr>
+        )
+      }
+    }
+  return rows;
+}
+  useEffect(()=>{
+    mapUserCurrencies();
+  }
+  ,[showOpenTransactions])
   return (
     <Layout>
         {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
@@ -235,7 +301,7 @@ const snackbarProps = {
         <h1 className='text-2xl border-[#BB86FC] border-b-2 py-2 my-4'>Hello { userData.firstName } { userData.surname }!</h1>
         <ChartExample setSellBuyCurrencies={setSellBuyCurrencies}/>
           <div className='forexPanel m-6'>
-            <div className="items-center justify-center flex h-full w-full flex-col gap-6">
+            <div className="items-center justify-center flex h-full w-full flex-col gap-6 overflow-x-auto">
                 <h1 className='text-2xl border-[#BB86FC] border-b-2 py-2 my-4'>Twoje transakcje</h1>
                 <div className='flex flex-row gap-8 w-full items-center justify-center'>
                     <button 
@@ -252,39 +318,23 @@ const snackbarProps = {
                     </button>
             
                 </div>
-                <table className='w-full overflow-auto'>
-                    <thead>
-                      {displayTableHeadRow()}
-                    </thead>
-                    <tbody>
-                      {showOpenTransactions ? (
-                        userSpeculativeTransactionsOpen.map((transaction) => (
-                          <tr className="border" key={transaction.id}>
-                            <td>{findCurrencyPair(transaction.id)}</td>
-                            <td>{transaction.transaction_balance}</td>
-                            <td>{new Date(transaction.entry_date).toLocaleString()}</td>
-                            <td>{transaction.entry_course_value.toFixed(5)}</td>
-                            <td>Live Profit</td>
-                            <td>{transaction.take_profit !== null && transaction.take_profit !== -1 ? transaction.take_profit : '-'}</td>
-                            <td>{transaction.stop_loss !== null && transaction.stop_loss !== -1 ? transaction.stop_loss : '-'}</td>
-                            <td className='justify-center flex items-center'><MdCurrencyExchange className='hover:cursor-pointer mt-1 inline' onClick={closeTransaction(transaction)} /></td>
-                          </tr>
-                        ))
-                      ) : (
-                        userSpeculativeTransactionsClosed.map((transaction) => (
-                          <tr key={transaction.id}>
-                            <td>{findCurrencyPair(transaction.id)}</td>
-                            <td>{transaction.transaction_balance}</td>
-                            <td>{new Date(transaction.entry_date).toLocaleString()}</td>
-                            <td>{transaction.entry_course_value.toFixed(5)}</td>
-                            <td>{transaction.exit_date ? transaction.exit_date.toLocaleString() : null}</td>
-                            <td>{transaction.exit_course_value?.toFixed(5)}</td>
-                            <td>{transaction.profit_loss} {findCurrencyName(transaction.id)}</td>
-                          </tr>
-                        )))}
-                    </tbody>
+                <table className='w-full overflow-auto min-w-[600px] overflow-x-auto'>
+                  <thead>
+                    {displayTableHeadRow()}
+                  </thead>
+                  <tbody>
+                    {mapUserCurrencies()}
+                  </tbody>
                 </table>
-                <button className='button2' onClick={()=>(setShowSpeculativeTransactionModal(true))}>Utwórz transakcję</button>
+                {showOpenTransactions && openTransactionsTotalPages !== 0 ? (
+                <div className='mt-4'>
+                  <Paginator currentPage={openTransactionsDataPage} totalPages={openTransactionsTotalPages} onPageChange={setOpenTransactionsDataPage} />
+                </div>) : null}
+                {!showOpenTransactions && closedTransactionsTotalPages !== 0 ? (
+                <div className='mt-4'>
+                  <Paginator currentPage={closedTransactionsDataPage} totalPages={closedTransactionsTotalPages} onPageChange={setClosedTransactionsDataPage} />
+                </div>) : null}
+                <button className='button2 font-bold relative z-10' onClick={()=>(setShowSpeculativeTransactionModal(true))}>Utwórz transakcję</button>
             </div>
           </div>
         </div>)}
@@ -295,7 +345,8 @@ const snackbarProps = {
         sellingCurrency={sellingCurrency}
         buyingCurrency={buyingCurrency}
         forexWalletID={ForexWalletID}
-        fetchForexWalletData={fetchForexWalletData}/>
+        fetchForexWalletData={fetchForexWalletData}
+        setSnackbarProps={setSnackbarProps}/>
       ): (
         null
       )}

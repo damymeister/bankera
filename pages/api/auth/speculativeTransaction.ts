@@ -82,17 +82,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (findSpeculativeTransaction === null) return res.status(404).json({ error: 'Speculative transaction does not exist.' })
       if(findSpeculativeTransaction.forex_wallet_id !== forex_wallet_id) return res.status(400).json({ error: `Wallet does not match.`});
       const findForexStorageBaseCurrency = await prisma.forex_Currency_Storage.findFirst({where: {forex_wallet_id: forex_wallet_id, forex_currency_id: findSpeculativeTransaction.base_currency_id}});
-      if (findForexStorageBaseCurrency === null) return res.status(404).json({ error: 'Base currency does not exist in wallet.' });
-      if(findForexStorageBaseCurrency.forex_wallet_id !== forex_wallet_id) return res.status(400).json({ error: `Wallet does not match.`});
+      if(findForexStorageBaseCurrency && findForexStorageBaseCurrency.forex_wallet_id !== forex_wallet_id) return res.status(400).json({ error: `Wallet does not match.`});
 
-      await prisma.forex_Currency_Storage.update({
-        where: {
-          id: findForexStorageBaseCurrency.id
-        },
-        data: {
-          forex_currency_amount: findForexStorageBaseCurrency.forex_currency_amount + findSpeculativeTransaction.deposit_amount + profit_loss
-        },
-      })
+      if(!findForexStorageBaseCurrency){
+        await prisma.forex_Currency_Storage.create({
+          data: {
+            forex_wallet_id: forex_wallet_id,
+            forex_currency_id: findSpeculativeTransaction.base_currency_id,
+            forex_currency_amount: findSpeculativeTransaction.deposit_amount + parseFloat(profit_loss),
+          }
+        })
+      }else{
+        await prisma.forex_Currency_Storage.update({
+          where: {
+            id: findForexStorageBaseCurrency.id
+          },
+          data: {
+            forex_currency_amount: findForexStorageBaseCurrency.forex_currency_amount + findSpeculativeTransaction.deposit_amount + parseFloat(profit_loss)
+          },
+        })
+    }
 
       await prisma.speculative_Transaction.update({
         where: { 
@@ -101,12 +110,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         data: {
           exit_course_value: exit_course_value,
           exit_date: exit_date,
-          profit_loss: profit_loss,
+          profit_loss: parseFloat(profit_loss),
         }
       })
       return res.status(200).json({ message: "Speculative transaction updated successfully." })
     } catch(error) {
-      return res.status(500).json({ message: 'Error while trying to update speculative transaction.' });
+      return res.status(500).json({ message: error });
     }
   }
   return res.status(500).json({message: "This HTTP method is not supported on this endpoint"})

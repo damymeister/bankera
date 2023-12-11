@@ -7,6 +7,7 @@ import { getCurrencyPair } from '@/pages/api/services/currencyPairService';
 import { SpeculativeTransactionCreate } from '@/lib/interfaces/speculative_Transaction';
 import { handleCreateSpeculativeTransaction } from '@/pages/api/services/speculativeTransactionService';
 import { getForexCurrencyStorageById } from '@/pages/api/services/forexCurrencyStorageService';
+import { parse } from 'path';
 export default function SpeculativeTransactionModal(props:any){
     //Snackbar states
     const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
@@ -15,9 +16,11 @@ export default function SpeculativeTransactionModal(props:any){
     const lot = 100000;//Lot is always the same
     const pipSize = 0.0001;//Pip is always the same, if currencyPair has currency "Yen" it can be 0.01 but it is not implemented yet
     const [currentVolume, setCurrentVolume] = useState<number>(1);
-    const [depositCurrencyAmount, setDepositCurrencyAmount] = useState<number>(0);
     const [stopLossIncluded, setStopLossIncluded] = useState<boolean>(false);
     const [takeProfitIncluded, setTakeProfitIncluded] = useState<boolean>(false);
+    const [baseCurrencyAmount, setBaseCurrencyAmount] = useState<number>(0);
+    const [minMaxTakeProfitVariable, setMinMaxTakeProfitVariable] = useState<{min: number, max: number}>({min: -1 , max: -1 })
+    const [minMaxStopLossVariable, setMinMaxStopLossVariable] = useState<{min: number, max: number}>({min: -1 , max: -1 })
     const [createSpeculativeTransactionData, setCreateSpeculativeTransactionData] =  useState<SpeculativeTransactionCreate>({
         forex_wallet_id: 0,
         transaction_type: 1,
@@ -62,11 +65,13 @@ export default function SpeculativeTransactionModal(props:any){
         calculatePipPrice();
         calculateTransactionBalance();
         calculateTransactionDeposit();
+        calulacteBaseCurrencyAmount();
+        setMaxMinStopLoss();
+        setMaxMinTakeProfit();
     }
 
     useEffect(() => {
         calculateData();
-        calulacteBaseCurrencyAmount();
       }, []);
 
     const calulacteBaseCurrencyAmount = async () => {
@@ -74,7 +79,7 @@ export default function SpeculativeTransactionModal(props:any){
         if (!getForexCurrencyStorage.data) {
           return;
         }
-        console.log(getForexCurrencyStorage)
+        setBaseCurrencyAmount(getForexCurrencyStorage.data.forex_currency_amount);
     }
       useEffect(() => {
         calculatePipPrice();
@@ -149,14 +154,13 @@ export default function SpeculativeTransactionModal(props:any){
             || createSpeculativeTransactionData.entry_course_value <= 0 
             || createSpeculativeTransactionData.lots <= 0 
             || (createSpeculativeTransactionData.transaction_type !== 1 && createSpeculativeTransactionData.transaction_type !== 2)
-            || createSpeculativeTransactionData.transaction_balance > depositCurrencyAmount){
+            || createSpeculativeTransactionData.deposit_amount > baseCurrencyAmount){
+            setSnackbarProps({ snackStatus: "danger", message: "Niepoprawne dane!", showSnackbar: true });
             return false
         }
         return true
     }
     const createSpeculativeTransaction = async () =>{
-            var msg = '';
-            var status = '';
             const currDate = new Date();
 
             if (!window.confirm("Czy na chcesz dokonać spekulacji na rynku Forex?")) return
@@ -171,22 +175,18 @@ export default function SpeculativeTransactionModal(props:any){
 
             try{
                 await handleCreateSpeculativeTransaction(createSpeculativeTransactionData);
-                msg = 'Dokonano transakcji spekulacyjnej!'
-                status = 'success'}
+                props.closeSpeculativeTransactionModal();
+                props.setSnackbarProps({ snackStatus: 'success', message: 'Dokonano transakcji spekulacyjnej!', showSnackbar: true });}
             catch(error){
-                msg = 'Błąd podczas tworzenia transakcji spekulacyjnej'
-                status = 'danger'
                 console.log(error);}
-            finally{
-                setSnackbarProps({ snackStatus: status, message: msg, showSnackbar: true });
-            }
-            props.closeSpeculativeTransactionModal();
+                setSnackbarProps({ snackStatus: 'danger', message: 'Wystąpił problem podczas tworzenia transakcji spekulacyjnej!', showSnackbar: true });
         }
     const setStopLoss = () =>{
         if(!stopLossIncluded){
+            const newStopLoss = createSpeculativeTransactionData.entry_course_value.toFixed(5);
             setCreateSpeculativeTransactionData((data) => ({
                 ...data,
-                stop_loss: createSpeculativeTransactionData.entry_course_value,
+                stop_loss: parseFloat(newStopLoss),
             }))
         }else{
             setCreateSpeculativeTransactionData((data) => ({
@@ -198,9 +198,10 @@ export default function SpeculativeTransactionModal(props:any){
     }
     const setTakeProfit = () =>{
         if(!takeProfitIncluded){
+            const newTakeProfit = createSpeculativeTransactionData.entry_course_value.toFixed(5);
             setCreateSpeculativeTransactionData((data) => ({
                 ...data,
-                take_profit: createSpeculativeTransactionData.entry_course_value,
+                take_profit: parseFloat(newTakeProfit),
             }))
         }else{
             setCreateSpeculativeTransactionData((data) => ({
@@ -211,22 +212,30 @@ export default function SpeculativeTransactionModal(props:any){
         setTakeProfitIncluded(!takeProfitIncluded);
     }
     const setMaxMinTakeProfit = () =>{
-        if(createSpeculativeTransactionData.transaction_type === 1) return {min: createSpeculativeTransactionData.entry_course_value, max: 15000}
-        return {min: 0.0 , max: createSpeculativeTransactionData.entry_course_value}
+        if(createSpeculativeTransactionData.transaction_type == 1){
+            setMinMaxTakeProfitVariable({min: createSpeculativeTransactionData.entry_course_value, max: 15000})
+            return
+        }
+        setMinMaxTakeProfitVariable({min: 0, max: createSpeculativeTransactionData.entry_course_value})
     }
     const setMaxMinStopLoss = () =>{
-        if(createSpeculativeTransactionData.transaction_type === 1) return {min: 0.0, max: createSpeculativeTransactionData.entry_course_value}
-        return {min: createSpeculativeTransactionData.entry_course_value, max: 15000}
+        if(createSpeculativeTransactionData.transaction_type == 1){
+            setMinMaxStopLossVariable({min: 0, max: createSpeculativeTransactionData.entry_course_value})
+            return
+        }
+        setMinMaxStopLossVariable({min: createSpeculativeTransactionData.entry_course_value, max: 15000})
     }
 
 useEffect(() => {
     setMaxMinStopLoss();
     setMaxMinTakeProfit();
+    console.log(minMaxStopLossVariable)
+    console.log(minMaxTakeProfitVariable);
 }
 , [createSpeculativeTransactionData.transaction_type]);
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black bg-opacity-80 text-white ">
+        <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black bg-opacity-80 text-white z-50">
             {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
           <div className="lg:w-2/5 w-2/3 py-2 min-h-2/3 h-auto bgdark text-white rounded-xl relative border-2 border-black borderLight p-6">
               <div className="text-white flex flex-col items-center">
@@ -238,6 +247,14 @@ useEffect(() => {
                         <span>Lot: 100 000 {props.buyingCurrency.name}</span>
                     </div>
                     <div className='flex flex-row gap-2 flex-wrap w-full justify-between border-[#BB86FC] border-b-2'>
+                        <span>Ilość waluty: {baseCurrencyAmount.toFixed(2)} {props.buyingCurrency.name}</span>
+                        <span>Kurs: {createSpeculativeTransactionData.entry_course_value.toFixed(5)}</span>
+                    </div>
+                    <div className='flex flex-row gap-6 flex-wrap w-full justify-between border-[#BB86FC] border-b-2 mb-6'>
+                        <span>Wartość pipsa: {(createSpeculativeTransactionData.pip_price).toFixed(2)} {props.buyingCurrency.name}</span>
+                        <span>Wartość kontraktu: {createSpeculativeTransactionData.transaction_balance.toFixed(0)} {props.buyingCurrency.name}</span>
+                    </div>
+                    <div className='flex flex-row gap-2 flex-wrap w-full justify-between border-[#BB86FC] border-b-2'>
                         <div>
                             <span>Typ transakcji: </span>
                             <select onChange={changeTransactionType} className=" text-white rounded-md border border-[#bb86fcad] bg-transparent focus:ring-2 focus:bg-[#1f1b24b2] focus:ring-inset focus:ring-indigo-600 sm:text-sm">
@@ -245,9 +262,6 @@ useEffect(() => {
                                 <option value="2">Sprzedaż</option>
                             </select>
                         </div>
-                        <span>Kurs: {createSpeculativeTransactionData.entry_course_value.toFixed(4)}</span>
-                    </div>
-                    <div className='flex flex-row gap-2 flex-wrap w-full justify-between border-[#BB86FC] border-b-2'>
                         <div>
                             <span>Dźwignia finansowa: </span>
                             <select onChange={changeFinancialLeverage} className=" text-white rounded-md border border-[#bb86fcad] bg-transparent focus:ring-2 focus:bg-[#1f1b24b2] focus:ring-inset focus:ring-indigo-600 sm:text-sm">
@@ -257,7 +271,9 @@ useEffect(() => {
                                 <option value="1">1</option>
                             </select>
                         </div>
-                        <div className='flex flex-row gap-2'>
+                    </div>
+                    <div className='flex flex-row gap-6 flex-wrap w-full justify-between border-[#BB86FC] border-b-2'>
+                    <div className='flex flex-row gap-2'>
                             <label htmlFor="volume" className="font-bold flex items-center justify-center">Wolumen:</label>
                             <input
                                 id="volume"
@@ -270,14 +286,7 @@ useEffect(() => {
                                 value={currentVolume}
                             />
                         </div>
-                    </div>
-                    <div className='flex flex-row gap-6 flex-wrap w-full justify-between border-[#BB86FC] border-b-2'>
-                        <span>Wartość pipsa: {(createSpeculativeTransactionData.pip_price).toFixed(2)} {props.buyingCurrency.name}</span>
-                        <span>Wartość kontraktu: {createSpeculativeTransactionData.transaction_balance.toFixed(0)} {props.buyingCurrency.name}</span>
-                    </div>
-                    <div className='flex flex-row gap-6 flex-wrap w-full justify-between border-[#BB86FC] border-b-2'>
                         <span>Wartość depozytu: {(createSpeculativeTransactionData.deposit_amount).toFixed(2)} {props.buyingCurrency.name}</span>
-                        <span>Ilość posiadanej waluty: {depositCurrencyAmount} {props.buyingCurrency.name}</span>
                     </div>
                     <div className='flex flex-row gap-6 flex-wrap w-full justify-between border-[#BB86FC] border-b-2'>
                         <div className='gap-2'>
@@ -286,22 +295,23 @@ useEffect(() => {
                                 <span className='font-bold'>Stop loss</span>
                             </div>
                             {stopLossIncluded ? (
-                                <div className='flex flex-row gap-2'>
-                                    <label htmlFor="stopLoss" className="font-bold flex items-center justify-center">Stop Loss:</label>
-                                    <input
-                                        id="stopLoss"
-                                        type="number"
-                                        min={setMaxMinStopLoss().min}
-                                        max={setMaxMinStopLoss().max}
-                                        step="0.0001"
-                                        className="w-24 font-bold border border-white rounded-lg bgdark focus:border-black overflow-y-auto resize-none"
-                                        onChange={(e) => setCreateSpeculativeTransactionData((data) => ({
-                                            ...data,
-                                            stop_loss: parseFloat(e.target.value),
-                                        }))}
-                                        value={createSpeculativeTransactionData.stop_loss}
-                                    />
-                                </div>
+                                  <input
+                                  id="stopLoss"
+                                  type="number"
+                                  min={minMaxStopLossVariable.min}
+                                  max={minMaxStopLossVariable.max}
+                                  step="0.00001"
+                                  className="w-24 mb-2 mt-2 font-bold border border-white rounded-lg bgdark focus:border-black overflow-y-auto resize-none"
+                                  onChange={(e) => {
+                                      const value = parseFloat(e.target.value).toFixed(5);
+                                      console.log(value);
+                                      setCreateSpeculativeTransactionData((data) => ({
+                                          ...data,
+                                          stop_loss: parseFloat(value),
+                                      }));
+                                  }}
+                                  value={createSpeculativeTransactionData.stop_loss}
+                              />
                             ) : (
                                 null
                             )}
@@ -312,22 +322,22 @@ useEffect(() => {
                                 <span className='font-bold'>Take profit</span>
                             </div>
                             {takeProfitIncluded ? (
-                                <div className='flex flex-row gap-2'>
-                                    <label htmlFor="takeProfit" className="font-bold flex items-center justify-center">Take Profit:</label>
                                     <input
                                         id="takeProfit"
                                         type="number"
-                                        min={setMaxMinTakeProfit().min}
-                                        max={setMaxMinTakeProfit().max}
-                                        step="0.0001"
-                                        className="w-24 font-bold border border-white rounded-lg bgdark focus:border-black overflow-y-auto resize-none"
-                                        onChange={(e) => setCreateSpeculativeTransactionData((data) => ({
+                                        min={minMaxStopLossVariable.min}
+                                        max={minMaxStopLossVariable.max}
+                                        step="0.00001"
+                                        className="w-24 font-bold mb-2 border border-white rounded-lg bgdark focus:border-black overflow-y-auto resize-none mt-2"
+                                        onChange={(e) => {
+                                            const value = parseFloat(e.target.value).toFixed(5);
+                                            console.log(e.target.value);
+                                            setCreateSpeculativeTransactionData((data) => ({
                                             ...data,
-                                            take_profit: parseFloat(e.target.value),
-                                        }))}
+                                            take_profit: parseFloat(value),
+                                        }))}}
                                         value={createSpeculativeTransactionData.take_profit}
                                     />
-                                </div>
                             ) : (
                                 null
                             )}
