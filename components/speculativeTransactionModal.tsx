@@ -141,7 +141,7 @@ export default function SpeculativeTransactionModal(props:any){
 
         if((createSpeculativeTransactionData.transaction_type == 1 && stopLossIncluded && createSpeculativeTransactionData.stop_loss 
             && createSpeculativeTransactionData.stop_loss > createSpeculativeTransactionData.entry_course_value)
-            || (createSpeculativeTransactionData.transaction_type == 2 && stopLossIncluded && createSpeculativeTransactionData.stop_loss
+            || (createSpeculativeTransactionData.transaction_type == 2 && createSpeculativeTransactionData.stop_loss
                 && createSpeculativeTransactionData.stop_loss < createSpeculativeTransactionData.entry_course_value))
             {
                 setSnackbarProps({ snackStatus: "danger", message: "Niepoprawna wartość Stop Loss!", showSnackbar: true });
@@ -149,7 +149,7 @@ export default function SpeculativeTransactionModal(props:any){
             }
         if((createSpeculativeTransactionData.transaction_type == 1 && takeProfitIncluded && createSpeculativeTransactionData.take_profit
             && createSpeculativeTransactionData.take_profit < createSpeculativeTransactionData.entry_course_value)
-            || (createSpeculativeTransactionData.transaction_type == 2 && takeProfitIncluded && createSpeculativeTransactionData.take_profit
+            || (createSpeculativeTransactionData.transaction_type == 2 && createSpeculativeTransactionData.take_profit
                 && createSpeculativeTransactionData.take_profit > createSpeculativeTransactionData.entry_course_value))
             {
                 setSnackbarProps({ snackStatus: "danger", message: "Niepoprawna wartość Take Profit!", showSnackbar: true });
@@ -163,9 +163,10 @@ export default function SpeculativeTransactionModal(props:any){
 
             if (!window.confirm("Czy na chcesz dokonać spekulacji na rynku Forex?")) return
 
-            if(!correctSpeculativeData){
-                setSnackbarProps({ snackStatus: "danger", message: "Niepoprawne dane!", showSnackbar: true });
+            if(!correctSpeculativeData()){
+                return;
             }
+
             setCreateSpeculativeTransactionData((data) => ({
                 ...data,
                 entry_date: currDate,
@@ -305,7 +306,6 @@ const checkIfDataLoaded = () =>{
                                   className="w-24 mb-2 mt-2 font-bold border border-white rounded-lg bgdark focus:border-black overflow-y-auto resize-none"
                                   onChange={(e) => {
                                       const value = parseFloat(e.target.value).toFixed(5);
-                                      console.log(value);
                                       setCreateSpeculativeTransactionData((data) => ({
                                           ...data,
                                           stop_loss: parseFloat(value),
@@ -331,7 +331,6 @@ const checkIfDataLoaded = () =>{
                                         className="w-24 font-bold mb-2 border border-white rounded-lg bgdark focus:border-black overflow-y-auto resize-none mt-2"
                                         onChange={(e) => {
                                             const value = parseFloat(e.target.value).toFixed(5);
-                                            console.log(e.target.value);
                                             setCreateSpeculativeTransactionData((data) => ({
                                             ...data,
                                             take_profit: parseFloat(value),
