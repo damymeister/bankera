@@ -133,10 +133,29 @@ export default function SpeculativeTransactionModal(props:any){
             || createSpeculativeTransactionData.entry_course_value <= 0 
             || createSpeculativeTransactionData.lots <= 0 
             || (createSpeculativeTransactionData.transaction_type !== 1 && createSpeculativeTransactionData.transaction_type !== 2)
-            || createSpeculativeTransactionData.deposit_amount > baseCurrencyAmount){
+            || createSpeculativeTransactionData.deposit_amount > baseCurrencyAmount)
+            {
             setSnackbarProps({ snackStatus: "danger", message: "Niepoprawne dane!", showSnackbar: true });
             return false
         }
+
+        if((createSpeculativeTransactionData.transaction_type == 1 && stopLossIncluded && createSpeculativeTransactionData.stop_loss 
+            && createSpeculativeTransactionData.stop_loss > createSpeculativeTransactionData.entry_course_value)
+            || (createSpeculativeTransactionData.transaction_type == 2 && stopLossIncluded && createSpeculativeTransactionData.stop_loss
+                && createSpeculativeTransactionData.stop_loss < createSpeculativeTransactionData.entry_course_value))
+            {
+                setSnackbarProps({ snackStatus: "danger", message: "Niepoprawna wartość Stop Loss!", showSnackbar: true });
+                return false
+            }
+        if((createSpeculativeTransactionData.transaction_type == 1 && takeProfitIncluded && createSpeculativeTransactionData.take_profit
+            && createSpeculativeTransactionData.take_profit < createSpeculativeTransactionData.entry_course_value)
+            || (createSpeculativeTransactionData.transaction_type == 2 && takeProfitIncluded && createSpeculativeTransactionData.take_profit
+                && createSpeculativeTransactionData.take_profit > createSpeculativeTransactionData.entry_course_value))
+            {
+                setSnackbarProps({ snackStatus: "danger", message: "Niepoprawna wartość Take Profit!", showSnackbar: true });
+                return false
+            }
+
         return true
     }
     const createSpeculativeTransaction = async () =>{
@@ -211,7 +230,7 @@ export default function SpeculativeTransactionModal(props:any){
     },[showSnackbar])
 
 const checkIfDataLoaded = () =>{
-    if(createSpeculativeTransactionData.entry_course_value !== -1 && createSpeculativeTransactionData.transaction_balance !== -1 && currentVolume !== -1){
+    if(createSpeculativeTransactionData.entry_course_value !== -1 && createSpeculativeTransactionData.transaction_balance !== -1 && currentVolume !== -1 && createSpeculativeTransactionData.entry_course_value){
         return true
     }
     return false
@@ -281,8 +300,7 @@ const checkIfDataLoaded = () =>{
                                   <input
                                   id="stopLoss"
                                   type="number"
-                                  min={createSpeculativeTransactionData.transaction_type == 1 ? 0 : createSpeculativeTransactionData.entry_course_value}
-                                  max={createSpeculativeTransactionData.transaction_type == 1 ? createSpeculativeTransactionData.entry_course_value : 15000 }
+                                  min="0"
                                   step="0.00001"
                                   className="w-24 mb-2 mt-2 font-bold border border-white rounded-lg bgdark focus:border-black overflow-y-auto resize-none"
                                   onChange={(e) => {
@@ -308,8 +326,7 @@ const checkIfDataLoaded = () =>{
                                     <input
                                         id="takeProfit"
                                         type="number"
-                                        min={createSpeculativeTransactionData.transaction_type == 1 ? createSpeculativeTransactionData.entry_course_value : 0}
-                                        max={createSpeculativeTransactionData.transaction_type == 1 ? 15000 : createSpeculativeTransactionData.entry_course_value}
+                                        min="0"
                                         step="0.00001"
                                         className="w-24 font-bold mb-2 border border-white rounded-lg bgdark focus:border-black overflow-y-auto resize-none mt-2"
                                         onChange={(e) => {
