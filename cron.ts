@@ -1,11 +1,12 @@
 import { Cron } from "cron-async";
 import * as updateRates from './lib/crons/updateRates'
 import * as updateHistory from './lib/crons/updateHistory'
+import * as updateSpecTrns from './lib/crons/updateSpecTrns'
 import { CHeaders, Color } from "./lib/console";
 
 export const startCron = () => {
     const cron = new Cron()
-    let crons = [updateRates, updateHistory]
+    let crons = [updateRates, updateHistory, updateSpecTrns]
     for (let i = 0; i < crons.length; i++) {
         cron.createJob(crons[i].name, {
             cron: crons[i].schedule,
