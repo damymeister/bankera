@@ -30,8 +30,8 @@ export interface SpeculativeTransactionCreate {
     deposit_amount: number;
     base_currency_id: number;
     profit_loss?: number;
-    stop_loss?: number;
-    take_profit?: number;
+    stop_loss: number;
+    take_profit: number;
 }
 
 export interface SpeculativeTransactionEdit{
