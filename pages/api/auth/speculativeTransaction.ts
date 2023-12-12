@@ -30,17 +30,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const findBaseCurrency = await prisma.currency.findUnique({where: {id: base_currency_id}});
       if(findBaseCurrency === null) return res.status(404).json({ error: 'Base currency does not exist.' });
       if(findCurrencyPair.buy_currency_id === null || findCurrencyPair.sell_currency_id === null) return res.status(404).json({ error: 'Currency pair does not exist.' })
-      if (stop_loss !== undefined && stop_loss !== null) {
+      if (stop_loss !== undefined && stop_loss !== null && stop_loss !== -1) {
         var stopLoss = stop_loss;
       }
   
-      if (take_profit !== undefined && take_profit !== null) {
+      if (take_profit !== undefined && take_profit !== null && take_profit !== -1) {
         var takeProfit = take_profit;
       }
       const findForexStorageBaseCurrency = await prisma.forex_Currency_Storage.findFirst({where: {forex_wallet_id: forex_wallet_id, forex_currency_id: base_currency_id}});
       if (findForexStorageBaseCurrency === null) return res.status(404).json({ error: 'Base currency does not exist in wallet.' });
       if(findForexStorageBaseCurrency.forex_currency_amount < deposit_amount) return res.status(400).json({ error: 'Insufficient funds in wallet.' });
       if(findForexStorageBaseCurrency.forex_wallet_id !== forex_wallet_id) return res.status(400).json({ error: `Wallet does not match.`});
+      if(transaction_type === 1){
+        if(takeProfit < entry_course_value || takeProfit < 0) return res.status(400).json({ error: 'Take profit must be greater than entry course value.' });
+        if(stopLoss > entry_course_value || stopLoss < 0) return res.status(400).json({ error: 'Stop loss must be less than entry course value.' });
+      }
+      if(transaction_type === 2){
+        if(takeProfit > entry_course_value || takeProfit < 0) return res.status(400).json({ error: 'Take profit must be less than entry course value.' });
+        if(stopLoss < entry_course_value || stopLoss < 0) return res.status(400).json({ error: 'Stop loss must be greater than entry course value.' });
+      }
 
       await prisma.forex_Currency_Storage.update({
         where: {
