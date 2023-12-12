@@ -261,7 +261,7 @@ const snackbarProps = {
             {!userSpeculativeTransactionsOpen[i].profit_loss ? (
               <td>-</td>
             ) : (
-            <td style={{ color: (userSpeculativeTransactionsOpen[i].profit_loss ?? 0 > 0) ? 'green' : 'red' }}>
+            <td style={{ color: displayCorrectColor(userSpeculativeTransactionsOpen[i].profit_loss || 0) }}>
               {userSpeculativeTransactionsOpen[i] && userSpeculativeTransactionsOpen[i].profit_loss?.toFixed(4)} {userSpeculativeTransactionsOpen[i] && findCurrencyName(userSpeculativeTransactionsOpen[i].id)}
             </td>)}
             <td>{userSpeculativeTransactionsOpen[i].take_profit !== null && userSpeculativeTransactionsOpen[i].take_profit !== -1 ? userSpeculativeTransactionsOpen[i].take_profit : '-'}</td>
@@ -284,13 +284,20 @@ const snackbarProps = {
             <td>{userSpeculativeTransactionsClosed[i].exit_date !== undefined ? transformDateTime(userSpeculativeTransactionsClosed[i].exit_date as Date): null}
           </td>
             <td>{userSpeculativeTransactionsClosed[i].exit_course_value?.toFixed(5)}</td>
-            <td>{userSpeculativeTransactionsClosed[i].profit_loss?.toFixed(3)} {findCurrencyName(userSpeculativeTransactionsClosed[i].id)}</td>
+            <td style={{ color: displayCorrectColor(userSpeculativeTransactionsClosed[i].profit_loss || 0) }}>{userSpeculativeTransactionsClosed[i].profit_loss?.toFixed(3)} {findCurrencyName(userSpeculativeTransactionsClosed[i].id)}</td>
           </tr>
         )
       }
     }
   return rows;
 }
+
+const displayCorrectColor = (profit_loss: number) =>{
+  if(profit_loss === null || profit_loss == 0) return 'white';
+  if(profit_loss > 0) return 'green';
+  return 'red';
+}
+
   useEffect(()=>{
     mapUserCurrencies();
   }
