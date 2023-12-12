@@ -36,7 +36,7 @@ export default function ChartExample(props:any) {
 
   useEffect(() => {
     const handleHistoryGet = async () => {
-      let url = api_url('auth/currencyHistory') + '?timestamp=' + pastTimestamp + '&sell_currency_id=' + sellingCurrency.id + '&buy_currency_id=' + buyingCurrency.id
+      let url = api_url('auth/currencyHistory') + '?timestamp=' + pastTimestamp + '&sell_currency_id=' + buyingCurrency.id + '&buy_currency_id=' + sellingCurrency.id
       if (trendlineEnabled) url += '&predict=true'
       const { data } = await axios.get(url, {headers: {Accept: 'application/json'}})
       setCurrencyHistory(data[0] as ICurrencyHistory)
