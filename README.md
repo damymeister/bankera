@@ -1,18 +1,9 @@
 # TODO List
 
-- ✓ Poprawić błędy z snackbarami
+- Poprawić błędy z snackbarami
 - ujednolicić język
-- ✓ Paginacja do currencyExchange, wallet, forexWallet
 - Ostatnia strona ma być wielkości tak jak poprzednich
-- ✓ Dodać zdjęcia do postów
-- ✓ Flex wrap do postów, posty wyższe niż szersze
-- ✓ **FOREX**!!!
-- ✓ Prosty wykres z currencyHistory
-- ✓ Edycja użytkowników w adminPanelu
-- ✓Implementacja speculativeTransaction
-- CRON do transakcji spekulacyjnych
-- ✓ Testy **SOŁ**
-- ✓ Portfel Forex, transakcje Wallet -> ForexWallet i na odwrót + zapis historii do bazy danych
+- Testy **SOŁ**
 
 # CRON DO TRANSAKCJI SPEKULACYJNYCH
 1) Ma się wywoływać co każdą zmianę kursów, musi iterować przez wszystkie otwarte transakcje - te które nie mają exit daty i exit kursu ustawionego, powinien sprawdzić ich stop loss oraz take profit, jeśli nowy kurs danej pary walutowej jest równy take_profit lub stop_loss danej transakcji otwartej, należy dokonać aktualizacji (zakończenia) transakcji, poprzez update exit kursu, oraz exit daty, a także wyliczyć profit_loss i też przypisać go do pola danej transakcji podczas aktualizacji (patrz forex.tsx - funkcja calculateProfitLoss a nastepnie closeTransaction).
