@@ -258,7 +258,12 @@ const snackbarProps = {
             <td>{userSpeculativeTransactionsOpen[i].deposit_amount.toFixed(2)} {findCurrencyName(userSpeculativeTransactionsOpen[i].id)}</td>
             <td>{transformDateTime(userSpeculativeTransactionsOpen[i].entry_date)}</td>
             <td>{userSpeculativeTransactionsOpen[i].entry_course_value.toFixed(5)}</td>
-            <td>Live Profit</td>
+            {!userSpeculativeTransactionsOpen[i].profit_loss ? (
+              <td>-</td>
+            ) : (
+            <td style={{ color: (userSpeculativeTransactionsOpen[i].profit_loss ?? 0 > 0) ? 'green' : 'red' }}>
+              {userSpeculativeTransactionsOpen[i] && userSpeculativeTransactionsOpen[i].profit_loss?.toFixed(4)} {userSpeculativeTransactionsOpen[i] && findCurrencyName(userSpeculativeTransactionsOpen[i].id)}
+            </td>)}
             <td>{userSpeculativeTransactionsOpen[i].take_profit !== null && userSpeculativeTransactionsOpen[i].take_profit !== -1 ? userSpeculativeTransactionsOpen[i].take_profit : '-'}</td>
             <td>{userSpeculativeTransactionsOpen[i].stop_loss !== null && userSpeculativeTransactionsOpen[i].stop_loss !== -1 ? userSpeculativeTransactionsOpen[i].stop_loss : '-'}</td>
             <td className='justify-center flex items-center'><MdCurrencyExchange className='hover:cursor-pointer mt-1 inline' onClick={closeTransaction(userSpeculativeTransactionsOpen[i])} /></td>
@@ -279,7 +284,7 @@ const snackbarProps = {
             <td>{userSpeculativeTransactionsClosed[i].exit_date !== undefined ? transformDateTime(userSpeculativeTransactionsClosed[i].exit_date as Date): null}
           </td>
             <td>{userSpeculativeTransactionsClosed[i].exit_course_value?.toFixed(5)}</td>
-            <td>{userSpeculativeTransactionsClosed[i].profit_loss} {findCurrencyName(userSpeculativeTransactionsClosed[i].id)}</td>
+            <td>{userSpeculativeTransactionsClosed[i].profit_loss?.toFixed(3)} {findCurrencyName(userSpeculativeTransactionsClosed[i].id)}</td>
           </tr>
         )
       }

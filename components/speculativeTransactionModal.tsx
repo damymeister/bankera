@@ -139,32 +139,49 @@ export default function SpeculativeTransactionModal(props:any){
             return false
         }
 
-        if((createSpeculativeTransactionData.transaction_type == 1 && stopLossIncluded && createSpeculativeTransactionData.stop_loss 
-            && createSpeculativeTransactionData.stop_loss > createSpeculativeTransactionData.entry_course_value)
-            || (createSpeculativeTransactionData.transaction_type == 2 && createSpeculativeTransactionData.stop_loss
-                && createSpeculativeTransactionData.stop_loss < createSpeculativeTransactionData.entry_course_value))
-            {
-                setSnackbarProps({ snackStatus: "danger", message: "Niepoprawna wartość Stop Loss!", showSnackbar: true });
-                return false
-            }
-        if((createSpeculativeTransactionData.transaction_type == 1 && takeProfitIncluded && createSpeculativeTransactionData.take_profit
-            && createSpeculativeTransactionData.take_profit < createSpeculativeTransactionData.entry_course_value)
-            || (createSpeculativeTransactionData.transaction_type == 2 && createSpeculativeTransactionData.take_profit
-                && createSpeculativeTransactionData.take_profit > createSpeculativeTransactionData.entry_course_value))
-            {
-                setSnackbarProps({ snackStatus: "danger", message: "Niepoprawna wartość Take Profit!", showSnackbar: true });
-                return false
-            }
-
         return true
     }
+
+    const correctStopLossAndTakeProfit = () =>{
+        if(!stopLossIncluded && !takeProfitIncluded){
+            return true
+        }
+        if(stopLossIncluded){
+            if(createSpeculativeTransactionData.transaction_type === 1 && createSpeculativeTransactionData.stop_loss > createSpeculativeTransactionData.entry_course_value){
+                setSnackbarProps({ snackStatus: "danger", message: `Stop loss powinien mieścić się w przedziale 0-${(createSpeculativeTransactionData.entry_course_value - 0.00001).toFixed(5)}`, showSnackbar: true });
+                return false
+            }
+            if(createSpeculativeTransactionData.transaction_type === 2 && createSpeculativeTransactionData.stop_loss < createSpeculativeTransactionData.entry_course_value){
+                setSnackbarProps({ snackStatus: "danger", message: `Stop loss powinien mieścić się w przedziale ${createSpeculativeTransactionData.entry_course_value.toFixed(5)}-∞`, showSnackbar: true });
+                return false
+            }
+        }
+        if(takeProfitIncluded){
+            if(createSpeculativeTransactionData.transaction_type === 1 && createSpeculativeTransactionData.take_profit < createSpeculativeTransactionData.entry_course_value){
+                setSnackbarProps({ snackStatus: "danger", message: `Take profit powinien mieścić się w przedziale ${createSpeculativeTransactionData.entry_course_value.toFixed(5)}-∞`, showSnackbar: true });
+                return false
+            }
+            if(createSpeculativeTransactionData.transaction_type === 2 && createSpeculativeTransactionData.take_profit > createSpeculativeTransactionData.entry_course_value){
+                setSnackbarProps({ snackStatus: "danger", message: `Take profit powinien mieścić się w przedziale 0-${(createSpeculativeTransactionData.entry_course_value - 0.00001).toFixed(5)}`, showSnackbar: true });
+                return false
+            }
+        }
+        return true
+    }
+
+
     const createSpeculativeTransaction = async () =>{
             const currDate = new Date();
 
             if (!window.confirm("Czy na chcesz dokonać spekulacji na rynku Forex?")) return
 
             if(!correctSpeculativeData()){
-                return;
+                setSnackbarProps({ snackStatus: "danger", message: "Niepoprawne dane!", showSnackbar: true });
+                return
+            }
+
+            if(!correctStopLossAndTakeProfit()){
+                return
             }
 
             setCreateSpeculativeTransactionData((data) => ({
@@ -180,6 +197,7 @@ export default function SpeculativeTransactionModal(props:any){
                 console.log(error);}
                 setSnackbarProps({ snackStatus: 'danger', message: 'Wystąpił problem podczas tworzenia transakcji spekulacyjnej!', showSnackbar: true });
         }
+
     const setStopLoss = () =>{
         if(!stopLossIncluded){
             const newStopLoss = createSpeculativeTransactionData.entry_course_value.toFixed(5);
@@ -306,6 +324,7 @@ const checkIfDataLoaded = () =>{
                                   className="w-24 mb-2 mt-2 font-bold border border-white rounded-lg bgdark focus:border-black overflow-y-auto resize-none"
                                   onChange={(e) => {
                                       const value = parseFloat(e.target.value).toFixed(5);
+                                      console.log(value);
                                       setCreateSpeculativeTransactionData((data) => ({
                                           ...data,
                                           stop_loss: parseFloat(value),
@@ -331,6 +350,7 @@ const checkIfDataLoaded = () =>{
                                         className="w-24 font-bold mb-2 border border-white rounded-lg bgdark focus:border-black overflow-y-auto resize-none mt-2"
                                         onChange={(e) => {
                                             const value = parseFloat(e.target.value).toFixed(5);
+                                            console.log(e.target.value);
                                             setCreateSpeculativeTransactionData((data) => ({
                                             ...data,
                                             take_profit: parseFloat(value),
