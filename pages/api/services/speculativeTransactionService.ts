@@ -1,10 +1,10 @@
 import api_url from '@/lib/api_url';
 import axios from 'axios'
-import { SpeculativeTransaction, SpeculativeTransactionEdit } from '@/lib/interfaces/speculative_Transaction';
+import { SpeculativeTransactionCreate, SpeculativeTransactionEdit } from '@/lib/interfaces/speculative_Transaction';
 
 const url = api_url('auth/speculativeTransaction')
 
-export const handleCreateSpeculativeTransaction = async (data: SpeculativeTransaction) => {
+export const handleCreateSpeculativeTransaction = async (data: SpeculativeTransactionCreate) => {
     try {
         const { data: res } = await axios.post(url, data, {headers: {Accept: 'application/json'}})
         return(res);

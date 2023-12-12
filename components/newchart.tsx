@@ -9,7 +9,7 @@ import { FaExchangeAlt } from "react-icons/fa";
 import { getHours } from "@/lib/time";
 import { regressionColor } from "@/lib/regression";
 
-export default function ChartExample() {
+export default function ChartExample(props:any) {
   const [currencies, setCurrencies] = useState<ICurrency[]>([]);
   const [currencyHistory, setCurrencyHistory] = useState<ICurrencyHistory>();
   const [sellingCurrency, setSellingCurrency] = useState<ICurrency>({id: getCurrencyIdByName(currencies, 'PLN'), name: 'PLN'})
@@ -22,7 +22,7 @@ export default function ChartExample() {
       const { data } = await axios.get(api_url('currency'), {headers: {Accept: 'application/json'}})
       setCurrencies(data as ICurrency[])
     }
-    
+    props.setSellBuyCurrencies(sellingCurrency, buyingCurrency);
     handleGetCurrencies()
   }, [])
 
@@ -33,9 +33,10 @@ export default function ChartExample() {
     }
   }, [currencies])
 
+
   useEffect(() => {
     const handleHistoryGet = async () => {
-      let url = api_url('auth/currencyHistory') + '?timestamp=' + pastTimestamp + '&sell_currency_id=' + sellingCurrency.id + '&buy_currency_id=' + buyingCurrency.id
+      let url = api_url('auth/currencyHistory') + '?timestamp=' + pastTimestamp + '&sell_currency_id=' + buyingCurrency.id + '&buy_currency_id=' + sellingCurrency.id
       if (trendlineEnabled) url += '&predict=true'
       const { data } = await axios.get(url, {headers: {Accept: 'application/json'}})
       setCurrencyHistory(data[0] as ICurrencyHistory)
@@ -43,7 +44,7 @@ export default function ChartExample() {
     if (sellingCurrency.id !== -1) {
       handleHistoryGet()
     }
-   
+    props.setSellBuyCurrencies(sellingCurrency, buyingCurrency);
   }, [sellingCurrency, buyingCurrency, pastTimestamp, trendlineEnabled])
 
   const chartRef = useRef<HTMLCanvasElement>(null);
@@ -156,7 +157,7 @@ export default function ChartExample() {
             legend: {
               title: {
                 display: true,
-                text: "Wykres dla: " + sellingCurrency.name + "/" + buyingCurrency.name,
+                text: "Para walutowa: " + sellingCurrency.name + "/" + buyingCurrency.name,
                 color: "#fff",
                 font: {
                   family: "monospace",

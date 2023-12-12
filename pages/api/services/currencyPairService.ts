@@ -12,3 +12,13 @@ export const getCurrencyPair = async (ownedCurrencyID: number, currencyToBuyID: 
         throw error;
     }
 };
+export const getCurrencyPairById = async (id: number) => {
+    try{
+        const urlWithQuery = api_url(`currencyPair?id=${id}`)
+        const res = await axios.get(urlWithQuery, {headers: {Accept: 'application/json'}})
+        return {data: res.data};
+    } catch (error) {
+        console.log('unexpected error: ', error);
+        throw error;
+    }
+}
