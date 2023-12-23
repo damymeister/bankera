@@ -40,3 +40,15 @@ export interface SpeculativeTransactionEdit{
     exit_course_value: number;
     exit_date: Date;
 }
+export interface SpeculativeTransactionProfitLossTest {
+    transaction_type: number;
+    entry_course_value: number;
+    exit_course_value: number;
+    transaction_balance: number;
+}
+export interface SpeculativeTransactionTakeProfitStopLossTest {
+    transaction_type: number;
+    take_profit: number;
+    stop_loss: number;
+    entry_course_value: number;
+}

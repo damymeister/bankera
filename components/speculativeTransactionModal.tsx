@@ -147,22 +147,34 @@ export default function SpeculativeTransactionModal(props:any){
             return true
         }
         if(stopLossIncluded){
-            if(createSpeculativeTransactionData.transaction_type === 1 && createSpeculativeTransactionData.stop_loss > createSpeculativeTransactionData.entry_course_value){
-                setSnackbarProps({ snackStatus: "danger", message: `Stop loss powinien mieścić się w przedziale 0-${(createSpeculativeTransactionData.entry_course_value - 0.00001).toFixed(5)}`, showSnackbar: true });
+            if(createSpeculativeTransactionData.transaction_type === 1 
+                && createSpeculativeTransactionData.stop_loss > createSpeculativeTransactionData.entry_course_value){
+                setSnackbarProps({ snackStatus: "danger", 
+                message: `Stop loss powinien mieścić się w przedziale 0-${(createSpeculativeTransactionData.entry_course_value - 0.00001).toFixed(5)}`, 
+                showSnackbar: true });
                 return false
             }
-            if(createSpeculativeTransactionData.transaction_type === 2 && createSpeculativeTransactionData.stop_loss < createSpeculativeTransactionData.entry_course_value){
-                setSnackbarProps({ snackStatus: "danger", message: `Stop loss powinien mieścić się w przedziale ${createSpeculativeTransactionData.entry_course_value.toFixed(5)}-∞`, showSnackbar: true });
+            if(createSpeculativeTransactionData.transaction_type === 2 
+                && createSpeculativeTransactionData.stop_loss < createSpeculativeTransactionData.entry_course_value){
+                setSnackbarProps({ snackStatus: "danger", 
+                message: `Stop loss powinien mieścić się w przedziale ${createSpeculativeTransactionData.entry_course_value.toFixed(5)}-∞`, 
+                showSnackbar: true });
                 return false
             }
         }
         if(takeProfitIncluded){
-            if(createSpeculativeTransactionData.transaction_type === 1 && createSpeculativeTransactionData.take_profit < createSpeculativeTransactionData.entry_course_value){
-                setSnackbarProps({ snackStatus: "danger", message: `Take profit powinien mieścić się w przedziale ${createSpeculativeTransactionData.entry_course_value.toFixed(5)}-∞`, showSnackbar: true });
+            if(createSpeculativeTransactionData.transaction_type === 1 
+                && createSpeculativeTransactionData.take_profit < createSpeculativeTransactionData.entry_course_value){
+                setSnackbarProps({ snackStatus: "danger",
+                 message: `Take profit powinien mieścić się w przedziale ${createSpeculativeTransactionData.entry_course_value.toFixed(5)}-∞`, 
+                 showSnackbar: true });
                 return false
             }
-            if(createSpeculativeTransactionData.transaction_type === 2 && createSpeculativeTransactionData.take_profit > createSpeculativeTransactionData.entry_course_value){
-                setSnackbarProps({ snackStatus: "danger", message: `Take profit powinien mieścić się w przedziale 0-${(createSpeculativeTransactionData.entry_course_value - 0.00001).toFixed(5)}`, showSnackbar: true });
+            if(createSpeculativeTransactionData.transaction_type === 2 
+                && createSpeculativeTransactionData.take_profit > createSpeculativeTransactionData.entry_course_value){
+                setSnackbarProps({ snackStatus: "danger", 
+                message: `Take profit powinien mieścić się w przedziale 0-${(createSpeculativeTransactionData.entry_course_value - 0.00001).toFixed(5)}`, 
+                showSnackbar: true });
                 return false
             }
         }
