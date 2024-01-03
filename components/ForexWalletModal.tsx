@@ -211,7 +211,7 @@ export default function ForexWalletModal(props:any){
                     value={amountToChange}
                   />
                 </div>
-              <button onClick={() => {!props.isForexWallet ? transferMoneyToForex() : transferMoneyToCasualWallet()}} className='className="py-4 button2 text-white rounded-xl'>Transfer</button>
+              <button onClick={() => {!props.isForexWallet ? transferMoneyToForex() : transferMoneyToCasualWallet()}} className='className="py-4 button2 mb-4 text-white rounded-xl'>Transfer</button>
               </div>
             <button onClick={() => props.closeForexWalletModal()} className="absolute right-2 top-2 ">
               <FaWindowClose className="text-white w-6 inline mr-3 cursor-pointer hover:text-slate-200 " />
