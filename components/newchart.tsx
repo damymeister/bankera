@@ -79,7 +79,7 @@ export default function ChartExample(props:any) {
       let values = currencyHistory.history.map((historyItem) => historyItem.conversion_value)
       labels = labels.reverse()
       values = values.reverse()
-      const futureData = generateFutureData();
+      const futureData = generateFutureData()
       const futureDataColor = currencyHistory.future ? regressionColor(currencyHistory.future.byx) : 'rgb(0,0,0)'
       chartInstanceRef.current = new Chart(chartRef.current, {
         type: "line",

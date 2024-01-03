@@ -171,9 +171,9 @@ const mapUserCurrencies = () =>{
       <div className="items-center bg-[#1f1b24b2] justify-center flex h-full w-full">
         {isLoading ? (<div>Is loading... </div>):
         walletID === null ?
-          <div>
-            <h3>You do not have a wallet yet! Create one below!</h3>
-            <button onClick={() => { handleCreateWallet().then(() => window.location.reload()) }} className="p-4 rounded-xl mt-4 button2 mb-4 cursor-pointer ">Create Wallet</button>
+          <div className='py-8'>
+            <h3 className='pb-4'>You do not have a wallet yet! Create one below!</h3>
+            <button onClick={() => { handleCreateWallet().then(() => window.location.reload()) }} className="p-4 rounded-xl mt-4 button2 mb-4 cursor-pointer pb-8">Create Wallet</button>
           </div> :
           <div className=" p-8 borderLight rounded-xl m-8  min-h-400">
             {!walletData || walletData.length === 0 ? (

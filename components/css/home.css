@@ -219,7 +219,7 @@ h1.Title {
     border-radius: 1rem;
     font-size: var(--text-small);
     font-family: inherit;
-    margin: 1rem;
+    /* margin: 1rem; */
     text-transform: capitalize;
     color: var(--text-mid);
     background: var(--primary-purple-color);

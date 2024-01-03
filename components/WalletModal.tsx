@@ -210,14 +210,14 @@ const displayButton = () =>{
   else if(operationType == Operation.Withdraw && data.currencyRow_id !== -1){
     return <button onClick={() => withDrawMoneyFromAccount()} className="py-4 button2 text-white rounded-xl">Withdraw</button>
   }
-  return <button onClick={() => addNewCurrency()} className="py-4 button2 text-white rounded-xl">Add</button>
+  return <button onClick={() => addNewCurrency()} className="py-4 button2 text-white rounded-xl mb-8">Add</button>
 }
 
   return (
     
       <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black bg-opacity-80 text-white ">
           {showSnackbar && <SnackBar snackbar={snackbarProps} setShowSnackbar={setShowSnackbar} />}
-        <div className="lg:w-2/5 w-2/3 py-2 lg:h-1/3 min-h-2/3 h-auto bgdark text-white rounded-xl relative border-2 border-black borderLight p-6">
+        <div className="lg:w-2/5 w-2/3 py-2 lg:h-1/3 min-h-2/3 h-auto bgdark text-white rounded-xl relative border-2 border-black borderLight p-8">
           {isLoading ? (
             <div>Is loading...</div>
           ) : (

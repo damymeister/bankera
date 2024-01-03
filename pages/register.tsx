@@ -32,16 +32,28 @@ export default function Register() {
         const url = api_url('register')
         const { data: res, status } = await axios.post(url, data, {headers: {Accept: 'application/json'}})
         console.log(res.message)
-        if (status === 201) router.push('/login') // 201 = created
+        if (status === 201) {
+            setsnackStatus("success")
+            setsnackMess("Zarejestrowano pomyślnie")
+            setShowSnackbar(true)
+            setTimeout(() => {
+                router.push('/login')
+            }, 2000);
+    
+           
+    } // 201 = created
       } catch (error) {
         if (axios.isAxiosError(error)) {
           if (
               error.response &&
               error.response.status >= 400 &&
-              error.response.status <= 500
-          ) {
+              error.response.status <= 500   
+          ) 
+          {
               setError(error.response.data.message)
+              setsnackStatus("danger")
               setShowSnackbar(true)
+              setsnackMess("Błąd w trakcie rejestracji")
           }
         }
         else console.log('unexpected error: ', error)
