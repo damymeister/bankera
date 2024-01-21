@@ -1,39 +1,12 @@
-# TODO List
+# README 
+Financial application built following the patterns popular in the Next.js stack, utilizing TypeScript, Prisma with MySQL, Tailwind CSS, CSS, and Chart JS.
 
-- Poprawić błędy z snackbarami
-- ujednolicić język
-- Ostatnia strona ma być wielkości tak jak poprzednich
-- Testy **SOŁ**
+This application serves as a simulator for a financial platform, allowing users to register and log in. Users can publish and edit entries about financial markets, create a currency portfolio, and a forex portfolio. 
+It enables currency exchange at current rates retrieved from internet APIs, fund transfers to other users, and speculation on currency pairs in the forex market with scripts checking stop-loss and take-profit with every rate change.
 
-# CRON DO TRANSAKCJI SPEKULACYJNYCH
-1) Ma się wywoływać co każdą zmianę kursów, musi iterować przez wszystkie otwarte transakcje - te które nie mają exit daty i exit kursu ustawionego, powinien sprawdzić ich stop loss oraz take profit, jeśli nowy kurs danej pary walutowej jest równy take_profit lub stop_loss danej transakcji otwartej, należy dokonać aktualizacji (zakończenia) transakcji, poprzez update exit kursu, oraz exit daty, a także wyliczyć profit_loss i też przypisać go do pola danej transakcji podczas aktualizacji (patrz forex.tsx - funkcja calculateProfitLoss a nastepnie closeTransaction).
-2) Dodatkowo CRON powinien wyliczać obecny zysk otwartych transakcji (to znaczy obliczać profit_loss ) wszystkich otwartych transakcji czyli (iteruje po wszystkich otwartych transakcjach, wylicza tak jak w funkcji calculateProfitLoss - nastepnie aktualizuje tylko pole profit_loss danej transakcji spekulacyjnej (nie ma jeszcze takiej metody w serwisie, należy ją zaimplementować) i wyświetla je w tabeli z otwartymi transakcjami spekulacyjnymi w polu Obecny zysk, ale przy aktualizacji nie moze aktualizować exit daty ani exit kursu bo transakcja nadal trwa!).
+All operations are executed through transactions, ensuring the integrity of multiple interdependent database operations.
 
-# Engineering thesis
-
-## GitHub Commands
-
-git push https://github.com/RaViii1/engineering-thesis main
-
-## Documentation Repository
-
-[https://github.com/RaViii1/praca-dyplomowa](https://github.com/RaViii1/praca-dyplomowa)
-
-## Enviornment variables
-
-DATABASE_URL=mysql://ei_project:Project2023!@dingomc.net:3306/ei_project
-
-## Development Version
-
-First, run the development server:
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## DingoMC Systems Production Version
+## PRODUCTION
 
 Click [here](http://dingomc.net:3001) to test officialy deployed production version  
 Click [here](http://dingomc.net:3002) to connect to phpMyAdmin
