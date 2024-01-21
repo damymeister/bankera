@@ -49,33 +49,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if(takeProfit > entry_course_value || takeProfit < 0) return res.status(400).json({ error: 'Take profit must be less than entry course value.' });
         if(stopLoss < entry_course_value || stopLoss < 0) return res.status(400).json({ error: 'Stop loss must be greater than entry course value.' });
       }
+      await prisma.$transaction(async (prisma) => {
 
-      await prisma.forex_Currency_Storage.update({
-        where: {
-          id: findForexStorageBaseCurrency.id
-        },
-        data: {
-          forex_currency_amount: findForexStorageBaseCurrency.forex_currency_amount - deposit_amount
-        },
-      })
-
-        await prisma.speculative_Transaction.create({
+        await prisma.forex_Currency_Storage.update({
+          where: {
+            id: findForexStorageBaseCurrency.id
+          },
           data: {
-            forex_wallet_id: forex_wallet_id,
-            transaction_type: transaction_type,
-            currency_pair_id: currency_pair_id,
-            financial_leverage: financial_leverage,
-            lots: lots,
-            entry_course_value: entry_course_value,
-            transaction_balance: transaction_balance,
-            entry_date: entry_date,
-            pip_price: pip_price,
-            stop_loss: stopLoss,
-            take_profit: takeProfit,
-            base_currency_id: base_currency_id,
-            deposit_amount: deposit_amount,
-          }
-      })
+            forex_currency_amount: findForexStorageBaseCurrency.forex_currency_amount - deposit_amount
+          },
+        })
+
+          await prisma.speculative_Transaction.create({
+            data: {
+              forex_wallet_id: forex_wallet_id,
+              transaction_type: transaction_type,
+              currency_pair_id: currency_pair_id,
+              financial_leverage: financial_leverage,
+              lots: lots,
+              entry_course_value: entry_course_value,
+              transaction_balance: transaction_balance,
+              entry_date: entry_date,
+              pip_price: pip_price,
+              stop_loss: stopLoss,
+              take_profit: takeProfit,
+              base_currency_id: base_currency_id,
+              deposit_amount: deposit_amount,
+            }
+        })
+    })
 
       return res.status(201).json({ message: "Speculative transaction created successfully." })
     } catch(error) {
@@ -91,6 +93,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if(findSpeculativeTransaction.forex_wallet_id !== forex_wallet_id) return res.status(400).json({ error: `Wallet does not match.`});
       const findForexStorageBaseCurrency = await prisma.forex_Currency_Storage.findFirst({where: {forex_wallet_id: forex_wallet_id, forex_currency_id: findSpeculativeTransaction.base_currency_id}});
       if(findForexStorageBaseCurrency && findForexStorageBaseCurrency.forex_wallet_id !== forex_wallet_id) return res.status(400).json({ error: `Wallet does not match.`});
+
+
+      await prisma.$transaction(async (prisma) => {
+
 
       if(!findForexStorageBaseCurrency){
         await prisma.forex_Currency_Storage.create({
@@ -121,6 +127,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           profit_loss: parseFloat(profit_loss),
         }
       })
+    })
       return res.status(200).json({ message: "Speculative transaction updated successfully." })
     } catch(error) {
       return res.status(500).json({ message: error });

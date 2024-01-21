@@ -38,6 +38,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (findCurrencyWithDraw === null) return res.status(404).json({ error: 'You don not have this currency in your wallet.' })
       if (findCurrencyWithDraw.amount < initial_amount) return res.status(400).json({ error: 'You do not have enough currency to exchange.' })
 
+      await prisma.$transaction(async (prisma) => {
+
+
+
       if(findCurrencyWithDraw.amount - initial_amount === 0) {
         await prisma.currency_Storage.delete({where: {id: findCurrencyWithDraw.id}})
       } else{
@@ -55,21 +59,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
       })
 
-      if (findCurrencyDeposit === null) {
-        await prisma.currency_Storage.create({
-          data: {
-            wallet_id: wallet_id,
-            currency_id: findCurrencyPair.sell_currency_id,
-            amount: converted_amount
+     await prisma.currency_Storage.upsert({
+      where: {
+        id: findCurrencyDeposit?.id || 0
+        },
+        create: {
+          wallet_id: wallet_id,
+          currency_id: findCurrencyPair.sell_currency_id,
+          amount: converted_amount
+        },
+        update: {
+          amount: {
+            increment: converted_amount
           }
-        })
-      } else {
-        await prisma.currency_Storage.update({
-          where: {
-            id: findCurrencyDeposit.id}, 
-            data: {amount: findCurrencyDeposit.amount + converted_amount}
-          })
-      }
+        }
+      })
       
       await prisma.inner_Transaction.create({data: {
         wallet_id: wallet_id,
@@ -78,6 +82,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         converted_amount: converted_amount,
         transaction_date: new Date(req.body.transaction_date)
       }})
+
+    })
       return res.status(201).json({ message: "Currency exchange completed successfully." })
     } catch(error) {
       return res.status(500).json({ message: 'Error while trying to exchange currencies.' });
